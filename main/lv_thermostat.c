@@ -12,7 +12,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include "lvgl.h"
-
+#include "esp_log.h"
 
 
 
@@ -379,23 +379,26 @@ void lv_set_style_buttons_threshold() {
 
 }
 
-static void event_handler_up_threshold(lv_obj_t *obj, lv_event_t *event) {
+static void event_handler_up_threshold(lv_event_t *event) {
 
 	DATOS_APLICACION *datosApp;
 	datosApp = (DATOS_APLICACION*) 	lv_event_get_user_data(event);
 	datosApp->termostato.tempUmbral += datosApp->termostato.incdec;
 	lv_set_text_threshold(datosApp);
 	//appuser_send_update_threshold
+	ESP_LOGI("HOLA", "HE PULSADO ARRIBA");
 
 }
 
 
-static void event_handler_down_threshold(lv_obj_t *obj, lv_event_t *event) {
+static void event_handler_down_threshold(lv_event_t *event) {
 
 	DATOS_APLICACION *datosApp;
 	datosApp = (DATOS_APLICACION*) 	lv_event_get_user_data(event);
 	datosApp->termostato.tempUmbral -= datosApp->termostato.incdec;
 	lv_set_text_threshold(datosApp);
+
+	ESP_LOGI("HOLA", "HE PULSADO ABAJO");
 
 }
 
@@ -481,8 +484,8 @@ void lv_update_bar_schedule(DATOS_APLICACION *datosApp) {
 	uint8_t minute_from = 35;
 	uint8_t hour_to = 18;
 	uint8_t minute_to = 0;
-	TIME_PROGRAM schedules;
-	int current_schedule;
+	//TIME_PROGRAM schedules;
+	//int current_schedule;
 	int current_value =35;
 	int progress;
 	bool active_schedule = true;
@@ -508,13 +511,6 @@ void lv_update_bar_schedule(DATOS_APLICACION *datosApp) {
 
 }
 
-// BROKER STATUS
-//UPGRADE STATUS
-//ALARMA_STATUS
-//STATUS APP
-// TEMPERATURE & THRESHOLD & RELAY
-// UPDATE_SCHEDULE
-// UPDATE TIME
 
 
 void lv_status_communication(DATOS_APLICACION *datosApp) {
@@ -683,6 +679,11 @@ void lv_thermostat_code(lv_disp_t *display) {
 	lv_status_device(datosApp);
 	lv_set_status_heating(datosApp, estado);
 	lv_set_text_threshold(datosApp);
+
+
+	lv_obj_add_event_cb(lv_main_screen, event_handler_down_threshold, LV_EVENT_CLICKED, datosApp);
+
+
 
 }
 

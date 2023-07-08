@@ -18,6 +18,11 @@
 #include "lv_examples.h"
 #include "lv_demos.h"
 
+#include "esp_lcd_touch.h"
+#include "esp_lcd_panel_io.h"
+
+
+
 
 
 void lv_set_style_screen(lv_disp_t *display);

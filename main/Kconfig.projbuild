@@ -1,18 +1,31 @@
-menu "Example Configuration"
-    config EXAMPLE_DOUBLE_FB
+menu "iotThermostat configuration"
+
+config LCD_H_RES
+	int "Horizontal resolution rgb panel"
+	default 800
+	help
+		Indicate the horizontal resolution of rgb panel
+		
+config LCD_V_RES
+	int "Vertical resolution rgb panel"
+	default 480
+	help
+		Indicate the vertical resolution of rgb panel		
+
+    config DOUBLE_FB
         bool "Use double Frame Buffer"
         default "n"
         help
             Enable this option, driver will allocate two frame buffers.
 
-    config EXAMPLE_USE_BOUNCE_BUFFER
-        depends on !EXAMPLE_DOUBLE_FB
+    config USE_BOUNCE_BUFFER
+        depends on !DOUBLE_FB
         bool "Use bounce buffer"
         help
             Enable bounce buffer mode can achieve higher PCLK frequency at the cost of higher CPU consumption.
 
-    config EXAMPLE_AVOID_TEAR_EFFECT_WITH_SEM
-        depends on !EXAMPLE_DOUBLE_FB
+    config AVOID_TEAR_EFFECT_WITH_SEM
+        depends on !DOUBLE_FB
         bool "Avoid tearing effect"
         default "y"
         help
