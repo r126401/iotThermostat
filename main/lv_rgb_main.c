@@ -26,7 +26,7 @@
 
 #include "driver/i2c.h"
 
-static const char *TAG = "example";
+static const char *TAG = "iotThermostat";
 #define	I2C_HOST	0
 esp_lcd_touch_handle_t tp = NULL;
 
@@ -79,7 +79,7 @@ SemaphoreHandle_t sem_gui_ready;
 
 
 
-static bool example_on_vsync_event(esp_lcd_panel_handle_t panel, const esp_lcd_rgb_panel_event_data_t *event_data, void *user_data)
+static bool on_vsync_event(esp_lcd_panel_handle_t panel, const esp_lcd_rgb_panel_event_data_t *event_data, void *user_data)
 {
     BaseType_t high_task_awoken = pdFALSE;
 #if CONFIG_AVOID_TEAR_EFFECT_WITH_SEM
@@ -90,7 +90,7 @@ static bool example_on_vsync_event(esp_lcd_panel_handle_t panel, const esp_lcd_r
     return high_task_awoken == pdTRUE;
 }
 
-static void example_lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
+static void lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_color_t *color_map)
 {
     esp_lcd_panel_handle_t panel_handle = (esp_lcd_panel_handle_t) drv->user_data;
     int offsetx1 = area->x1;
@@ -106,7 +106,7 @@ static void example_lvgl_flush_cb(lv_disp_drv_t *drv, const lv_area_t *area, lv_
     lv_disp_flush_ready(drv);
 }
 
-static void example_increase_lvgl_tick(void *arg)
+static void increase_lvgl_tick(void *arg)
 {
     /* Tell LVGL how many milliseconds has elapsed */
     lv_tick_inc(CONFIG_LVGL_TICK_PERIOD_MS);
@@ -192,7 +192,7 @@ void lv_app_rgb_main(void)
 
     ESP_LOGI(TAG, "Register event callbacks");
     esp_lcd_rgb_panel_event_callbacks_t cbs = {
-        .on_vsync = example_on_vsync_event,
+        .on_vsync = on_vsync_event,
     };
     ESP_ERROR_CHECK(esp_lcd_rgb_panel_register_event_callbacks(panel_handle, &cbs, &disp_drv));
 
@@ -228,7 +228,7 @@ void lv_app_rgb_main(void)
     lv_disp_drv_init(&disp_drv);
     disp_drv.hor_res = CONFIG_LCD_H_RES;
     disp_drv.ver_res = CONFIG_LCD_V_RES;
-    disp_drv.flush_cb = example_lvgl_flush_cb;
+    disp_drv.flush_cb = lvgl_flush_cb;
     disp_drv.draw_buf = &disp_buf;
     disp_drv.user_data = panel_handle;
 #if CONFIG_CONFIG_DOUBLE_FB
@@ -240,7 +240,7 @@ void lv_app_rgb_main(void)
     ESP_LOGI(TAG, "Install LVGL tick timer");
     // Tick interface for LVGL (using esp_timer to generate 2ms periodic event)
     const esp_timer_create_args_t lvgl_tick_timer_args = {
-        .callback = &example_increase_lvgl_tick,
+        .callback = &increase_lvgl_tick,
         .name = "lvgl_tick"
     };
     esp_timer_handle_t lvgl_tick_timer = NULL;
@@ -248,7 +248,7 @@ void lv_app_rgb_main(void)
     ESP_ERROR_CHECK(esp_timer_start_periodic(lvgl_tick_timer, CONFIG_LVGL_TICK_PERIOD_MS * 1000));
 
     ESP_LOGI(TAG, "Display LVGL Scatter Chart");
-    //example_lvgl_demo_ui(disp);
+    //lvgl_demo_ui(disp);
     init_app_touch_gt911(disp);
     
 
