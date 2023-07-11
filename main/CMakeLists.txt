@@ -6,6 +6,7 @@ idf_component_register(SRCS
 "lv_thermostat.c"
 "fonts/russo36.c"
 "fonts/russo48.c"
+"fonts/russo100.c"
 "images/ic_action_offline.c"
 "images/ic_action_online.c"
 "images/ic_action_reset.c"

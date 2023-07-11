@@ -1,4 +1,0 @@
-Executing action: add-dependency
-Created "/home/t126401/espressif5.2/iotThermostat/main/idf_component.yml"
-Successfully added dependency "lvgl/lvgl*" to component "main"
-Done

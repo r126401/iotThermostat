@@ -76,7 +76,7 @@ LV_IMG_DECLARE(ic_down_threshold);
 //LV_FONT_CUSTOM_DECLARE(lv_font_led_30);
 LV_FONT_DECLARE(russo48);
 LV_FONT_DECLARE(russo36);
-
+LV_FONT_DECLARE(russo100);
 
 
 
@@ -210,7 +210,7 @@ void lv_create_layout_temperature(DATOS_APLICACION *datosApp) {
 	char temperature[10];
 	lv_layout_temperature = lv_obj_create(lv_main_screen);
 	lv_obj_set_size(lv_layout_temperature, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-	lv_obj_align_to(lv_layout_temperature, lv_layout_notification, LV_ALIGN_OUT_BOTTOM_LEFT, 120, 50);
+	lv_obj_align_to(lv_layout_temperature, lv_layout_notification, LV_ALIGN_OUT_BOTTOM_MID, 120, 50);
 	//lv_obj_set_pos(lv_layout_temperature, 100, 100);
 	//lv_obj_center(lv_layout_temperature);
 	lv_obj_set_flex_align(lv_layout_temperature, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
@@ -224,7 +224,7 @@ void lv_create_layout_temperature(DATOS_APLICACION *datosApp) {
 	sprintf(temperature, "%.1f", datosApp->termostato.tempActual);
 
 	lv_label_set_text_fmt(lv_text_temperature, "%s ºC", temperature);
-    lv_obj_set_style_text_font(lv_text_temperature, &russo48, LV_PART_MAIN);
+    lv_obj_set_style_text_font(lv_text_temperature, &russo100, LV_PART_MAIN);
 	lv_set_style_layout_temperature();
 	lv_obj_center(lv_text_temperature);
 
@@ -285,7 +285,7 @@ void lv_set_style_threshold() {
 
 	lv_style_init(&lv_style_layout_threshold);
 	lv_obj_add_style(lv_layout_threshold, &lv_style_layout_threshold, LV_STATE_DEFAULT);
-	lv_obj_set_style_text_font(lv_layout_threshold, &russo36, LV_PART_MAIN);
+	lv_obj_set_style_text_font(lv_layout_threshold, &russo48, LV_PART_MAIN);
 	lv_obj_clear_flag(lv_layout_threshold, LV_OBJ_FLAG_SCROLLABLE);
     lv_style_set_bg_opa(&lv_style_layout_threshold, LV_OPA_TRANSP);
     lv_style_set_border_width(&lv_style_layout_threshold, 0);

@@ -60,8 +60,8 @@ esp_lcd_touch_handle_t tp = NULL;
 #define CONFIG_PIN_NUM_DISP_EN        -1
 
 // The pixel number in horizontal and vertical
-#define CONFIG_LCD_H_RES              800
-#define CONFIG_LCD_V_RES              480
+//#define CONFIG_LCD_H_RES              480
+//#define CONFIG_LCD_V_RES              272
 
 #if CONFIG_CONFIG_DOUBLE_FB
 #define CONFIG_LCD_NUM_FB             2

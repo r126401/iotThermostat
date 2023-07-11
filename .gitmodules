@@ -1,6 +1,0 @@
-[submodule "components"]
-	path = components
-	url = git@github.com:r126401/components.git
-[submodule "esp_lcd_touch_xpt2046"]
-	path = esp_lcd_touch_xpt2046
-	url = https://github.com/atanisoft/esp_lcd_touch_xpt2046.git
