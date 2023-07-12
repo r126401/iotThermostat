@@ -681,8 +681,6 @@ void lv_thermostat_code(lv_disp_t *display) {
 	lv_set_text_threshold(datosApp);
 
 
-	lv_obj_add_event_cb(lv_main_screen, event_handler_down_threshold, LV_EVENT_CLICKED, datosApp);
-
 
 
 }
