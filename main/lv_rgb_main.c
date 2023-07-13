@@ -19,10 +19,12 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "lvgl.h"
-#include "lv_thermostat.h"
+
 #include "driver/spi_master.h"
 #include "esp_lcd_touch_gt911.h"
 
+#include "lv_factory_reset.h"
+#include "lv_thermostat.h"
 
 #include "driver/i2c.h"
 
@@ -115,10 +117,27 @@ static void increase_lvgl_tick(void *arg)
 
 
 
+static void lv_init_app(DATOS_APLICACION *datosApp) {
+
+	switch (datosApp->datosGenerales->estadoApp) {
+
+	case (ARRANQUE_FABRICA):
+			lv_screen_factory_reset(datosApp);
+			break;
+
+	default:
+		lv_screen_thermostat(datosApp);
+		break;
+
+	}
+
+
+}
 
 
 
-void lv_app_rgb_main(void)
+
+void lv_app_rgb_main(DATOS_APLICACION *datosApp)
 {
     static lv_disp_draw_buf_t disp_buf; // contains internal graphic buffer(s) called draw buffer(s)
     static lv_disp_drv_t disp_drv;      // contains callback functions
@@ -248,11 +267,9 @@ void lv_app_rgb_main(void)
     ESP_ERROR_CHECK(esp_timer_start_periodic(lvgl_tick_timer, CONFIG_LVGL_TICK_PERIOD_MS * 1000));
 
     ESP_LOGI(TAG, "Display LVGL Scatter Chart");
-    //lvgl_demo_ui(disp);
     init_app_touch_gt911(disp);
     
-
-    lv_thermostat_code(disp);
+    lv_init_app(datosApp);
 
 
     while (1) {

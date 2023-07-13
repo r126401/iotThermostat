@@ -1,9 +1,11 @@
 idf_component_register(SRCS 
 "main.c"
+"code_application.c"
 "lv_rgb_main.c"
 "lv_factory_reset.c"
 "lv_init_thermostat.c"
 "lv_thermostat.c"
+"lv_tools.c"
 "fonts/russo36.c"
 "fonts/russo48.c"
 "fonts/russo100.c"
@@ -25,3 +27,7 @@ idf_component_register(SRCS
 INCLUDE_DIRS 
 "."
 "include")
+
+
+
+

@@ -19,7 +19,7 @@
 
 #include "lv_factory_reset.h"
 #include <stdlib.h>
-
+#include "lv_tools.h"
 lv_obj_t *lv_screen_factory;
 lv_obj_t *lv_text_area_factory;
 lv_obj_t *lv_img_app;
@@ -37,7 +37,7 @@ LV_IMG_DECLARE(ic_action_reset);
 
 
 
-void lv_init_data_factory_reset() {
+void lv_screen_factory_reset() {
 
 	  DATOS_APLICACION *datosApp;
 	  DATOS_GENERALES *datos;
@@ -65,6 +65,10 @@ void lv_init_data_factory_reset() {
 void lv_set_style_factory_screen() {
 
 	lv_style_init(&lv_style_factory_screen);
+	lv_theme_default_init(lv_obj_get_disp(lv_scr_act()),  /*Use the DPI, size, etc from this display*/
+					lv_color_hex(0x0534F0), lv_color_hex(0x0534F0),   /*Primary and secondary palette*/
+			                                        true,    /*Light or dark mode*/
+			                                        &lv_font_montserrat_16); /*Small, normal, large fonts*/
 	lv_obj_add_style(lv_screen_factory, &lv_style_factory_screen, LV_PART_MAIN);
 
 
@@ -117,23 +121,25 @@ void lv_create_screen_factory(DATOS_APLICACION *datosApp) {
 	lv_scr_load(lv_screen_factory);
 	lv_set_style_factory_screen();
 	lv_create_text_area(datosApp);
-	lv_obj_set_size(lv_text_area_factory, 300, 180);
-
-	lv_textarea_add_text(lv_text_area_factory, "          PUESTA EN SERVICIO...\n\n");
-
+	lv_obj_set_size(lv_text_area_factory, lv_pct(60), LV_SIZE_CONTENT);
+	lv_textarea_set_align(lv_text_area_factory, LV_TEXT_ALIGN_CENTER);
+	lv_textarea_add_text(lv_text_area_factory, "PUESTA EN SERVICIO...\n\n");
 	lv_textarea_add_text(lv_text_area_factory, "Por favor, abre la aplicacion MyHomeIot e instala un nuevo dispositivo.\n\n");
 	lv_textarea_add_text(lv_text_area_factory, "Una vez instalado el dispositivo se conectara a la red y comenzara a funcionar.");
 
 
 	lv_img_app = lv_img_create(lv_screen_factory);
-	lv_obj_set_pos(lv_img_app, 15, 40);
+	lv_obj_set_pos(lv_img_app, lv_pct(5), lv_pct(5));
 	lv_img_set_src(lv_img_app, &ic_app);
 
+
+
 	lv_imgbtn_reset = lv_imgbtn_create(lv_screen_factory);
-	lv_obj_set_pos(lv_imgbtn_reset, 420, 30);
 	lv_imgbtn_set_src(lv_imgbtn_reset, LV_IMGBTN_STATE_RELEASED, &ic_action_reset, NULL, NULL);
 	lv_obj_add_event_cb(lv_imgbtn_reset, event_handler_reset, LV_EVENT_CLICKED, NULL);
 	lv_obj_add_event_cb(lv_text_area_factory, event_handler_focused, LV_EVENT_FOCUSED, NULL);
+
+	lv_obj_set_pos(lv_imgbtn_reset, 650 , lv_pct(5));
 
 
 

@@ -108,7 +108,7 @@ static void btn_cb(lv_event_t * e)
     lv_disp_set_rotation(disp, rotation);
 }
 
-void lv_set_style_screen(lv_disp_t *display) {
+void lv_set_style_screen(lv_obj_t *display) {
 
 
 	lv_theme_default_init(lv_obj_get_disp(lv_scr_act()),  /*Use the DPI, size, etc from this display*/
@@ -169,10 +169,12 @@ void lv_create_layout_nofitification(DATOS_APLICACION *datosApp) {
 	lv_obj_set_style_text_font(lv_date_text, &lv_font_montserrat_16, LV_STATE_DEFAULT);
 	//lv_obj_center(lv_date_text);
 	lv_obj_align(lv_date_text, LV_ALIGN_TOP_MID, 0, 0);
+	lv_label_set_long_mode(lv_date_text, 3);
 
 	//icono conexion al broker
 	lv_icon_broker_status = lv_img_create(lv_layout_notification);
 	lv_img_set_src(lv_icon_broker_status, &ic_wifi_off);
+
 
 
 	//Icono conexion del dispositivo
@@ -205,14 +207,13 @@ void lv_create_layout_nofitification(DATOS_APLICACION *datosApp) {
 
 
 
+
 void lv_create_layout_temperature(DATOS_APLICACION *datosApp) {
 
 	char temperature[10];
 	lv_layout_temperature = lv_obj_create(lv_main_screen);
 	lv_obj_set_size(lv_layout_temperature, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-	lv_obj_align_to(lv_layout_temperature, lv_layout_notification, LV_ALIGN_OUT_BOTTOM_MID, 120, 50);
-	//lv_obj_set_pos(lv_layout_temperature, 100, 100);
-	//lv_obj_center(lv_layout_temperature);
+	lv_obj_align_to(lv_layout_temperature, lv_layout_notification, LV_ALIGN_OUT_BOTTOM_LEFT, CONFIG_LCD_H_RES/4 , CONFIG_LCD_V_RES/4);
 	lv_obj_set_flex_align(lv_layout_temperature, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 
 	// icono temperatura
@@ -299,12 +300,12 @@ void lv_set_style_threshold() {
 void lv_create_layout_threshold(DATOS_APLICACION *datosApp) {
 
 	lv_layout_threshold =  lv_obj_create(lv_main_screen);
-	lv_obj_align_to(lv_layout_threshold, lv_layout_temperature, LV_ALIGN_OUT_BOTTOM_LEFT, 15, 0);
+	lv_obj_align_to(lv_layout_threshold, lv_layout_temperature, LV_ALIGN_OUT_BOTTOM_LEFT, 15, 20);
 	lv_obj_set_flex_align(lv_layout_threshold, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START, LV_FLEX_ALIGN_START);
 	lv_icon_threshold = lv_img_create(lv_layout_threshold);
 	lv_img_set_src(lv_icon_threshold, &ic_threshold);
 	lv_text_threshold = lv_label_create(lv_layout_threshold);
-	lv_obj_set_y(lv_text_threshold, 25);
+	//lv_obj_set_y(lv_text_threshold, 25);
 	//lv_set_text_threshold(datosApp);
 	//sprintf(temperature, "%.1f ºC", datosApp->termostato.tempUmbral);
 	//lv_label_set_text(lv_text_threshold, temperature);
@@ -419,7 +420,7 @@ void lv_create_layout_buttons_threshold(DATOS_APLICACION *datosApp) {
 	lv_icon_down_threshold = lv_img_create(lv_button_down_threshold);
 	lv_img_set_src(lv_icon_down_threshold, &ic_down_threshold);
 	lv_obj_set_size(lv_layout_buttons_threshold, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-	lv_obj_set_pos(lv_layout_buttons_threshold, 10, 60);
+	lv_obj_set_pos(lv_layout_buttons_threshold,lv_pct(5) , lv_pct(40));
 	lv_set_style_buttons_threshold();
 
 
@@ -643,14 +644,9 @@ void example_lvgl_demo_ui(lv_disp_t *disp)
 
 
 
-void lv_thermostat_code(lv_disp_t *display) {
+void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 
-	  DATOS_APLICACION *datosApp;
-	  DATOS_GENERALES *datos;
 
-	  datosApp = (DATOS_APLICACION*) calloc(1, sizeof(DATOS_APLICACION));
-	  datos = (DATOS_GENERALES*) calloc(1, sizeof(DATOS_GENERALES));
-	  datosApp->datosGenerales = datos;
 	  datosApp->datosGenerales->estadoApp = NORMAL_AUTO;
 	  datosApp->datosGenerales->estadoProgramacion = VALID_PROG;
 	  datosApp->termostato.tempActual = 21.254;
@@ -662,9 +658,9 @@ void lv_thermostat_code(lv_disp_t *display) {
 	  datosApp->alarmas[4].estado_alarma = ALARMA_OFF;
 	  datosApp->termostato.incdec = 0.5;
 
-	  //lv_main_screen =lv_scr_act();
-	  lv_main_screen = lv_disp_get_scr_act(display);
-	  lv_set_style_screen(display);
+	  lv_main_screen =lv_scr_act();
+	  //lv_main_screen = lv_disp_get_scr_act(display);
+	  lv_set_style_screen(lv_main_screen);
 
 	lv_create_layout_nofitification(datosApp);
 	lv_create_layout_temperature(datosApp);

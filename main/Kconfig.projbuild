@@ -1,30 +1,105 @@
 menu "iotThermostat configuration"
 
+config IMPLEMENTS_LEDS
+	bool "identify GPIOS to leds"
+	default n
+	help 
+		Configure GPIOS to implements LEDS
+
+config GPIO_PIN_LED
+	int "PIN GPIO LED INDICATOR"
+	default 0
+	depends on IMPLEMENTS_LEDS
+	help 
+		GPIO to implement LED indicator
+	
+config GPIO_PIN_LED_LCD
+	default 0
+	int "PIN GPIO LED INDICATOR"
+	depends on IMPLEMENTS_LEDS
+	help 
+		GPIO to implement LED indicator
+	
+config GPIO_PIN_BOTON
+	int "Pin gipo para activar el boton"
+	default 0
+	help 
+		Indica el pin gpio con el que se activa el boton
+
+
+menu "pp"
+
+choice
+	prompt "Seleccion del tipo de sensor de temperatura"
+        help
+            Selecciona el tipo de sensor
+    
+        config DHT22
+            bool "DHT22"
+            help
+            	DTH22
+        config DS18B20
+            bool "DS18B20"
+            help
+            	DS18B20
+        endchoice
+
+
+
+config GPIO_PIN_DHT
+	int "PIN SENSOR DHT"
+	default 0
+	depends on DHT22
+	help 
+		Implement pin gpio to sensor dht22 or dht11
+
+
+config GPIO_PIN_DS18B20
+	int "PIN SENSOR DS18B20"
+	default 0
+	depends on !DHT22
+	help 
+		Implement pin gpio to sensor DS18B20
+
+
+endmenu
+
+config RGB_PANEL
+	bool "Indicate if use rgb panel"
+	default n
+	help include code for implement rgb panel into proyect
+
+
 config LCD_H_RES
 	int "Horizontal resolution rgb panel"
+	depends on RGB_PANEL
 	default 800
 	help
 		Indicate the horizontal resolution of rgb panel
 		
 config LCD_V_RES
 	int "Vertical resolution rgb panel"
+	depends on RGB_PANEL
 	default 480
 	help
 		Indicate the vertical resolution of rgb panel		
 
     config DOUBLE_FB
         bool "Use double Frame Buffer"
+        depends on RGB_PANEL
         default "n"
         help
             Enable this option, driver will allocate two frame buffers.
 
     config USE_BOUNCE_BUFFER
+    	depends on RGB_PANEL
         depends on !DOUBLE_FB
         bool "Use bounce buffer"
         help
             Enable bounce buffer mode can achieve higher PCLK frequency at the cost of higher CPU consumption.
 
     config AVOID_TEAR_EFFECT_WITH_SEM
+    	depends on RGB_PANEL
         depends on !DOUBLE_FB
         bool "Avoid tearing effect"
         default "y"

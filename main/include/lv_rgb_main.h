@@ -9,10 +9,10 @@
 #define MAIN_INCLUDE_LV_RGB_MAIN_H_
 
 #include "lvgl.h"
+#include "common_data.h"
 
 
-
-void lv_app_rgb_main(void);
+void lv_app_rgb_main(DATOS_APLICACION *datosApp);
 void init_app_touch_xpt2046(lv_disp_t *disp);
 void init_app_touch_gt911(lv_disp_t *disp);
 

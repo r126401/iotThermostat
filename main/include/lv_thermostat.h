@@ -10,7 +10,7 @@
 #define LV_SRC_INCLUDE_LV_THERMOSTAT_H_ 1
 
 //#define _DEFAULT_SOURCE /* needed for usleep() */
-#include "datosapp.h"
+
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -20,18 +20,18 @@
 
 #include "esp_lcd_touch.h"
 #include "esp_lcd_panel_io.h"
+#include "common_data.h"
 
 
 
 
-
-void lv_set_style_screen(lv_disp_t *display);
+void lv_set_style_screen(lv_obj_t *display);
 void lv_set_style_layout_notification();
 void lv_create_layout_nofitification(DATOS_APLICACION *datosApp);
 void lv_create_layout_temperature(DATOS_APLICACION *datosApp);
 void lv_set_style_status_application();
 void lv_create_status_aplication(DATOS_APLICACION *datosApp);
-void lv_thermostat_code(lv_disp_t *display);
+void lv_screen_thermostat(DATOS_APLICACION *datosApp);
 void lv_status_communication(DATOS_APLICACION *datosApp);
 void lv_status_device(DATOS_APLICACION *datosApp);
 void lv_set_style_layout_temperature();
