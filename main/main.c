@@ -65,9 +65,7 @@ void app_main(void) {
 		datosApp.datosGenerales->estadoApp = NORMAL_ARRANCANDO;
 	}
 
-#ifdef CONFIG_RGB_PANEL
-	xTaskCreate(lv_app_rgb_main, "tarea LCD", 4096, (void*) &datosApp, 4, NULL);
-#endif
+
 
 	if (init_code_application(&datosApp) != ESP_OK) {
 		ESP_LOGE(TAG, ""TRAZAR" FALLO LA INICIALIZACION DE LA APLICACION", INFOTRAZA);
@@ -76,7 +74,16 @@ void app_main(void) {
 
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 
+#ifdef CONFIG_RGB_PANEL
+	xTaskCreate(lv_app_rgb_main, "tarea LCD", 4096, (void*) &datosApp, 2, NULL);
+#endif
+
+
+	vTaskDelay(5000 / portTICK_PERIOD_MS);
+
 	conectar_dispositivo_wifi();
+
+
 
 	error = inicializacion(&datosApp, CONFIG_CARGA_CONFIGURACION);
 	if (error == ESP_OK) {
