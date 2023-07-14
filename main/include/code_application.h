@@ -22,6 +22,7 @@
  * @return ESP_OK cuando la inicializacion del dispositivo especifico es correcta
  */
 esp_err_t init_code_application(DATOS_APLICACION *datosApp);
+void tarea_lectura_temperatura(void *parametros);
 
 
 

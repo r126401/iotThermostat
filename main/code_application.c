@@ -96,6 +96,38 @@ static void refresco_lcd(void *arg) {
 
 }
 
+enum ESTADO_RELE operacion_rele(DATOS_APLICACION *datosApp, enum TIPO_ACTUACION_RELE tipo, enum ESTADO_RELE operacion) {
+
+	enum ESTADO_RELE rele;
+
+
+	//gpio_reset_pin(CONFIG_GPIO_PIN_RELE);
+	//gpio_rele_in();
+	switch (tipo) {
+	case MANUAL:
+		if (gpio_get_level(CONFIG_GPIO_PIN_RELE) == OFF) {
+			ESP_LOGW(TAG, ""TRAZAR" ESTABA A OFF Y SE ENCIENDE", INFOTRAZA);
+			rele = ON;
+		} else {
+			ESP_LOGW(TAG, ""TRAZAR" ESTABA A On Y SE APAGA", INFOTRAZA);
+			rele = OFF;
+		}
+		break;
+	default:
+		rele = operacion;
+		break;
+	}
+	//gpio_rele_out();
+	gpio_set_level(CONFIG_GPIO_PIN_RELE, rele);
+	ESP_LOGW(TAG, ""TRAZAR"EL RELE SE HA PUESTO A %d", INFOTRAZA, rele);
+	//lv_actualizar_rele_lcd(rele);
+	//gpio_set_direction(CONFIG_GPIO_PIN_RELE, GPIO_MODE_INPUT);
+
+	return rele;
+}
+
+
+
 void accionar_termostato(DATOS_APLICACION *datosApp) {
 
 	enum ESTADO_RELE accion_rele;

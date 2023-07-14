@@ -71,6 +71,7 @@ void app_main(void) {
 		ESP_LOGE(TAG, ""TRAZAR" FALLO LA INICIALIZACION DE LA APLICACION", INFOTRAZA);
 	}
 
+
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 
 	conectar_dispositivo_wifi();

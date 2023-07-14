@@ -14,7 +14,12 @@
 #include "lvgl.h"
 #include "esp_log.h"
 
+#ifndef CONFIG_LCD_H_RES
 
+#define CONFIG_LCD_H_RES 800
+#define CONFIG_LCD_V_RES 480
+
+#endif
 
 //#define CONFIG_LV_DISPLAY_WIDTH 480
 //#define CONFIG_LV_DISPLAY_height 272

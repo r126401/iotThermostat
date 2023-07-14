@@ -15,7 +15,7 @@ config GPIO_PIN_LED
 	
 config GPIO_PIN_LED_LCD
 	default 0
-	int "PIN GPIO LED INDICATOR"
+	int "PIN GPIO LED INDICATOR_LCD"
 	depends on IMPLEMENTS_LEDS
 	help 
 		GPIO to implement LED indicator
@@ -27,47 +27,48 @@ config GPIO_PIN_BOTON
 		Indica el pin gpio con el que se activa el boton
 
 
-menu "pp"
+menu "Tipo de sensor a utilizar"
 
-choice
-	prompt "Seleccion del tipo de sensor de temperatura"
+choice TEMPERATURE_SENSOR
+    prompt "Seleccion del tipo de sensor de temperatura"
+    help
+        Selecciona el tipo de sensor
+
+    config DHT22
+        bool "DHT22"
+        prompt "DTH22"
         help
-            Selecciona el tipo de sensor
-    
-        config DHT22
-            bool "DHT22"
-            help
-            	DTH22
-        config DS18B20
-            bool "DS18B20"
-            help
-            	DS18B20
-        endchoice
+            DTH22
 
-
+    config DS18B20
+        bool "DS18B20"
+        prompt "DS18B20"
+        help
+            DS18B20
+endchoice
 
 config GPIO_PIN_DHT
-	int "PIN SENSOR DHT"
-	default 0
-	depends on DHT22
-	help 
-		Implement pin gpio to sensor dht22 or dht11
-
+    int "PIN SENSOR DHT"
+    default 0
+    depends on DHT22
+    help 
+        Implement pin gpio to sensor dht22 or dht11
 
 config GPIO_PIN_DS18B20
-	int "PIN SENSOR DS18B20"
-	default 0
-	depends on !DHT22
-	help 
-		Implement pin gpio to sensor DS18B20
-
+    int "PIN SENSOR DS18B20"
+    default 0
+    depends on !DHT22
+    help 
+        Implement pin gpio to sensor DS18B20
 
 endmenu
+
 
 config RGB_PANEL
 	bool "Indicate if use rgb panel"
 	default n
-	help include code for implement rgb panel into proyect
+	help 
+		include code for implement rgb panel into proyect
 
 
 config LCD_H_RES
