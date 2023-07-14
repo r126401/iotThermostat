@@ -91,6 +91,8 @@ void lv_set_style_text_area_factory() {
 }
 void lv_set_style_button_reset() {
 
+
+
 }
 
 
@@ -100,6 +102,7 @@ static void event_handler_reset(lv_event_t *event) {
 		lv_text_reset = lv_label_create(lv_screen_factory);
 		lv_obj_set_pos(lv_text_reset, 180, 20);
 		lv_label_set_text(lv_text_reset, "Reiniciando...");
+		esp_restart();
 
 	}
 }

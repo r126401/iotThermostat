@@ -25,6 +25,7 @@
 
 #include "lv_factory_reset.h"
 #include "lv_thermostat.h"
+#include "lv_init_thermostat.h"
 
 #include "driver/i2c.h"
 
@@ -129,9 +130,13 @@ static void lv_init_app(DATOS_APLICACION *datosApp) {
 
 	switch (datosApp->datosGenerales->estadoApp) {
 
-	case (ARRANQUE_FABRICA):
+	case ARRANQUE_FABRICA:
 			lv_screen_factory_reset(datosApp);
 			break;
+	case ESPERA_FIN_ARRANQUE:
+	case NORMAL_ARRANCANDO:
+		lv_init_data_init_thermostat(datosApp);
+		break;
 
 	default:
 		lv_screen_thermostat(datosApp);

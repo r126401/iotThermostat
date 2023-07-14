@@ -61,6 +61,8 @@ void app_main(void) {
 
 		datosApp.datosGenerales->estadoApp = ARRANQUE_FABRICA;
 
+	} else {
+		datosApp.datosGenerales->estadoApp = NORMAL_ARRANCANDO;
 	}
 
 #ifdef CONFIG_RGB_PANEL

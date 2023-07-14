@@ -22,6 +22,7 @@ lv_obj_t *lv_button_wifi_stations;
 lv_style_t lv_style_screen_init_thermostat;
 lv_style_t lv_style_button_reset_init;
 lv_style_t lv_style_wifi_stations;
+lv_style_t lv_style_text_init_termostat;
 
 lv_obj_t *lv_label_reset;
 lv_obj_t *lv_button_reset;
@@ -33,8 +34,10 @@ lv_obj_t *lv_keyboard;
 lv_obj_t *lv_label_connection_wifi;
 
 
-
-
+static void lv_event_handler_button_reset(lv_event_t *e);
+static void lv_event_handler_wifi_stations(lv_event_t *e);
+static void lv_event_handler_list(lv_event_t *e);
+static void lv_handler_keyboard(lv_event_t *e);
 
 
 void lv_set_style_layout_wifi_stations() {
@@ -103,14 +106,32 @@ void lv_set_style_button_reset_init_thermostat() {
 
 }
 
+
+
+void lv_set_style_text_init_thermostat() {
+
+	lv_style_init(&lv_style_text_init_termostat);
+	lv_obj_add_style(lv_text_init_thermostat, &lv_style_text_init_termostat, LV_STATE_DEFAULT);
+	lv_style_set_text_font(&lv_style_text_init_termostat, &lv_font_montserrat_48);
+    lv_style_set_bg_opa(&lv_style_text_init_termostat, LV_OPA_TRANSP);
+    lv_style_set_shadow_width(&lv_style_text_init_termostat, 100);
+    lv_style_set_shadow_color(&lv_style_text_init_termostat, lv_palette_main(LV_PALETTE_BLUE));
+
+}
+
+
 void lv_set_style_screen_init_thermostat() {
 
 	lv_style_init(&lv_style_screen_init_thermostat);
-	lv_obj_add_style(lv_text_init_thermostat, &lv_style_screen_init_thermostat, LV_STATE_DEFAULT);
-	lv_style_set_text_font(&lv_style_screen_init_thermostat, &lv_font_montserrat_20);
-    lv_style_set_bg_opa(&lv_style_screen_init_thermostat, LV_OPA_TRANSP);
-    lv_style_set_shadow_width(&lv_style_screen_init_thermostat, 100);
-    lv_style_set_shadow_color(&lv_style_screen_init_thermostat, lv_palette_main(LV_PALETTE_BLUE));
+	lv_theme_default_init(lv_obj_get_disp(lv_scr_act()),  /*Use the DPI, size, etc from this display*/
+					lv_color_hex(0x0534F0), lv_color_hex(0x0534F0),   /*Primary and secondary palette*/
+			                                        true,    /*Light or dark mode*/
+			                                        &lv_font_montserrat_16); /*Small, normal, large fonts*/
+
+	lv_obj_add_style(lv_screen_init_thermostat, &lv_style_screen_init_thermostat, LV_PART_MAIN);
+
+
+
     //lv_style_set_shadow_ofs_x(&lv_style_screen_init_thermostat, 0);
     //lv_style_set_shadow_ofs_y(&lv_style_screen_init_thermostat, 20);
 
@@ -186,6 +207,10 @@ static void lv_event_handler_wifi_stations(lv_event_t *e) {
 
 }
 
+
+
+
+
 void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp) {
 
 
@@ -195,16 +220,18 @@ void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp) {
 		lv_obj_clear_flag(lv_screen_init_thermostat, LV_OBJ_FLAG_SCROLLABLE);
 	}
 
+	lv_set_style_screen_init_thermostat();
+
 	if (lv_text_init_thermostat == NULL) {
 		lv_text_init_thermostat = lv_label_create(lv_screen_init_thermostat);
-		lv_set_style_screen_init_thermostat();
+		lv_set_style_text_init_thermostat();
 		lv_obj_center(lv_text_init_thermostat);
 	}
 
 	lv_label_set_text(lv_text_init_thermostat, "Inicializando...");
 	lv_obj_clear_flag(lv_text_init_thermostat, LV_OBJ_FLAG_HIDDEN);
 
-
+/*
 	if (lv_button_reset == NULL) {
 		lv_button_reset = lv_btn_create(lv_screen_init_thermostat);
 		lv_label_reset = lv_label_create(lv_button_reset);
@@ -233,7 +260,7 @@ void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp) {
 	lv_obj_clear_flag(lv_label_connection_wifi, LV_OBJ_FLAG_HIDDEN);
 
 
-
+*/
 
 
 
@@ -244,16 +271,9 @@ void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp) {
 
 
 
-void lv_init_data_init_thermostat() {
+void lv_init_data_init_thermostat(DATOS_APLICACION *datosApp) {
 
-	  DATOS_APLICACION *datosApp;
-	  DATOS_GENERALES *datos;
 
-	  datosApp = (DATOS_APLICACION*) calloc(1, sizeof(DATOS_APLICACION));
-	  datos = (DATOS_GENERALES*) calloc(1, sizeof(DATOS_GENERALES));
-	  datosApp->datosGenerales = datos;
-	  datosApp->datosGenerales->estadoApp = NORMAL_AUTO;
-	  datosApp->datosGenerales->estadoProgramacion = VALID_PROG;
 	  lv_create_layout_init_thermostat(datosApp);
 	  //create_screen_layout_search_ssid(datosApp);
 
