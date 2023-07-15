@@ -74,15 +74,14 @@ void app_main(void) {
 
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 
+
+
+
+
+	conectar_dispositivo_wifi();
 #ifdef CONFIG_RGB_PANEL
 	xTaskCreate(lv_app_rgb_main, "tarea LCD", 4096, (void*) &datosApp, 2, NULL);
 #endif
-
-
-	vTaskDelay(5000 / portTICK_PERIOD_MS);
-
-	conectar_dispositivo_wifi();
-
 
 
 	error = inicializacion(&datosApp, CONFIG_CARGA_CONFIGURACION);

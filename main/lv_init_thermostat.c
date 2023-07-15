@@ -231,7 +231,7 @@ void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp) {
 	lv_label_set_text(lv_text_init_thermostat, "Inicializando...");
 	lv_obj_clear_flag(lv_text_init_thermostat, LV_OBJ_FLAG_HIDDEN);
 
-/*
+
 	if (lv_button_reset == NULL) {
 		lv_button_reset = lv_btn_create(lv_screen_init_thermostat);
 		lv_label_reset = lv_label_create(lv_button_reset);
@@ -242,15 +242,19 @@ void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp) {
 
 	lv_label_set_text(lv_label_reset, LV_SYMBOL_REFRESH);
 
+
+
 	if (lv_button_wifi_stations == NULL) {
 		lv_button_wifi_stations = lv_btn_create(lv_screen_init_thermostat);
 		lv_obj_t *lv_label_button = lv_label_create(lv_button_wifi_stations);
 		lv_label_set_text(lv_label_button, LV_SYMBOL_WIFI);
-		lv_obj_align_to(lv_button_wifi_stations, lv_screen_init_thermostat, LV_ALIGN_TOP_RIGHT, 0, 15);
+		lv_obj_align_to(lv_button_wifi_stations, lv_screen_init_thermostat, LV_ALIGN_TOP_RIGHT, -40, 15);
 		lv_obj_add_event_cb(lv_button_wifi_stations, lv_event_handler_wifi_stations, LV_EVENT_CLICKED, datosApp);
-		lv_obj_set_size(lv_button_wifi_stations, 32,32);
-		lv_set_style_button_reset_init_thermostat();
+		//lv_set_style_button_reset_init_thermostat();
 	}
+
+
+
 
 	if (lv_label_connection_wifi == NULL) {
 		lv_label_connection_wifi = lv_label_create(lv_screen_init_thermostat);
@@ -260,7 +264,7 @@ void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp) {
 	lv_obj_clear_flag(lv_label_connection_wifi, LV_OBJ_FLAG_HIDDEN);
 
 
-*/
+
 
 
 

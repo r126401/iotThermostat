@@ -44,7 +44,7 @@ esp_lcd_touch_handle_t tp = NULL;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// Please update the following configuration according to your LCD spec //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define CONFIG_LCD_PIXEL_CLOCK_HZ     (18 * 1000 * 1000)
+#define CONFIG_LCD_PIXEL_CLOCK_HZ     (14 * 1000 * 1000)
 #define CONFIG_LCD_BK_LIGHT_ON_LEVEL  1
 #define CONFIG_LCD_BK_LIGHT_OFF_LEVEL !CONFIG_LCD_BK_LIGHT_ON_LEVEL
 #define CONFIG_PIN_NUM_BK_LIGHT       2
@@ -210,12 +210,12 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
             .h_res = CONFIG_LCD_H_RES,
             .v_res = CONFIG_LCD_V_RES,
             // The following parameters should refer to LCD spec
-            .hsync_back_porch = 40,
-            .hsync_front_porch = 20,
-            .hsync_pulse_width = 1,
+            .hsync_back_porch = 8,
+            .hsync_front_porch = 8,
+            .hsync_pulse_width = 4,
             .vsync_back_porch = 8,
-            .vsync_front_porch = 4,
-            .vsync_pulse_width = 1,
+            .vsync_front_porch = 8,
+            .vsync_pulse_width = 4,
             .flags.pclk_active_neg = true,
         },
         .flags.fb_in_psram = true, // allocate frame buffer in PSRAM
