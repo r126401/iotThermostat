@@ -161,21 +161,7 @@ void tarea_lectura_temperatura(void *parametros) {
     	leer_temperatura(datosApp);
     	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
     	accionar_termostato(datosApp);
-    	/*
-	    if (((accion_termostato = calcular_accion_termostato(datosApp, &accion_rele)) == ACCIONAR_TERMOSTATO)) {
-	    	operacion_rele(datosApp, TEMPORIZADA, accion_rele);
-	    }
 
-	    if ((accion_termostato == ACCIONAR_TERMOSTATO) || (lecturaAnterior != datosApp->termostato.tempActual)) {
-	    	lv_actualizar_temperatura_lcd(datosApp);
-            informe = appuser_generar_informe_espontaneo(datosApp, CAMBIO_TEMPERATURA, NULL);
-            publicar_mensaje_json(datosApp, informe, NULL);
-
-            //lv_actualizar_humedad_lcd(datosApp);
-	    }
-
-	    lecturaAnterior = datosApp->termostato.tempActual;
-	    */
 	    vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
 
 

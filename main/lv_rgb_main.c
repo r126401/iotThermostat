@@ -74,11 +74,11 @@ esp_lcd_touch_handle_t tp = NULL;
 //#define CONFIG_LCD_H_RES              480
 //#define CONFIG_LCD_V_RES              272
 
-#if CONFIG_CONFIG_DOUBLE_FB
+#if CONFIG_DOUBLE_FB
 #define CONFIG_LCD_NUM_FB             2
 #else
 #define CONFIG_LCD_NUM_FB             1
-#endif // CONFIG_CONFIG_DOUBLE_FB
+#endif // CONFIG_DOUBLE_FB
 
 #define CONFIG_LVGL_TICK_PERIOD_MS    2
 
@@ -241,7 +241,7 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
     lv_init();
     void *buf1 = NULL;
     void *buf2 = NULL;
-#if CONFIG_CONFIG_DOUBLE_FB
+#if CONFIG_DOUBLE_FB
     ESP_LOGI(TAG, "Use frame buffers as LVGL draw buffers");
     ESP_ERROR_CHECK(esp_lcd_rgb_panel_get_frame_buffer(panel_handle, 2, &buf1, &buf2));
     // initialize LVGL draw buffers
@@ -254,7 +254,7 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
     assert(buf2);
     // initialize LVGL draw buffers
     lv_disp_draw_buf_init(&disp_buf, buf1, buf2, CONFIG_LCD_H_RES * 100);
-#endif // CONFIG_CONFIG_DOUBLE_FB
+#endif // CONFIG_DOUBLE_FB
 
     ESP_LOGI(TAG, "Register display driver to LVGL");
     lv_disp_drv_init(&disp_drv);
@@ -263,7 +263,7 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
     disp_drv.flush_cb = lvgl_flush_cb;
     disp_drv.draw_buf = &disp_buf;
     disp_drv.user_data = panel_handle;
-#if CONFIG_CONFIG_DOUBLE_FB
+#if CONFIG_DOUBLE_FB
     disp_drv.full_refresh = true; // the full_refresh mode can maintain the synchronization between the two frame buffers
 #endif
     lv_disp_t *disp = lv_disp_drv_register(&disp_drv);

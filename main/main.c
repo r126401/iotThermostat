@@ -75,13 +75,13 @@ void app_main(void) {
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 
 
-
+#ifdef CONFIG_RGB_PANEL
+	xTaskCreate(lv_app_rgb_main, "tarea LCD", 4096, (void*) &datosApp, 4, NULL);
+#endif
 
 
 	conectar_dispositivo_wifi();
-#ifdef CONFIG_RGB_PANEL
-	xTaskCreate(lv_app_rgb_main, "tarea LCD", 4096, (void*) &datosApp, 2, NULL);
-#endif
+
 
 
 	error = inicializacion(&datosApp, CONFIG_CARGA_CONFIGURACION);
@@ -96,6 +96,7 @@ void app_main(void) {
 
 
     iniciar_gestion_programacion(&datosApp);
+
     //xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 4096, (void*) &datosApp, 4, NULL);
 
     pintar_fecha();
