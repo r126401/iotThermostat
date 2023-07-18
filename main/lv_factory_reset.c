@@ -20,6 +20,9 @@
 #include "lv_factory_reset.h"
 #include <stdlib.h>
 #include "lv_tools.h"
+#include "logging.h"
+#include "esp_log.h"
+
 lv_obj_t *lv_screen_factory;
 lv_obj_t *lv_text_area_factory;
 lv_obj_t *lv_img_app;
@@ -35,7 +38,7 @@ lv_style_t	lv_style_button_reset;
 LV_IMG_DECLARE(ic_app);
 LV_IMG_DECLARE(ic_action_reset);
 
-
+static const char *TAG = "lv_factory_reset";
 
 void lv_screen_factory_reset() {
 
@@ -162,6 +165,19 @@ void lv_create_text_area(DATOS_APLICACION *datosApp){
 	lv_set_style_text_area_factory();
 	lv_obj_clear_state(lv_text_area_factory, LV_STATE_FOCUSED);
 
+}
+
+void lv_smartconfig_notify(DATOS_APLICACION *datosApp) {
+
+
+
+	ESP_LOGI(TAG, ""TRAZAR" Pintamos que estamos en smartconfig...", INFOTRAZA);
 
 
 }
+
+
+
+
+
+

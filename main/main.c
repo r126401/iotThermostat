@@ -30,44 +30,6 @@ static const char *TAG = "IotThermostat";
 DATOS_APLICACION datosApp;
 TaskHandle_t handle;
 
-
-/*
-
-void get_hour_by_ntp(DATOS_APLICACION *datosApp) {
-
-	esp_err_t error;
-
-	inicializar_parametros_ntp(&datosApp->datosGenerales->clock);
-	appuser_get_date_sntp(datosApp);
-	ESP_LOGW(TAG, ""TRAZAR"(1)", INFOTRAZA);
-	error = obtener_fecha_hora(&datosApp->datosGenerales->clock);
-	ESP_LOGW(TAG, ""TRAZAR"(2)", INFOTRAZA);
-
-	if (error != ESP_OK) {
-		ESP_LOGW(TAG, ""TRAZAR"NO SE HA PODIDO OBTENER LA HORA DEL SERVIDOR NTP. NO HABRA PROGRAMACION. error: %d", INFOTRAZA, error);
-		datosApp->datosGenerales->estadoProgramacion = INVALID_PROG;
-		appuser_error_get_date_sntp(datosApp);
-		registrar_alarma(datosApp, NOTIFICACION_ALARMA_NTP, ALARMA_NTP, ALARMA_OFF, false);
-
-	} else {
-		ESP_LOGI(TAG, ""TRAZAR" VAMOS A REGISTRAR ALARMA", INFOTRAZA);
-		registrar_alarma(datosApp, NOTIFICACION_ALARMA_NTP, ALARMA_NTP, ALARMA_OFF, false);
-		appuser_sntp_ok(datosApp);
-		actualizar_hora(&datosApp->datosGenerales->clock);
-		//ESP_LOGI(TAG, ""TRAZAR"Hora inicializada:%s", INFOTRAZA, pintar_fecha(datosApp->datosGenerales->clock.date);
-		ESP_LOGI(TAG, ""TRAZAR"Hora inicializada:%s", INFOTRAZA,pintar_fecha(datosApp->datosGenerales->clock.date));
-	    datosApp->datosGenerales->estadoProgramacion = VALID_PROG;
-
-
-	}
-}
-*/
-
-
-
-
-
-
 void app_main(void) {
 
 
@@ -89,7 +51,7 @@ void app_main(void) {
 
 	error = inicializar_nvs(CONFIG_NAMESPACE, &datosApp.handle);
 	if (error != ESP_OK) {
-		ESP_LOGE(TAG, ""TRAZAR" ERROR AL INICIALIZAR NVS", INFOTRAZA);
+		ESP_LOGW(TAG, ""TRAZAR" ERROR AL INICIALIZAR NVS", INFOTRAZA);
 		error = ESP_FAIL;
 	} else {
 		error = ESP_OK;
@@ -100,9 +62,11 @@ void app_main(void) {
 	if(configurado_de_fabrica() == ESP_OK) {
 
 		datosApp.datosGenerales->estadoApp = ARRANQUE_FABRICA;
+		ESP_LOGW(TAG, ""TRAZAR" ESTAMOS ARRANCANDO DE FABRICA", INFOTRAZA);
 
 	} else {
 		datosApp.datosGenerales->estadoApp = NORMAL_ARRANCANDO;
+		ESP_LOGE(TAG, ""TRAZAR" NORMAL ARRANCANDO...", INFOTRAZA);
 	}
 
 
@@ -112,13 +76,19 @@ void app_main(void) {
 	}
 
 
-	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
+
 
 	error = inicializacion(&datosApp, CONFIG_CARGA_CONFIGURACION);
 	if (error == ESP_OK) {
 		ESP_LOGI(TAG, ""TRAZAR"INICIALIZACION CORRECTA", INFOTRAZA);
 	} else {
-		ESP_LOGE(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
+		if (datosApp.datosGenerales->estadoApp == ARRANQUE_FABRICA) {
+			ESP_LOGI(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
+		} else {
+			ESP_LOGE(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
+			return;
+		}
+
 	}
 
 
@@ -127,6 +97,7 @@ void app_main(void) {
 	xTaskCreate(lv_app_rgb_main, "tarea LCD", 9216, (void*) &datosApp, 4, NULL);
 #endif
 
+	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 	conectar_dispositivo_wifi();
 	handle = NULL;
 	sync_app_by_ntp(&datosApp);

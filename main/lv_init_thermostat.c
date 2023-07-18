@@ -10,7 +10,10 @@
 #include "lvgl.h"
 #include "lv_init_thermostat.h"
 #include <stdlib.h>
+#include "logging.h"
+#include "esp_log.h"
 
+static const char *TAG = "lv_factory_reset";
 
 lv_obj_t *lv_screen_init_thermostat;
 lv_obj_t *lv_img_reset_init;
@@ -278,6 +281,8 @@ void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp) {
 void lv_init_data_init_thermostat(DATOS_APLICACION *datosApp) {
 
 
+	ESP_LOGI(TAG, ""TRAZAR"LEVANTAMOS LA PANTALLA NORMAL DE INICIALIZANDO...", INFOTRAZA);
+
 	  lv_create_layout_init_thermostat(datosApp);
 	  //create_screen_layout_search_ssid(datosApp);
 
@@ -445,4 +450,8 @@ void lv_delete_objects_layout_wifi() {
 	lv_layout_wifi_stations = NULL;
 
 }
+
+
+
+
 

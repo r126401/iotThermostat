@@ -27,4 +27,8 @@ void lv_create_text_area(DATOS_APLICACION *datosApp);
 void lv_screen_factory_reset();
 
 
+
+void lv_smartconfig_notify(DATOS_APLICACION *datosApp);
+
+
 #endif /* LV_SRC_INCLUDE_LV_FACTORY_RESET_H_ */
