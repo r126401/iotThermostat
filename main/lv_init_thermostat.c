@@ -12,29 +12,37 @@
 #include <stdlib.h>
 #include "logging.h"
 #include "esp_log.h"
+#include "conexiones.h"
+#include "esp_wifi.h"
+#include "lv_tools.h"
 
 static const char *TAG = "lv_factory_reset";
 
-lv_obj_t *lv_screen_init_thermostat;
-lv_obj_t *lv_img_reset_init;
-lv_obj_t *lv_list_wifi_station;
-lv_obj_t *lv_text_ssid;
-lv_obj_t *lv_layout_wifi_stations;
-lv_obj_t *lv_text_init_thermostat;
-lv_obj_t *lv_button_wifi_stations;
+lv_obj_t *lv_screen_init_thermostat = NULL;
+lv_obj_t *lv_img_reset_init = NULL;
+lv_obj_t *lv_list_wifi_station = NULL;
+lv_obj_t *lv_text_ssid = NULL;
+lv_obj_t *lv_layout_wifi_stations = NULL;
+lv_obj_t *lv_text_init_thermostat = NULL;
+lv_obj_t *lv_button_wifi_stations = NULL;
 lv_style_t lv_style_screen_init_thermostat;
 lv_style_t lv_style_button_reset_init;
 lv_style_t lv_style_wifi_stations;
 lv_style_t lv_style_text_init_termostat;
 
-lv_obj_t *lv_label_reset;
-lv_obj_t *lv_button_reset;
+lv_obj_t *lv_label_reset = NULL;
+lv_obj_t *lv_button_reset = NULL;
 lv_obj_t *lv_label_password = NULL;
 lv_obj_t *lv_password_text = NULL;
 lv_obj_t *lv_btn_ok = NULL;
 lv_obj_t *lv_text_button = NULL;
-lv_obj_t *lv_keyboard;
-lv_obj_t *lv_label_connection_wifi;
+lv_obj_t *lv_keyboard = NULL;
+lv_obj_t *lv_label_connection_wifi = NULL;
+
+lv_obj_t **array_btns = NULL;
+uint16_t size_array_btns = 0;
+
+lv_obj_t *lv_anim_wait;
 
 
 static void lv_event_handler_button_reset(lv_event_t *e);
@@ -93,7 +101,7 @@ void lv_set_style_button_reset_init_thermostat() {
 	lv_obj_add_style(lv_button_reset, &lv_style_button_reset_init, LV_STATE_DEFAULT);
 	lv_obj_add_style(lv_button_wifi_stations, &lv_style_button_reset_init, LV_STATE_DEFAULT);
 	lv_style_set_pad_all(&lv_style_button_reset_init, 0);
-	lv_style_set_text_font(&lv_style_button_reset_init, &lv_font_montserrat_26);
+	lv_style_set_text_font(&lv_style_button_reset_init, &lv_font_montserrat_48);
     lv_style_set_bg_opa(&lv_style_button_reset_init, LV_OPA_TRANSP);
     lv_style_set_text_color(&lv_style_button_reset_init, lv_color_hex(0x2A8AD2));
     lv_style_set_shadow_width(&lv_style_button_reset_init, 55);
@@ -144,11 +152,32 @@ void lv_set_style_screen_init_thermostat() {
 
 }
 
+void lv_delete_layout_wifi_stations() {
+
+	int i;
+	lv_obj_del(lv_layout_wifi_stations);
+	lv_layout_wifi_stations = NULL;
+	for (i=0;i<size_array_btns;i++) {
+		lv_obj_del(array_btns[i]);
+	}
+	free (array_btns);
+	size_array_btns = 0;
+
+}
 
 
 void lv_back_wifi_layout(DATOS_APLICACION *datosApp) {
 
-	lv_obj_add_flag(lv_layout_wifi_stations, LV_OBJ_FLAG_HIDDEN);
+
+	//Borramos la animacion por si estuviera activa
+	lv_obj_del(lv_anim_wait);
+
+	//Enseñamos el texto inicializando si vinieramos de la lista
+
+	if (lv_layout_wifi_stations != NULL) {
+		lv_delete_layout_wifi_stations();
+	}
+
 	if (lv_text_ssid != NULL) {
 		lv_obj_add_flag(lv_text_ssid, LV_OBJ_FLAG_HIDDEN);
 	}
@@ -166,6 +195,8 @@ void lv_back_wifi_layout(DATOS_APLICACION *datosApp) {
 static void lv_event_handler_button_reset(lv_event_t *e) {
 
 	DATOS_APLICACION *datosApp;
+
+
 	datosApp = (DATOS_APLICACION*) 	lv_event_get_user_data(e);
 
 	if (lv_layout_wifi_stations != NULL) {
@@ -199,11 +230,21 @@ static void lv_event_handler_button_reset(lv_event_t *e) {
 static void lv_event_handler_wifi_stations(lv_event_t *e) {
 
 	DATOS_APLICACION *datosApp;
+	lv_point_t pos;
+
+
+
 	datosApp = (DATOS_APLICACION*) 	lv_event_get_user_data(e);
 
+	//Escondemos el texto inicializando y el conectando wifi
 	lv_obj_add_flag(lv_text_init_thermostat, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_add_flag(lv_label_connection_wifi, LV_OBJ_FLAG_HIDDEN);
 	lv_label_set_text(lv_label_reset, LV_SYMBOL_BACKSPACE);
+	pos.x = 0;
+	pos.y = 0;
+	lv_anim_wait = lv_anim_wait_event("Buscando redes...", lv_screen_init_thermostat, pos);
+	lv_obj_invalidate(lv_anim_wait);
+
 	lv_create_layout_search_ssid(datosApp);
 
 
@@ -217,60 +258,31 @@ static void lv_event_handler_wifi_stations(lv_event_t *e) {
 void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp) {
 
 
-	if (lv_screen_init_thermostat == NULL) {
-		lv_screen_init_thermostat = lv_obj_create(NULL);
-		lv_scr_load(lv_screen_init_thermostat);
-		lv_obj_clear_flag(lv_screen_init_thermostat, LV_OBJ_FLAG_SCROLLABLE);
-	}
 
+	//Creamos el objeto padre de la pantalla.
+	lv_screen_init_thermostat = lv_obj_create(NULL);
+	lv_scr_load(lv_screen_init_thermostat);
 	lv_set_style_screen_init_thermostat();
-
-	if (lv_text_init_thermostat == NULL) {
-		lv_text_init_thermostat = lv_label_create(lv_screen_init_thermostat);
-		lv_set_style_text_init_thermostat();
-		lv_obj_center(lv_text_init_thermostat);
-	}
-
-	lv_label_set_text(lv_text_init_thermostat, "Inicializando...");
-	lv_obj_clear_flag(lv_text_init_thermostat, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_clear_flag(lv_screen_init_thermostat, LV_OBJ_FLAG_SCROLLABLE);
 
 
-	if (lv_button_reset == NULL) {
-		lv_button_reset = lv_btn_create(lv_screen_init_thermostat);
-		lv_label_reset = lv_label_create(lv_button_reset);
-		lv_obj_align_to(lv_button_reset, lv_screen_init_thermostat, LV_ALIGN_TOP_LEFT, 15, 15);
-		lv_obj_add_event_cb(lv_button_reset, lv_event_handler_button_reset, LV_EVENT_CLICKED, datosApp);
-	}
 
 
+	//Creamos el boton reset
+	lv_button_reset = lv_btn_create(lv_screen_init_thermostat);
+	lv_label_reset = lv_label_create(lv_button_reset);
+	lv_obj_align_to(lv_button_reset, lv_screen_init_thermostat, LV_ALIGN_TOP_LEFT, 48, 48);
+	lv_obj_add_event_cb(lv_button_reset, lv_event_handler_button_reset, LV_EVENT_CLICKED, datosApp);
 	lv_label_set_text(lv_label_reset, LV_SYMBOL_REFRESH);
 
 
-
-	if (lv_button_wifi_stations == NULL) {
-		lv_button_wifi_stations = lv_btn_create(lv_screen_init_thermostat);
-		lv_obj_t *lv_label_button = lv_label_create(lv_button_wifi_stations);
-		lv_label_set_text(lv_label_button, LV_SYMBOL_WIFI);
-		lv_obj_align_to(lv_button_wifi_stations, lv_screen_init_thermostat, LV_ALIGN_TOP_RIGHT, -40, 15);
-		lv_obj_add_event_cb(lv_button_wifi_stations, lv_event_handler_wifi_stations, LV_EVENT_CLICKED, datosApp);
-		//lv_set_style_button_reset_init_thermostat();
-	}
-
-
-
-
-	if (lv_label_connection_wifi == NULL) {
-		lv_label_connection_wifi = lv_label_create(lv_screen_init_thermostat);
-		lv_obj_align_to(lv_label_connection_wifi, lv_text_init_thermostat, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 10);
-		lv_label_set_text_fmt(lv_label_connection_wifi, "Conectando a : %s", "NuevoSalon");
-	}
-	lv_obj_clear_flag(lv_label_connection_wifi, LV_OBJ_FLAG_HIDDEN);
-
-
-
-
-
-
+	//Creamos el boton wifi stations
+	lv_button_wifi_stations = lv_btn_create(lv_screen_init_thermostat);
+	lv_obj_t *lv_label_button = lv_label_create(lv_button_wifi_stations);
+	lv_label_set_text(lv_label_button, LV_SYMBOL_WIFI);
+	lv_obj_align_to(lv_button_wifi_stations, lv_screen_init_thermostat, LV_ALIGN_TOP_RIGHT, -48, 48);
+	lv_obj_add_event_cb(lv_button_wifi_stations, lv_event_handler_wifi_stations, LV_EVENT_CLICKED, datosApp);
+	lv_set_style_button_reset_init_thermostat();
 
 
 
@@ -291,18 +303,35 @@ void lv_init_data_init_thermostat(DATOS_APLICACION *datosApp) {
 }
 
 
-void lv_create_items(char station_list[10][50]) {
+station_t* lv_get_list_stations(uint16_t *size) {
 
-	strncpy(station_list[0], "Salon", 50);
-	strncpy(station_list[1], "NuevoSalon", 50);
-	strncpy(station_list[2], "patio", 50);
-	strncpy(station_list[3], "comedor", 50);
-	strncpy(station_list[4], "despacho", 50);
-	strncpy(station_list[5], "Salon2", 50);
-	strncpy(station_list[6], "NuevoSalon2", 50);
-	strncpy(station_list[7], "patio2", 50);
-	strncpy(station_list[8], "comedor2", 50);
-	strncpy(station_list[9], "despacho2", 50);
+	wifi_ap_record_t list_stations[CONFIG_DEFAULT_SCAN_LIST_SIZE];
+	int i;
+	station_t *list;
+
+	get_scan_station_list(list_stations, size);
+
+
+	if (*size > 0) {
+		list = (station_t*) calloc(*size, sizeof(station_t));
+
+		for (i=0;i<*size;i++) {
+
+			sprintf(list[i].ssid, "%s", list_stations[i].ssid);
+			ESP_LOGI(TAG, ""TRAZAR"estacion: %s",INFOTRAZA, list[i].ssid);
+			if (list_stations[i].authmode == WIFI_AUTH_OPEN) {
+				list[i].open_ssid = true;
+			} else {
+				list[i].open_ssid = false;
+			}
+
+		}
+		return list;
+	} else {
+		return NULL;
+	}
+
+
 
 
 }
@@ -329,48 +358,44 @@ static void lv_event_handler_list(lv_event_t *e) {
 void lv_create_layout_search_ssid(DATOS_APLICACION *datosApp) {
 
 	int i;
-	int size=10;
-	char station_list[10][50];
-	lv_obj_t * btn;
 
+	station_t *station_list = NULL;
 
+	ESP_LOGI(TAG, ""TRAZAR"VAMOS A PINTAR  REDES", INFOTRAZA);
+	// consultamos la lista de estaciones escaneadas
+	if ((station_list = lv_get_list_stations(&size_array_btns)) != NULL) {
 
+		ESP_LOGI(TAG, ""TRAZAR"VAMOS A PINTAR %d REDES", INFOTRAZA, size_array_btns);
 
-	//Creamos el layout donde estaran todos los componentes para buscar ssid wifi
-	if (lv_layout_wifi_stations == NULL) {
 		lv_layout_wifi_stations = lv_obj_create(lv_screen_init_thermostat);
-		lv_obj_set_pos(lv_layout_wifi_stations, 50, 30);
-		if (lv_list_wifi_station == NULL) {
-			lv_list_wifi_station = lv_list_create(lv_layout_wifi_stations);
-			lv_create_items(station_list);
-			lv_list_add_text(lv_list_wifi_station, "Estaciones wifi");
-		}
+
+		lv_list_wifi_station = lv_list_create(lv_layout_wifi_stations);
+		lv_list_add_text(lv_list_wifi_station, "Estaciones wifi");
 		lv_obj_set_size(lv_layout_wifi_stations, lv_pct(100), lv_pct(70));
-		for (i=0;i<size;i++) {
-			btn = lv_list_add_btn(lv_list_wifi_station, LV_SYMBOL_WIFI, station_list[i]);
-		    lv_obj_add_event_cb(btn, lv_event_handler_list, LV_EVENT_CLICKED, datosApp);
+		lv_obj_center(lv_layout_wifi_stations);
+
+		ESP_LOGI(TAG, ""TRAZAR"RELLENAMOS LA LISTA", INFOTRAZA);
+		array_btns = (lv_obj_t **) calloc(size_array_btns, sizeof(lv_obj_t*));
+		for (i=0;i<size_array_btns;i++) {
+			array_btns[i] = lv_list_add_btn(lv_list_wifi_station, LV_SYMBOL_WIFI, station_list[i].ssid);
+		    lv_obj_add_event_cb(array_btns[i], lv_event_handler_list, LV_EVENT_CLICKED, datosApp);
 		}
+
 		lv_obj_set_size(lv_list_wifi_station, lv_pct(50), lv_pct(100));
 		lv_set_style_layout_wifi_stations();
-
+		lv_obj_add_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN);
+		if (lv_anim_wait != NULL) {
+			ESP_LOGW(TAG, ""TRAZAR"BORRAMOS EL SPINNER CON REDES", INFOTRAZA);
+			lv_obj_del(lv_anim_wait);
+				}
 	} else {
-		lv_obj_clear_flag(lv_layout_wifi_stations, LV_OBJ_FLAG_HIDDEN);
-		lv_obj_clear_flag(lv_list_wifi_station, LV_OBJ_FLAG_HIDDEN);
-		if (lv_password_text != NULL) {
-			lv_obj_add_flag(lv_password_text, LV_OBJ_FLAG_HIDDEN);
-		}
-
-		if (lv_label_password != NULL) {
-			lv_obj_add_flag(lv_label_password, LV_OBJ_FLAG_HIDDEN);
-		}
-
-		if (lv_text_ssid != NULL) {
-			lv_obj_add_flag(lv_text_ssid, LV_OBJ_FLAG_HIDDEN);
-		}
-
+		ESP_LOGW(TAG, ""TRAZAR"NO HAY REDES DISPONIBLES", INFOTRAZA);
+		lv_create_layout_search_ssid(datosApp);
 
 	}
-	lv_obj_add_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN);
+
+
+
 }
 
 
@@ -452,6 +477,25 @@ void lv_delete_objects_layout_wifi() {
 }
 
 
+void lv_connecting_to_wifi_station(DATOS_APLICACION *datosApp) {
+
+	wifi_config_t conf_wifi;
+
+	lv_text_init_thermostat = lv_label_create(lv_screen_init_thermostat);
+	lv_obj_center(lv_text_init_thermostat);
+	lv_label_set_text(lv_text_init_thermostat, "Inicializando...");
+	lv_set_style_text_init_thermostat();
+
+
+	esp_wifi_get_config(WIFI_IF_STA, &conf_wifi);
+	ESP_LOGI(TAG, ""TRAZAR"CONECTANDO A LA RED WIFI", INFOTRAZA);
+	lv_label_connection_wifi = lv_label_create(lv_screen_init_thermostat);
+	lv_obj_align_to(lv_label_connection_wifi, lv_text_init_thermostat, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 10);
+	lv_label_set_text_fmt(lv_label_connection_wifi, "Conectando a : %s", conf_wifi.sta.ssid );
+	lv_obj_clear_flag(lv_label_connection_wifi, LV_OBJ_FLAG_HIDDEN);
+
+
+}
 
 
 

@@ -14,6 +14,7 @@
 #include "lvgl.h"
 
 lv_coord_t calculate_center_obj_x(lv_coord_t width, bool offset_left);
+lv_obj_t* lv_anim_wait_event(char* message, lv_obj_t *parent, lv_point_t pos);
 
 
 

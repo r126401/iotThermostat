@@ -514,6 +514,12 @@ CONFIG_CARGA_CONFIGURACION=0
 #
 # Configuracion General
 #
+CONFIG_DEFAULT_SCAN_LIST_SIZE=10
+# end of Configuracion General
+
+#
+# Configuracion General
+#
 CONFIG_CLAVE_CONFIGURACION_GENERAL="general"
 CONFIG_CLAVE_PROGRAMACION="programacion"
 CONFIG_CLAVE_PROGRAMA_ESTATICO="programa_estatico_real"
