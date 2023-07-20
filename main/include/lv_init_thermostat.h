@@ -11,6 +11,7 @@
 //#include "datosapp.h"
 #include "lvgl.h"
 #include "common_data.h"
+#include "esp_wifi.h"
 
 
 typedef struct station_t {
@@ -33,11 +34,11 @@ void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp);
 void lv_init_data_init_thermostat(DATOS_APLICACION *datosApp);
 station_t* lv_get_list_stations(uint16_t *size);
 
-void lv_create_layout_search_ssid(DATOS_APLICACION *datosApp);
+
 
 void lv_create_layout_password_wifi(DATOS_APLICACION datosApp);
 void lv_delete_objects_layout_wifi();
 void lv_connecting_to_wifi_station(DATOS_APLICACION *datosApp);
-
+void lv_create_layout_search_ssid(DATOS_APLICACION *datosApp, wifi_ap_record_t *ap_info, uint16_t *ap_count);
 
 #endif /* LV_SRC_INCLUDE_LV_INIT_THERMOSTAT_H_ */

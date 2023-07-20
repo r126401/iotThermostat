@@ -229,12 +229,9 @@ static void lv_event_handler_button_reset(lv_event_t *e) {
 
 static void lv_event_handler_wifi_stations(lv_event_t *e) {
 
-	DATOS_APLICACION *datosApp;
+
 	lv_point_t pos;
 
-
-
-	datosApp = (DATOS_APLICACION*) 	lv_event_get_user_data(e);
 
 	//Escondemos el texto inicializando y el conectando wifi
 	lv_obj_add_flag(lv_text_init_thermostat, LV_OBJ_FLAG_HIDDEN);
@@ -244,8 +241,9 @@ static void lv_event_handler_wifi_stations(lv_event_t *e) {
 	pos.y = 0;
 	lv_anim_wait = lv_anim_wait_event("Buscando redes...", lv_screen_init_thermostat, pos);
 	lv_obj_invalidate(lv_anim_wait);
+	get_scan_station_list();
+	//lv_create_layout_search_ssid(datosApp);
 
-	lv_create_layout_search_ssid(datosApp);
 
 
 
@@ -355,44 +353,45 @@ static void lv_event_handler_list(lv_event_t *e) {
 
 
 
-void lv_create_layout_search_ssid(DATOS_APLICACION *datosApp) {
+
+void lv_create_layout_search_ssid(DATOS_APLICACION *datosApp, wifi_ap_record_t *ap_info, uint16_t *ap_count) {
+
+
 
 	int i;
 
 	station_t *station_list = NULL;
 
+
 	ESP_LOGI(TAG, ""TRAZAR"VAMOS A PINTAR  REDES", INFOTRAZA);
 	// consultamos la lista de estaciones escaneadas
-	if ((station_list = lv_get_list_stations(&size_array_btns)) != NULL) {
 
-		ESP_LOGI(TAG, ""TRAZAR"VAMOS A PINTAR %d REDES", INFOTRAZA, size_array_btns);
+	if (*ap_count == 0 ) {
 
-		lv_layout_wifi_stations = lv_obj_create(lv_screen_init_thermostat);
+		ESP_LOGW(TAG, ""TRAZAR"No hay redes disponibles", INFOTRAZA);
 
-		lv_list_wifi_station = lv_list_create(lv_layout_wifi_stations);
-		lv_list_add_text(lv_list_wifi_station, "Estaciones wifi");
-		lv_obj_set_size(lv_layout_wifi_stations, lv_pct(100), lv_pct(70));
-		lv_obj_center(lv_layout_wifi_stations);
-
-		ESP_LOGI(TAG, ""TRAZAR"RELLENAMOS LA LISTA", INFOTRAZA);
-		array_btns = (lv_obj_t **) calloc(size_array_btns, sizeof(lv_obj_t*));
-		for (i=0;i<size_array_btns;i++) {
-			array_btns[i] = lv_list_add_btn(lv_list_wifi_station, LV_SYMBOL_WIFI, station_list[i].ssid);
-		    lv_obj_add_event_cb(array_btns[i], lv_event_handler_list, LV_EVENT_CLICKED, datosApp);
-		}
-
-		lv_obj_set_size(lv_list_wifi_station, lv_pct(50), lv_pct(100));
-		lv_set_style_layout_wifi_stations();
-		lv_obj_add_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN);
-		if (lv_anim_wait != NULL) {
-			ESP_LOGW(TAG, ""TRAZAR"BORRAMOS EL SPINNER CON REDES", INFOTRAZA);
-			lv_obj_del(lv_anim_wait);
-				}
-	} else {
-		ESP_LOGW(TAG, ""TRAZAR"NO HAY REDES DISPONIBLES", INFOTRAZA);
-		lv_create_layout_search_ssid(datosApp);
-
+		return;
 	}
+
+	size_array_btns = *ap_count;
+
+	ESP_LOGI(TAG, ""TRAZAR"VAMOS A PINTAR %d REDES", INFOTRAZA, size_array_btns);
+	lv_layout_wifi_stations = lv_obj_create(lv_screen_init_thermostat);
+	lv_list_wifi_station = lv_list_create(lv_layout_wifi_stations);
+	lv_list_add_text(lv_list_wifi_station, "Estaciones wifi");
+	lv_obj_set_size(lv_layout_wifi_stations, lv_pct(100), lv_pct(70));
+	lv_obj_center(lv_layout_wifi_stations);
+	ESP_LOGI(TAG, ""TRAZAR"RELLENAMOS LA LISTA", INFOTRAZA);
+	array_btns = (lv_obj_t **) calloc(size_array_btns, sizeof(lv_obj_t*));
+	for (i=0;i<size_array_btns;i++) {
+		array_btns[i] = lv_list_add_btn(lv_list_wifi_station, LV_SYMBOL_WIFI, (char*) ap_info[i].ssid);
+	    lv_obj_add_event_cb(array_btns[i], lv_event_handler_list, LV_EVENT_CLICKED, datosApp);
+	}
+
+	lv_obj_set_size(lv_list_wifi_station, lv_pct(50), lv_pct(100));
+	lv_set_style_layout_wifi_stations();
+	lv_obj_add_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN);
+
 
 
 
