@@ -29,6 +29,7 @@ lv_style_t lv_style_screen_init_thermostat;
 lv_style_t lv_style_button_reset_init;
 lv_style_t lv_style_wifi_stations;
 lv_style_t lv_style_text_init_termostat;
+lv_style_t lv_style_text_fail;
 
 lv_obj_t *lv_label_reset = NULL;
 lv_obj_t *lv_button_reset = NULL;
@@ -170,7 +171,9 @@ void lv_back_wifi_layout(DATOS_APLICACION *datosApp) {
 
 
 	//Borramos la animacion por si estuviera activa
-	lv_obj_del(lv_anim_wait);
+	if (lv_anim_wait != NULL) {
+		lv_obj_del(lv_anim_wait);
+	}
 
 	//Enseñamos el texto inicializando si vinieramos de la lista
 
@@ -239,8 +242,12 @@ static void lv_event_handler_wifi_stations(lv_event_t *e) {
 	lv_label_set_text(lv_label_reset, LV_SYMBOL_BACKSPACE);
 	pos.x = 0;
 	pos.y = 0;
-	lv_anim_wait = lv_anim_wait_event("Buscando redes...", lv_screen_init_thermostat, pos);
-	lv_obj_invalidate(lv_anim_wait);
+	if (lv_anim_wait == NULL) {
+		lv_anim_wait = lv_anim_wait_event("Buscando redes...", lv_screen_init_thermostat, pos);
+	} else {
+		lv_obj_clear_flag(lv_anim_wait, LV_OBJ_FLAG_HIDDEN);
+	}
+
 	get_scan_station_list();
 	//lv_create_layout_search_ssid(datosApp);
 
@@ -281,6 +288,7 @@ void lv_create_layout_init_thermostat(DATOS_APLICACION *datosApp) {
 	lv_obj_align_to(lv_button_wifi_stations, lv_screen_init_thermostat, LV_ALIGN_TOP_RIGHT, -48, 48);
 	lv_obj_add_event_cb(lv_button_wifi_stations, lv_event_handler_wifi_stations, LV_EVENT_CLICKED, datosApp);
 	lv_set_style_button_reset_init_thermostat();
+	lv_obj_add_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN);
 
 
 
@@ -366,10 +374,13 @@ void lv_create_layout_search_ssid(DATOS_APLICACION *datosApp, wifi_ap_record_t *
 	ESP_LOGI(TAG, ""TRAZAR"VAMOS A PINTAR  REDES", INFOTRAZA);
 	// consultamos la lista de estaciones escaneadas
 
+	lv_obj_add_flag(lv_anim_wait, LV_OBJ_FLAG_HIDDEN);
+
 	if (*ap_count == 0 ) {
 
 		ESP_LOGW(TAG, ""TRAZAR"No hay redes disponibles", INFOTRAZA);
-
+		lv_obj_clear_flag(lv_label_connection_wifi, LV_OBJ_FLAG_HIDDEN);
+		lv_label_set_text_fmt(lv_label_connection_wifi, "No hay redes disponibles...");
 		return;
 	}
 
@@ -476,6 +487,19 @@ void lv_delete_objects_layout_wifi() {
 }
 
 
+static void lv_set_style_text_connecting() {
+
+	lv_style_init(&lv_style_text_fail);
+	lv_obj_add_style(lv_label_connection_wifi, &lv_style_text_fail, LV_STATE_DEFAULT);
+	lv_style_set_text_font(&lv_style_text_fail, &lv_font_montserrat_26);
+    lv_style_set_bg_opa(&lv_style_text_fail, LV_OPA_TRANSP);
+
+
+
+
+}
+
+
 void lv_connecting_to_wifi_station(DATOS_APLICACION *datosApp) {
 
 	wifi_config_t conf_wifi;
@@ -492,9 +516,40 @@ void lv_connecting_to_wifi_station(DATOS_APLICACION *datosApp) {
 	lv_obj_align_to(lv_label_connection_wifi, lv_text_init_thermostat, LV_ALIGN_OUT_BOTTOM_LEFT, 0, 10);
 	lv_label_set_text_fmt(lv_label_connection_wifi, "Conectando a : %s", conf_wifi.sta.ssid );
 	lv_obj_clear_flag(lv_label_connection_wifi, LV_OBJ_FLAG_HIDDEN);
+	lv_set_style_text_connecting();
 
 
 }
+
+
+
+
+void lv_set_button_wifi(DATOS_APLICACION *datosApp, bool fail) {
+
+	wifi_config_t conf_wifi;
+	esp_wifi_get_config(WIFI_IF_STA, &conf_wifi);
+
+	if (fail == false) {
+		lv_style_set_text_color(&lv_style_text_fail, lv_color_hex(0xFFFF00));
+		//lv_label_set_text_fmt(lv_label_connection_wifi, "Conectando a : %s", conf_wifi.sta.ssid );
+		lv_obj_invalidate(lv_label_connection_wifi);
+		ESP_LOGW(TAG, ""TRAZAR"WARNING", INFOTRAZA);
+	} else {
+
+		if (lv_obj_has_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN)) {
+			lv_obj_clear_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN);
+
+			lv_label_set_text_fmt(lv_label_connection_wifi, "Error al conectar a : %s", conf_wifi.sta.ssid);
+			lv_style_set_text_color(&lv_style_text_fail, lv_color_hex(0xFF0000));
+			ESP_LOGW(TAG, ""TRAZAR"FALLO", INFOTRAZA);
+
+		}
+	}
+
+
+}
+
+
 
 
 
