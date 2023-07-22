@@ -11,6 +11,24 @@
 
 lv_style_t style_anim;
 
+void lv_set_style_to_text(lv_obj_t *obj, lv_style_t *style, lv_font_t *font, lv_coord_t border_width, uint32_t color_text) {
+
+	lv_style_init(style);
+	lv_style_set_text_font(style, font);
+    lv_style_set_bg_opa(style, LV_OPA_TRANSP);
+    lv_style_set_border_opa(style, LV_OPA_TRANSP);
+    lv_style_set_border_width(style, border_width);
+    lv_style_set_text_color(style, lv_color_hex(color_text));
+    lv_obj_add_style(obj, style, LV_STATE_DEFAULT);
+
+
+
+
+
+}
+
+
+
 
 void lv_set_style_anim_wait_event(lv_obj_t *obj) {
 

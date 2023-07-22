@@ -31,6 +31,9 @@ lv_style_t lv_style_wifi_stations;
 lv_style_t lv_style_text_init_termostat;
 lv_style_t lv_style_text_fail;
 
+lv_style_t style;
+
+
 lv_obj_t *lv_label_reset = NULL;
 lv_obj_t *lv_button_reset = NULL;
 lv_obj_t *lv_label_password = NULL;
@@ -50,6 +53,11 @@ static void lv_event_handler_button_reset(lv_event_t *e);
 static void lv_event_handler_wifi_stations(lv_event_t *e);
 static void lv_event_handler_list(lv_event_t *e);
 static void lv_handler_keyboard(lv_event_t *e);
+
+
+
+
+
 
 
 void lv_set_style_layout_wifi_stations() {
@@ -343,38 +351,48 @@ station_t* lv_get_list_stations(uint16_t *size) {
 }
 
 
+
+
+
+static void lv_set_style_text(lv_obj_t *obj, lv_style_t *style) {
+
+	lv_style_init(style);
+	lv_obj_add_style(obj, style, LV_STATE_DEFAULT);
+	lv_style_set_text_font(&lv_style_text_fail, &lv_font_montserrat_26);
+    lv_style_set_bg_opa(style, LV_OPA_TRANSP);
+    lv_style_set_text_color(style, lv_color_hex(0x0000FF));
+
+
+
+
+}
+
 static void lv_event_handler_list(lv_event_t *e) {
 
-	DATOS_APLICACION *datosApp;
 
-	datosApp = (DATOS_APLICACION*) 	lv_event_get_user_data(e);
 	lv_obj_t * obj = lv_event_get_target(e);
 	if (lv_text_ssid == NULL) {
 		lv_text_ssid = lv_label_create(lv_screen_init_thermostat);
 	}
 	lv_label_set_text(lv_text_ssid, lv_list_get_btn_text(lv_list_wifi_station, obj));
-	lv_create_layout_password_wifi(*datosApp);
+	lv_obj_add_flag(lv_list_wifi_station, LV_OBJ_FLAG_HIDDEN);
+	lv_create_layout_password_wifi();
 
 
 
 }
 
 
-
-
 void lv_create_layout_search_ssid(DATOS_APLICACION *datosApp, wifi_ap_record_t *ap_info, uint16_t *ap_count) {
 
 
-
 	int i;
-
-	station_t *station_list = NULL;
-
-
 	ESP_LOGI(TAG, ""TRAZAR"VAMOS A PINTAR  REDES", INFOTRAZA);
 	// consultamos la lista de estaciones escaneadas
 
-	lv_obj_add_flag(lv_anim_wait, LV_OBJ_FLAG_HIDDEN);
+	if (lv_anim_wait != NULL) {
+		lv_obj_add_flag(lv_anim_wait, LV_OBJ_FLAG_HIDDEN);
+	}
 
 	if (*ap_count == 0 ) {
 
@@ -386,23 +404,16 @@ void lv_create_layout_search_ssid(DATOS_APLICACION *datosApp, wifi_ap_record_t *
 
 	size_array_btns = *ap_count;
 
-	ESP_LOGI(TAG, ""TRAZAR"VAMOS A PINTAR %d REDES", INFOTRAZA, size_array_btns);
-	lv_layout_wifi_stations = lv_obj_create(lv_screen_init_thermostat);
-	lv_list_wifi_station = lv_list_create(lv_layout_wifi_stations);
-	lv_list_add_text(lv_list_wifi_station, "Estaciones wifi");
-	lv_obj_set_size(lv_layout_wifi_stations, lv_pct(100), lv_pct(70));
-	lv_obj_center(lv_layout_wifi_stations);
-	ESP_LOGI(TAG, ""TRAZAR"RELLENAMOS LA LISTA", INFOTRAZA);
+	lv_list_wifi_station = lv_list_create(lv_screen_init_thermostat);
+	lv_obj_center(lv_list_wifi_station);
 	array_btns = (lv_obj_t **) calloc(size_array_btns, sizeof(lv_obj_t*));
+	lv_list_add_text(lv_list_wifi_station, "Estaciones wifi");
 	for (i=0;i<size_array_btns;i++) {
 		array_btns[i] = lv_list_add_btn(lv_list_wifi_station, LV_SYMBOL_WIFI, (char*) ap_info[i].ssid);
 	    lv_obj_add_event_cb(array_btns[i], lv_event_handler_list, LV_EVENT_CLICKED, datosApp);
 	}
-
-	lv_obj_set_size(lv_list_wifi_station, lv_pct(50), lv_pct(100));
-	lv_set_style_layout_wifi_stations();
-	lv_obj_add_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN);
-
+	lv_obj_set_size(lv_list_wifi_station, 600, 400);
+	lv_set_style_text(lv_list_wifi_station, &style);
 
 
 
@@ -435,34 +446,36 @@ static void lv_handler_keyboard(lv_event_t *e) {
 }
 
 
-void lv_create_layout_password_wifi(DATOS_APLICACION datosApp) {
-
-	//posicionamiento de la etiqueta ssid
+void lv_create_layout_password_wifi() {
 
 
-	lv_obj_add_flag(lv_list_wifi_station, LV_OBJ_FLAG_HIDDEN);
-	lv_obj_align_to(lv_text_ssid, lv_layout_wifi_stations, LV_ALIGN_TOP_MID, -50, 0);
-	//lv_obj_set_pos(lv_text_ssid, lv_pct(70), lv_pct(20));
+	//lv_style_t style;
+
+	lv_obj_center(lv_text_ssid);
+	lv_obj_align_to(lv_text_ssid, lv_screen_init_thermostat,LV_ALIGN_TOP_MID, 0, 50);
+	lv_set_style_to_text(lv_text_ssid, &style, &lv_font_montserrat_26, 0, 0x0534F0);
+	lv_obj_invalidate(lv_text_ssid);
 
 
-	//etiqueta password
-	if (lv_label_password == NULL) {
-		lv_label_password = lv_label_create(lv_layout_wifi_stations);
-		lv_obj_align_to(lv_label_password, lv_text_ssid, LV_ALIGN_OUT_BOTTOM_MID, -100, 10);
-	}
+
+	//Etiqueta password
+	/*
+	lv_label_password = lv_label_create(lv_screen_init_thermostat);
+	lv_obj_align_to(lv_label_password, lv_text_ssid,LV_ALIGN_OUT_BOTTOM_MID, 0, 0);
+	lv_obj_add_style(lv_password_text, &style, LV_STATE_DEFAULT);
+	*/
+
 	//caja password
-	if (lv_password_text == NULL) {
-		lv_password_text = lv_textarea_create(lv_layout_wifi_stations);
-	    lv_textarea_set_text(lv_password_text, "");
-	    lv_textarea_set_password_mode(lv_password_text, true);
-	    lv_textarea_set_one_line(lv_password_text, true);
-		lv_label_set_text(lv_label_password, "Password:");
-		lv_obj_align_to(lv_password_text, lv_label_password, LV_ALIGN_OUT_RIGHT_MID, 10, 0);
-		lv_obj_set_width(lv_password_text, lv_pct(25));
-		lv_obj_set_style_bg_opa(lv_password_text, LV_OPA_TRANSP, 0);
-		lv_obj_set_style_border_width(lv_password_text, 0, LV_PART_MAIN);
-
-	}
+	lv_password_text = lv_textarea_create(lv_screen_init_thermostat);
+    lv_textarea_set_text(lv_password_text, "");
+    lv_textarea_set_password_mode(lv_password_text, true);
+    lv_textarea_set_one_line(lv_password_text, true);
+	lv_obj_align_to(lv_password_text, lv_text_ssid, LV_ALIGN_OUT_BOTTOM_MID, 0, 20);
+	lv_obj_set_width(lv_password_text, lv_pct(25));
+	lv_obj_set_style_bg_opa(lv_password_text, LV_OPA_50, LV_PART_MAIN);
+	lv_obj_set_style_border_width(lv_password_text, 2, LV_PART_MAIN);
+	lv_set_style_to_text(lv_text_ssid, &style, &lv_font_montserrat_26, 0, 0x0534F0);
+	lv_obj_invalidate(lv_text_ssid);
 
 
 	if (lv_keyboard == NULL) {
@@ -474,7 +487,6 @@ void lv_create_layout_password_wifi(DATOS_APLICACION datosApp) {
     lv_keyboard_set_textarea(lv_keyboard, lv_password_text); /*Focus it on one of the text areas to start*/
     lv_obj_clear_flag(lv_keyboard, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_clear_flag(lv_password_text, LV_OBJ_FLAG_HIDDEN);
-	lv_obj_clear_flag(lv_label_password, LV_OBJ_FLAG_HIDDEN);
 	lv_obj_clear_flag(lv_text_ssid, LV_OBJ_FLAG_HIDDEN);
 
 }

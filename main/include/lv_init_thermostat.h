@@ -36,7 +36,7 @@ station_t* lv_get_list_stations(uint16_t *size);
 
 
 
-void lv_create_layout_password_wifi(DATOS_APLICACION datosApp);
+void lv_create_layout_password_wifi();
 void lv_delete_objects_layout_wifi();
 void lv_connecting_to_wifi_station(DATOS_APLICACION *datosApp);
 void lv_create_layout_search_ssid(DATOS_APLICACION *datosApp, wifi_ap_record_t *ap_info, uint16_t *ap_count);
