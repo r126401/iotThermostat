@@ -426,6 +426,12 @@ static void lv_handler_keyboard(lv_event_t *e) {
 
 	uint16_t kcode;
 	int length;
+	wifi_config_t wifi_config;
+
+    bzero(&wifi_config, sizeof(wifi_config_t));
+
+
+
     lv_obj_t * kb = lv_event_get_user_data(e);
     kcode = lv_keyboard_get_selected_btn(kb);
 
@@ -434,7 +440,11 @@ static void lv_handler_keyboard(lv_event_t *e) {
     if (length >= 8) {
     	lv_obj_set_style_text_color(lv_password_text, lv_color_hex(0xccaaaa), LV_PART_MAIN);
         if ((kcode == 40) || (kcode == 22)) {
-        	lv_label_set_text_fmt(lv_text_ssid, "%d", kcode);
+        	strcpy((char*) wifi_config.sta.ssid, lv_label_get_text(lv_text_ssid));
+        	strcpy((char*) wifi_config.sta.password, lv_textarea_get_text(lv_password_text));
+        	ESP_LOGI(TAG, ""TRAZAR"SSID: %s, PASSWORD: %s", INFOTRAZA,  (char*) wifi_config.sta.ssid, (char*) wifi_config.sta.password);
+        	ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config));
+        	esp_restart();
         	//reiniciar el dispositivo
         }
 
