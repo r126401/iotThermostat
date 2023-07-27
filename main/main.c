@@ -104,9 +104,9 @@ void app_main(void) {
 	crear_tarea_mqtt(&datosApp);
 
 
-    iniciar_gestion_programacion(&datosApp);
+	iniciar_gestion_programacion(&datosApp);
 
-    //xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 4096, (void*) &datosApp, 4, NULL);
+    xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 4, NULL);
 
     pintar_fecha();
 

@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include "lvgl.h"
 #include "esp_log.h"
+#include "logging.h"
 
 #ifndef CONFIG_LCD_H_RES
 
@@ -89,7 +90,7 @@ LV_FONT_DECLARE(russo100);
 
 lv_theme_t *th;
 
-
+static const char *TAG = "lv_thermostat";
 
 
 
@@ -663,7 +664,9 @@ void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 	  datosApp->alarmas[4].estado_alarma = ALARMA_OFF;
 	  datosApp->termostato.incdec = 0.5;
 
-	  lv_main_screen =lv_scr_act();
+	  lv_main_screen = lv_obj_create(NULL);
+	  //lv_main_screen =lv_scr_act();
+	  lv_scr_load(lv_main_screen);
 	  //lv_main_screen = lv_disp_get_scr_act(display);
 	  lv_set_style_screen(lv_main_screen);
 
@@ -697,4 +700,17 @@ void lv_set_text_threshold(DATOS_APLICACION *datosApp) {
 	lv_label_set_text(lv_text_threshold, threshold);
 
 }
+
+
+
+void lv_update_device(DATOS_APLICACION *datosApp) {
+
+	ESP_LOGI(TAG, ""TRAZAR"LV_UPDATE_DEVICE", INFOTRAZA);
+
+
+
+}
+
+
+
 

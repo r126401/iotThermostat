@@ -48,6 +48,7 @@ void lv_set_style_bar_schedule();
 void lv_update_bar_schedule(DATOS_APLICACION *datosApp);
 void lv_set_text_threshold(DATOS_APLICACION *datosApp);
 void example_lvgl_demo_ui(lv_disp_t *disp);
+void lv_update_device(DATOS_APLICACION *datosApp);
 
 
 #endif /* LV_SRC_INCLUDE_LV_THERMOSTAT_H_ */

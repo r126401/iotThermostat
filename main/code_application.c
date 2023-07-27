@@ -154,6 +154,7 @@ void tarea_lectura_temperatura(void *parametros) {
     DATOS_APLICACION *datosApp = (DATOS_APLICACION*) parametros;
 
 
+    ESP_LOGI(TAG, ""TRAZAR"COMIENZA LA TAREA DE LECTURA DE TEMPERATURA", INFOTRAZA);
 
     while(1) {
 

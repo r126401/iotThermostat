@@ -23,6 +23,7 @@
  */
 esp_err_t init_code_application(DATOS_APLICACION *datosApp);
 void tarea_lectura_temperatura(void *parametros);
+void accionar_termostato(DATOS_APLICACION *datosApp);
 
 
 

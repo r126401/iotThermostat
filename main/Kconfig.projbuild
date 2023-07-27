@@ -1,5 +1,12 @@
 menu "iotThermostat configuration"
 
+config TIPO_DISPOSITIVO
+	int "Tipo de dispositivo"
+	default 0
+	help
+		indica el tipo de dispositivo
+
+
 config IMPLEMENTS_LEDS
 	bool "identify GPIOS to leds"
 	default n
