@@ -135,7 +135,7 @@ static void lv_init_app(DATOS_APLICACION *datosApp) {
 			break;
 	case ESPERA_FIN_ARRANQUE:
 	case NORMAL_ARRANCANDO:
-		lv_init_data_init_thermostat(datosApp);
+		lv_init_thermostat();
 		break;
 
 	default:
@@ -287,7 +287,7 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
 
     while (1) {
         // raise the task priority of LVGL and/or reduce the handler period can improve the performance
-        vTaskDelay(pdMS_TO_TICKS(10));
+        vTaskDelay(pdMS_TO_TICKS(12));
         // The task running lv_timer_handler should have lower priority than that running `lv_tick_inc`
         lv_timer_handler();
     }
