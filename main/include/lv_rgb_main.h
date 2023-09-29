@@ -15,5 +15,6 @@
 void lv_app_rgb_main(DATOS_APLICACION *datosApp);
 void init_app_touch_xpt2046(lv_disp_t *disp);
 void init_app_touch_gt911(lv_disp_t *disp);
+void init_app_touch_xpt2046(lv_disp_t *disp);
 
 #endif /* MAIN_INCLUDE_LV_RGB_MAIN_H_ */

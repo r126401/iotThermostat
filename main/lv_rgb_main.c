@@ -22,21 +22,28 @@
 
 #include "driver/spi_master.h"
 #include "esp_lcd_touch_gt911.h"
+#include  "esp_lcd_touch_xpt2046.h"
 
 #include "lv_factory_reset.h"
 #include "lv_thermostat.h"
 #include "lv_init_thermostat.h"
 
 #include "driver/i2c.h"
+#include "logging.h"
+
 
 static const char *TAG = "iotThermostat";
 #define	I2C_HOST	0
 esp_lcd_touch_handle_t tp = NULL;
 
+
+
+
+
 #ifndef CONFIG_LCD_H_RES
 
-#define CONFIG_LCD_H_RES 800
-#define CONFIG_LCD_V_RES 480
+#define CONFIG_LCD_H_RES 480
+#define CONFIG_LCD_V_RES 272
 
 #endif
 
@@ -44,7 +51,7 @@ esp_lcd_touch_handle_t tp = NULL;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////// Please update the following configuration according to your LCD spec //////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define CONFIG_LCD_PIXEL_CLOCK_HZ     (12 * 1000 * 1000)
+#define CONFIG_LCD_PIXEL_CLOCK_HZ     (7 * 1000 * 1000)
 #define CONFIG_LCD_BK_LIGHT_ON_LEVEL  1
 #define CONFIG_LCD_BK_LIGHT_OFF_LEVEL !CONFIG_LCD_BK_LIGHT_ON_LEVEL
 #define CONFIG_PIN_NUM_BK_LIGHT       2
@@ -87,6 +94,16 @@ esp_lcd_touch_handle_t tp = NULL;
 SemaphoreHandle_t sem_vsync_end;
 SemaphoreHandle_t sem_gui_ready;
 #endif
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -139,6 +156,7 @@ static void lv_init_app(DATOS_APLICACION *datosApp) {
 		break;
 
 	default:
+		lv_delete_init_thermostat();
 		lv_screen_thermostat(datosApp);
 		break;
 
@@ -210,10 +228,10 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
             .h_res = CONFIG_LCD_H_RES,
             .v_res = CONFIG_LCD_V_RES,
             // The following parameters should refer to LCD spec
-            .hsync_back_porch = 8,
+            .hsync_back_porch = 43,
             .hsync_front_porch = 8,
             .hsync_pulse_width = 4,
-            .vsync_back_porch = 8,
+            .vsync_back_porch = 12,
             .vsync_front_porch = 8,
             .vsync_pulse_width = 4,
             .flags.pclk_active_neg = true,
@@ -279,11 +297,18 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
     ESP_ERROR_CHECK(esp_timer_create(&lvgl_tick_timer_args, &lvgl_tick_timer));
     ESP_ERROR_CHECK(esp_timer_start_periodic(lvgl_tick_timer, CONFIG_LVGL_TICK_PERIOD_MS * 1000));
 
-    ESP_LOGI(TAG, "Display LVGL Scatter Chart");
+    ESP_LOGI(TAG, "Display LVGL Scatter Chart. Resolution %d X %d", CONFIG_LCD_H_RES, CONFIG_LCD_V_RES );
+
+#ifdef CONFIG_XPT2046
+    init_app_touch_xpt2046(disp);
+#endif
+
+#ifdef CONFIG_GT911
     init_app_touch_gt911(disp);
+#endif
+
     
     lv_init_app(datosApp);
-
 
     while (1) {
         // raise the task priority of LVGL and/or reduce the handler period can improve the performance
@@ -298,7 +323,7 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
 
 
 
-
+#ifdef CONFIG_GT911
 static void lvgl_touch_cb(lv_indev_drv_t * drv, lv_indev_data_t * data)
 {
     uint16_t touchpad_x[1] = {0};
@@ -391,5 +416,90 @@ void init_app_touch_gt911(lv_disp_t *disp) {
 
 
 }
+
+#endif
+
+#ifdef CONFIG_XPT2046
+static void lvgl_touch_cb2(lv_indev_drv_t * drv, lv_indev_data_t * data) {
+
+    uint16_t x[1];
+    uint16_t y[1];
+    uint16_t strength[1];
+    uint8_t count = 0;
+
+
+
+
+    // Update touch point data.
+   ESP_ERROR_CHECK(esp_lcd_touch_read_data(tp));
+
+    data->state = LV_INDEV_STATE_REL;
+
+    if (esp_lcd_touch_get_coordinates(tp, x, y, strength, &count, 1))
+    {
+        data->point.x = x[0];
+        data->point.y = y[0];
+        data->state = LV_INDEV_STATE_PR;
+        ESP_LOGI(TAG, "XPT2046: x=%d, y=%d",data->point.x, data->point.y);
+    }
+
+    data->continue_reading = false;
+
+
+}
+
+
+void init_app_touch_xpt2046(lv_disp_t *disp) {
+
+
+	// Inicializamos el bus
+
+    ESP_LOGI(TAG, "Initialize SPI bus");
+    spi_bus_config_t buscfg = {
+        .sclk_io_num = 12,
+        .mosi_io_num = 11,
+        .miso_io_num = 13,
+        .quadwp_io_num = -1,
+        .quadhd_io_num = -1,
+        .max_transfer_sz = CONFIG_LCD_H_RES * 80 * sizeof(uint16_t),
+    };
+    ESP_ERROR_CHECK(spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO));
+
+
+	esp_lcd_panel_io_handle_t tp_io_handle = NULL;
+	esp_lcd_panel_io_spi_config_t tp_io_config = ESP_LCD_TOUCH_IO_SPI_XPT2046_CONFIG(38);
+	ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)SPI2_HOST, &tp_io_config, &tp_io_handle));
+
+	    esp_lcd_touch_config_t tp_cfg = {
+	        .x_max = CONFIG_LCD_H_RES,
+	        .y_max = CONFIG_LCD_V_RES,
+	        .rst_gpio_num = -1,
+	        .int_gpio_num = 18,
+	        .flags = {
+	            .swap_xy = 0,
+	            .mirror_x = 0,
+	            .mirror_y = 0,
+	        },
+	    };
+
+	    ESP_LOGI(TAG, "Initialize touch controller XPT2046");
+	    ESP_ERROR_CHECK(esp_lcd_touch_new_spi_xpt2046(tp_io_handle, &tp_cfg, &tp));
+
+	    ESP_LOGE(TAG, "tp es nulo y no puede ser");
+
+	    static lv_indev_drv_t indev_drv;    // Input device driver (Touch)
+	    lv_indev_drv_init(&indev_drv);
+	    indev_drv.type = LV_INDEV_TYPE_POINTER;
+	    indev_drv.disp = disp;
+	    indev_drv.read_cb = lvgl_touch_cb2;
+	    indev_drv.user_data = tp;
+	    lv_indev_drv_register(&indev_drv);
+
+
+
+
+
+}
+#endif
 
 

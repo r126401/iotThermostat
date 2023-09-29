@@ -34,6 +34,30 @@ config GPIO_PIN_BOTON
 		Indica el pin gpio con el que se activa el boton
 
 
+menu "Tipo de touch"
+
+    choice "TOUCH_TYPE"
+        prompt "Seleccion del tipo de touch para la pantalla"
+        help
+	        Selecciona el tipo de touch a usar
+	        
+        config GT911
+	        bool "GT911"
+	        prompt "GT911"
+		        help
+			        GT911
+        config XPT2046
+	        bool "XPT2046"
+	        prompt "XPT2046"
+	        help
+		        XPT2046
+		        
+    endchoice
+
+endmenu
+
+
+
 menu "Tipo de sensor a utilizar"
 
 choice TEMPERATURE_SENSOR
@@ -53,6 +77,8 @@ choice TEMPERATURE_SENSOR
         help
             DS18B20
 endchoice
+endmenu
+
 
 config GPIO_PIN_DHT
     int "PIN SENSOR DHT"
@@ -64,11 +90,10 @@ config GPIO_PIN_DHT
 config GPIO_PIN_DS18B20
     int "PIN SENSOR DS18B20"
     default 0
-    depends on !DHT22
+    depends on DS18B20
     help 
         Implement pin gpio to sensor DS18B20
 
-endmenu
 
 
 config RGB_PANEL

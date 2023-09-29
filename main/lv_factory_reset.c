@@ -123,29 +123,47 @@ void lv_create_screen_factory(DATOS_APLICACION *datosApp) {
 
 
 
+	//create objects
 	lv_screen_factory = lv_obj_create(NULL);
 	lv_scr_load(lv_screen_factory);
-	lv_set_style_factory_screen();
 	lv_create_text_area(datosApp);
-	lv_obj_set_size(lv_text_area_factory, lv_pct(60), LV_SIZE_CONTENT);
-	lv_textarea_set_align(lv_text_area_factory, LV_TEXT_ALIGN_CENTER);
 	lv_textarea_add_text(lv_text_area_factory, "PUESTA EN SERVICIO...\n\n");
 	lv_textarea_add_text(lv_text_area_factory, "Por favor, abre la aplicacion MyHomeIot e instala un nuevo dispositivo.\n\n");
 	lv_textarea_add_text(lv_text_area_factory, "Una vez instalado el dispositivo se conectara a la red y comenzara a funcionar.");
 
-
 	lv_img_app = lv_img_create(lv_screen_factory);
-	lv_obj_set_pos(lv_img_app, lv_pct(5), lv_pct(5));
 	lv_img_set_src(lv_img_app, &ic_app);
-
-
 
 	lv_imgbtn_reset = lv_imgbtn_create(lv_screen_factory);
 	lv_imgbtn_set_src(lv_imgbtn_reset, LV_IMGBTN_STATE_RELEASED, &ic_action_reset, NULL, NULL);
+
+
+
+
+
+	//style objects
+	lv_set_style_factory_screen();
+
+	//position objects
+	lv_textarea_set_align(lv_text_area_factory, LV_TEXT_ALIGN_CENTER);
+	lv_obj_set_pos(lv_img_app, lv_pct(5), lv_pct(5));
+	lv_obj_set_pos(lv_imgbtn_reset, lv_pct(85) , lv_pct(5));
+
+
+
+	//sizing objects
+	lv_obj_set_size(lv_text_area_factory, lv_pct(60), LV_SIZE_CONTENT);
+
+	// callback funtcions
 	lv_obj_add_event_cb(lv_imgbtn_reset, event_handler_reset, LV_EVENT_CLICKED, NULL);
 	lv_obj_add_event_cb(lv_text_area_factory, event_handler_focused, LV_EVENT_FOCUSED, NULL);
 
-	lv_obj_set_pos(lv_imgbtn_reset, 650 , lv_pct(5));
+
+
+
+
+
+
 
 
 
@@ -161,7 +179,8 @@ void lv_create_text_area(DATOS_APLICACION *datosApp){
 	//creamos el text_area
 
 	lv_text_area_factory = lv_textarea_create(lv_screen_factory);
-	lv_obj_center(lv_text_area_factory);
+	//lv_obj_center(lv_text_area_factory);
+	lv_obj_set_pos(lv_text_area_factory, lv_pct(20), lv_pct(5));
 	lv_set_style_text_area_factory();
 	lv_obj_clear_state(lv_text_area_factory, LV_STATE_FOCUSED);
 
