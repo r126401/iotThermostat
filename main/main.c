@@ -106,7 +106,7 @@ void app_main(void) {
 
 	iniciar_gestion_programacion(&datosApp);
 
-    xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 4, NULL);
+   xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 4096, (void*) &datosApp, 1, NULL);
 
     pintar_fecha();
 
