@@ -23,12 +23,15 @@
 #include "lv_rgb_main.h"
 #include "lv_factory_reset.h"
 #include "lv_thermostat.h"
-
+#include "lv_init_thermostat.h"
 #endif
 
 static const char *TAG = "IotThermostat";
 DATOS_APLICACION datosApp;
 TaskHandle_t handle;
+
+
+
 
 void app_main(void) {
 
@@ -57,26 +60,28 @@ void app_main(void) {
 		error = ESP_OK;
 	}
 
+/*
+#ifdef CONFIG_RGB_PANEL
+	xTaskCreate(lv_app_rgb_main, "tarea LCD", 4096, (void*) &datosApp, 4, NULL);
+#endif
+	*/
 
+	lv_app_rgb_main(&datosApp);
 
 	if(configurado_de_fabrica() == ESP_OK) {
 
 		datosApp.datosGenerales->estadoApp = ARRANQUE_FABRICA;
 		ESP_LOGW(TAG, ""TRAZAR" ESTAMOS ARRANCANDO DE FABRICA", INFOTRAZA);
+		lv_screen_factory_reset(datosApp);
 
 	} else {
 		datosApp.datosGenerales->estadoApp = NORMAL_ARRANCANDO;
 		ESP_LOGE(TAG, ""TRAZAR" NORMAL ARRANCANDO...", INFOTRAZA);
+		lv_init_thermostat();
+
 	}
 
-
-
-	if (init_code_application(&datosApp) != ESP_OK) {
-		ESP_LOGE(TAG, ""TRAZAR" FALLO LA INICIALIZACION DE LA APLICACION", INFOTRAZA);
-	}
-
-
-
+	lv_timer_handler();
 
 	error = inicializacion(&datosApp, CONFIG_CARGA_CONFIGURACION);
 	if (error == ESP_OK) {
@@ -93,22 +98,26 @@ void app_main(void) {
 
 
 
-#ifdef CONFIG_RGB_PANEL
-	xTaskCreate(lv_app_rgb_main, "tarea LCD", 9216, (void*) &datosApp, 4, NULL);
-#endif
 
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 	conectar_dispositivo_wifi();
-	handle = NULL;
 	sync_app_by_ntp(&datosApp);
 	crear_tarea_mqtt(&datosApp);
 
 
+
 	iniciar_gestion_programacion(&datosApp);
 
-   xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 4096, (void*) &datosApp, 1, NULL);
+	xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 1, NULL);
 
-    pintar_fecha();
+    //pintar_fecha();
+	lv_screen_thermostat(&datosApp);
 
+    while (1) {
+        // raise the task priority of LVGL and/or reduce the handler period can improve the performance
+        vTaskDelay(pdMS_TO_TICKS(10));
+        // The task running lv_timer_handler should have lower priority than that running `lv_tick_inc`
+        lv_timer_handler();
+    }
 
 }

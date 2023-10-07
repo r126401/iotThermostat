@@ -38,7 +38,7 @@ void lv_set_style_layout_temperature();
 void lv_set_style_threshold();
 void lv_create_layout_threshold(DATOS_APLICACION *datosApp);
 void lv_status_application(DATOS_APLICACION *datosApp);
-void lv_set_status_heating(DATOS_APLICACION *datosApp, enum ESTADO_RELE rele);
+void lv_update_heating(DATOS_APLICACION *datosApp);
 void lv_create_heating_icon(DATOS_APLICACION *datosApp);
 void lv_create_layout_buttons_threshold(DATOS_APLICACION *datosApp);
 void lv_set_style_layout_buttons_threshold();
@@ -46,9 +46,12 @@ void lv_create_layout_schedule(DATOS_APLICACION *datosApp);
 void lv_set_style_layout_schedule();
 void lv_set_style_bar_schedule();
 void lv_update_bar_schedule(DATOS_APLICACION *datosApp);
-void lv_set_text_threshold(DATOS_APLICACION *datosApp);
+void lv_update_threshold(DATOS_APLICACION *datosApp);
 void example_lvgl_demo_ui(lv_disp_t *disp);
 void lv_update_device(DATOS_APLICACION *datosApp);
+void lv_update_error_temperature();
+void lv_update_temperature(DATOS_APLICACION *datosApp);
+bool lv_update_hour(char* hour);
 
 
 #endif /* LV_SRC_INCLUDE_LV_THERMOSTAT_H_ */

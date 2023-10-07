@@ -45,6 +45,7 @@ void lv_screen_factory_reset() {
 	  DATOS_APLICACION *datosApp;
 	  DATOS_GENERALES *datos;
 
+	  ESP_LOGW(TAG, "VAMOS A CREAR LA PANTALLA DE FACTORY RESET");
 	  datosApp = (DATOS_APLICACION*) calloc(1, sizeof(DATOS_APLICACION));
 	  datos = (DATOS_GENERALES*) calloc(1, sizeof(DATOS_GENERALES));
 	  datosApp->datosGenerales = datos;
@@ -59,7 +60,7 @@ void lv_screen_factory_reset() {
 	  datosApp->alarmas[4].estado_alarma = ALARMA_OFF;
 	  datosApp->termostato.incdec = 0.5;
 	  lv_create_screen_factory(datosApp);
-
+	  ESP_LOGW(TAG, "PANTALLA FACTORY RESET CREADA");
 
 }
 

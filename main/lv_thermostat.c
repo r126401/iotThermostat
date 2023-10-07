@@ -165,7 +165,7 @@ void lv_create_layout_nofitification(DATOS_APLICACION *datosApp) {
 	//creating objects
 	lv_layout_notification = lv_obj_create(lv_main_screen);
 	lv_date_text = lv_label_create(lv_layout_notification);
-	lv_label_set_text_fmt(lv_date_text, "12:05");
+	lv_label_set_text_fmt(lv_date_text, "--:--");
 	lv_label_set_long_mode(lv_date_text, 3);
 
 	//style objects
@@ -443,7 +443,7 @@ static void event_handler_up_threshold(lv_event_t *event) {
 	DATOS_APLICACION *datosApp;
 	datosApp = (DATOS_APLICACION*) 	lv_event_get_user_data(event);
 	datosApp->termostato.tempUmbral += datosApp->termostato.incdec;
-	lv_set_text_threshold(datosApp);
+	lv_update_threshold(datosApp);
 	//appuser_send_update_threshold
 	ESP_LOGI("HOLA", "HE PULSADO ARRIBA");
 
@@ -455,7 +455,7 @@ static void event_handler_down_threshold(lv_event_t *event) {
 	DATOS_APLICACION *datosApp;
 	datosApp = (DATOS_APLICACION*) 	lv_event_get_user_data(event);
 	datosApp->termostato.tempUmbral -= datosApp->termostato.incdec;
-	lv_set_text_threshold(datosApp);
+	lv_update_threshold(datosApp);
 
 	ESP_LOGI("HOLA", "HE PULSADO ABAJO");
 
@@ -748,7 +748,7 @@ void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 
 	lv_status_device(datosApp);
 	lv_set_status_heating(datosApp, estado);
-	lv_set_text_threshold(datosApp);
+	lv_update_threshold(datosApp);
 
 
 
@@ -756,7 +756,7 @@ void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 }
 
 
-void lv_set_text_threshold(DATOS_APLICACION *datosApp) {
+void lv_update_threshold(DATOS_APLICACION *datosApp) {
 
 	char threshold[10];
 
@@ -775,6 +775,23 @@ void lv_update_device(DATOS_APLICACION *datosApp) {
 
 
 
+}
+
+
+
+bool lv_update_hour(char* hour) {
+
+
+
+	if ((lv_date_text != NULL) && (hour != NULL)){
+		lv_label_set_text(lv_date_text, hour);
+		ESP_LOGI(TAG, ""TRAZAR"hora actualizada: %s", INFOTRAZA, hour);
+		return true;
+
+	} else {
+		ESP_LOGI(TAG, ""TRAZAR"Todavia no hay que actualizar hora", INFOTRAZA);
+		return false;
+	}
 }
 
 

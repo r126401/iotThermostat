@@ -24,45 +24,15 @@
 
 
 static const char *TAG = "code_application";
-xQueueHandle cola_gpio = NULL;
-static esp_timer_handle_t temporizador_refresco_led;
+
 static esp_timer_handle_t temporizador_lectura_remota;
 
-#define TASA_REFRESCO_LED 5 //ms
-#define NUM_REPETICIONES    3
+
 #define TIMEOUT_LECTURA_REMOTA 5000 //ms
-
-#ifdef CONFIG_GPIO_PIN_DHT
-#define GPIO_OUTPUT_PIN_SEL  ((1ULL<<CONFIG_GPIO_PIN_LED)| (1ULL<<CONFIG_GPIO_PIN_DHT) | (1ULL<<CONFIG_GPIO_PIN_LED_LCD))
-#endif
-
 #ifdef CONFIG_GPIO_PIN_DS18B20
-
-#define GPIO_OUTPUT_PIN_SEL  ((1ULL<<CONFIG_GPIO_PIN_LED)| (1ULL<<CONFIG_GPIO_PIN_LED_LCD) | (1ULL<<CONFIG_GPIO_PIN_DS18B20))
+#define GPIO_OUTPUT_PIN_SEL  (1ULL<<CONFIG_GPIO_PIN_DS18B20)
 #endif
 
-//#define GPIO_OUTPUT_PIN_SEL  ((1ULL<<CONFIG_GPIO_PIN_LED)| (1ULL<<CONFIG_GPIO_PIN_DHT) | (1ULL<<CONFIG_GPIO_PIN_LED_LCD) | (1ULL<<CONFIG_GPIO_PIN_DS18B20))
-#define GPIO_INPUT_PIN_SEL  ( (1ULL<<CONFIG_GPIO_PIN_BOTON))
-
-/*
-static void gpio_rele_out() {
-
-	gpio_config_t io_conf;
-	io_conf.intr_type = GPIO_INTR_DISABLE;
-	io_conf.pin_bit_mask = 1ULL<<CONFIG_GPIO_PIN_RELE;
-	io_conf.mode = GPIO_MODE_OUTPUT;
-    io_conf.pull_down_en = 0;
-    //disable pull-up mode
-    io_conf.pull_up_en = 0;
-    gpio_config(&io_conf);
-    ESP_LOGW(TAG, ""TRAZAR" gpio rele en salida", INFOTRAZA);
-
-}
-
-
-
-
-*/
 
 
 
@@ -70,31 +40,7 @@ static void gpio_rele_out() {
 
 
 
-static void gpio_rele_in_out() {
-	gpio_config_t io_conf;
-	io_conf.intr_type = GPIO_INTR_DISABLE;
-	io_conf.pin_bit_mask = 1ULL<<CONFIG_GPIO_PIN_RELE;
-	io_conf.mode = GPIO_MODE_INPUT_OUTPUT;
-    io_conf.pull_down_en = 0;
-    //disable pull-up mode
-    io_conf.pull_up_en = 0;
-    gpio_config(&io_conf);
-    ESP_LOGW(TAG, ""TRAZAR" gpio rele en E/S", INFOTRAZA);
 
-}
-
-static void refresco_lcd(void *arg) {
-
-
-	if (gpio_get_level(CONFIG_GPIO_PIN_LED_LCD) == OFF) {
-		gpio_set_level(CONFIG_GPIO_PIN_LED_LCD, ON);
-
-	} else {
-		gpio_set_level(CONFIG_GPIO_PIN_LED_LCD, OFF);
-	}
-
-
-}
 
 enum ESTADO_RELE operacion_rele(DATOS_APLICACION *datosApp, enum TIPO_ACTUACION_RELE tipo, enum ESTADO_RELE operacion) {
 
@@ -136,13 +82,21 @@ void accionar_termostato(DATOS_APLICACION *datosApp) {
 	static float lecturaAnterior = -1000;
 
     if (((accion_termostato = calcular_accion_termostato(datosApp, &accion_rele)) == ACCIONAR_TERMOSTATO)) {
+    	ESP_LOGI(TAG, ""TRAZAR"VAMOS A ACCIONAR EL RELE", INFOTRAZA);
     	operacion_rele(datosApp, TEMPORIZADA, accion_rele);
     }
 
     if ((accion_termostato == ACCIONAR_TERMOSTATO) || (lecturaAnterior != datosApp->termostato.tempActual)) {
     	//lv_actualizar_temperatura_lcd(datosApp);
+    	ESP_LOGI(TAG, ""TRAZAR"HA HABIDO CAMBIO DE TEMPERATURA", INFOTRAZA);
         informe = appuser_send_spontaneous_report(datosApp, CAMBIO_TEMPERATURA, NULL);
-        publicar_mensaje_json(datosApp, informe, NULL);
+        if (informe != NULL) {
+        	ESP_LOGI(TAG, "mensaje: %s", cJSON_Print(informe));
+        	publicar_mensaje_json(datosApp, informe, NULL);
+        } else {
+        	ESP_LOGI(TAG, "El informe iba vacio");
+        }
+
     }
     lecturaAnterior = datosApp->termostato.tempActual;
 }
@@ -157,13 +111,14 @@ void tarea_lectura_temperatura(void *parametros) {
     ESP_LOGI(TAG, ""TRAZAR"COMIENZA LA TAREA DE LECTURA DE TEMPERATURA", INFOTRAZA);
 
     while(1) {
+    	vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
 
     	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
     	leer_temperatura(datosApp);
     	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
     	accionar_termostato(datosApp);
 
-	    vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
+
 
 
     }
@@ -414,231 +369,4 @@ esp_err_t leer_temperatura_remota(DATOS_APLICACION *datosApp) {
 	return ESP_OK;
 }
 
-
-void pulsacion_modo_app(DATOS_APLICACION *datosApp) {
-
-	time_t t_siguiente_intervalo;
-	ESP_LOGI(TAG, ""TRAZAR" PONER QUITAR MODO MANUAL :%d", INFOTRAZA, datosApp->datosGenerales->estadoApp );
-	switch (datosApp->datosGenerales->estadoApp) {
-
-	case NORMAL_AUTO:
-	case NORMAL_AUTOMAN:
-		//datosApp->termostato.tempUmbral = datosApp->termostato.tempUmbralDefecto;
-		appuser_notify_app_status(datosApp, NORMAL_MANUAL);
-		break;
-	case NORMAL_MANUAL:
-		//ESP_LOGE(TAG, ""TRAZAR" pasamos a modo auto", INFOTRAZA);
-		appuser_notify_app_status(datosApp, NORMAL_AUTO);
-		calcular_programa_activo(datosApp, &t_siguiente_intervalo);
-		break;
-	default:
-		//ESP_LOGE(TAG, ""TRAZAR" NO SE PUEDE CAMBIAR EL ESTADO POR NO SER CONSISTENTE. ESTADO %d", INFOTRAZA, datosApp->datosGenerales->estadoApp);
-		break;
-
-	}
-	leer_temperatura(datosApp);
-
-
-}
-
-void pulsacion(void *arg) {
-
-
-    static esp_timer_handle_t timer_pulse;
-    static uint8_t rep=0;
-    cJSON *informe;
-
-    DATOS_APLICACION *datosApp;
-    datosApp = (DATOS_APLICACION*) arg;
-
-
-
-    const esp_timer_create_args_t timer_pulse_args = {
-            .callback = &pulsacion,
-            /* name is optional, but may help identify the timer when debugging */
-            .name = "pulsacion",
-			.arg = (void*) datosApp
-    };
-
-
-    ESP_LOGW(TAG, "pulsacion  %p", datosApp);
-    ESP_LOGI(TAG, ""TRAZAR"RUTINA QUE TRATA LAS INTERRUPCIONES", INFOTRAZA);
-    //gpio_rele_in();
-    if (gpio_get_level(CONFIG_GPIO_PIN_BOTON) == OFF) {
-    	ESP_ERROR_CHECK(esp_timer_create(&timer_pulse_args, &timer_pulse));
-    	ESP_ERROR_CHECK(esp_timer_start_once(timer_pulse,  500*1000));
-
-        rep++;
-        ESP_LOGI(TAG, ""TRAZAR"repeticion %d", INFOTRAZA, rep);
-
-    } else {
-        datosApp->datosGenerales->botonPulsado = false;
-        //*rebote = false;
-        //printf("Rebote cancelado, rep = %d\n", rep);
-        if (rep > NUM_REPETICIONES) {
-
-            ESP_LOGI(TAG, ""TRAZAR"pulsacion larga", INFOTRAZA);
-
-
-
-            if (esp_netif_is_netif_up(ESP_IF_WIFI_STA) == true) {
-            	ESP_LOGI(TAG, ""TRAZAR"EJECUTAMOS RESTART", INFOTRAZA);
-                esp_restart();
-            } else {
-                //smartconfig
-                ESP_LOGI(TAG,"sin ip, entramos en smartconfig...");
-                //smartconfig_set_type(SC_TYPE_ESPTOUCH);
-                ESP_LOGI(TAG, ""TRAZAR"AQUI LANZARIAMOS LA RUTINA DE SMARTCONFIG", INFOTRAZA);
-                appuser_notify_smartconfig(datosApp);
-                xTaskCreate(tarea_smartconfig, "tarea_smart", 2048, (void*)&datosApp, tskIDLE_PRIORITY + 0, NULL);
-
-
-            }
-
-        } else {
-            //ESP_LOGI(TAG, ""TRAZAR"pulsacion corta 0x%08x", INFOTRAZA, datosApp);
-            ESP_LOGW(TAG, "pulsacion corta %p", datosApp);
-            pulsacion_modo_app(datosApp);
-            /*
-            if (datosApp->datosGenerales->estadoApp < 2) {
-            	appuser_cambiar_modo_aplicacion(datosApp, NORMAL_MANUAL);
-
-            } else {
-                if (datosApp->datosGenerales->estadoApp == NORMAL_MANUAL) {
-            		appuser_cambiar_modo_aplicacion(datosApp, NORMAL_AUTO);
-
-
-                }
-            }*/
-            informe = appuser_send_spontaneous_report(datosApp, CAMBIO_ESTADO_APLICACION, NULL);
-            publicar_mensaje_json(datosApp, informe, NULL);
-            //poner_quitar_modo_manual(datosApp);
-
-            //operacion_rele(datosApp, MANUAL, INDETERMINADO);
-
-        }
-
-        rep=0;
-    }
-}
-
-static void tratarInterrupcionesPulsador(void *arg) {
-
-
-	DATOS_APLICACION *datosApp;
-	datosApp = (DATOS_APLICACION*) arg;
-
-
-    static esp_timer_handle_t timer_pulse;
-
-    const esp_timer_create_args_t timer_pulse_args = {
-    		.callback = &pulsacion,
-    		.name = "tratarInterrupcionesPulsador",
-			.arg = (void*) datosApp
-    };
-
-
-    if (datosApp->datosGenerales->botonPulsado == false) {
-        datosApp->datosGenerales->botonPulsado = true;
-        //ets_timer_disarm(&notificacionWifi);
-        ESP_ERROR_CHECK(esp_timer_create(&timer_pulse_args, &timer_pulse));
-        ESP_ERROR_CHECK(esp_timer_start_once(timer_pulse, 250*1000));
-
-
-    }
-
-
-
-
-    //GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status );
-}
-
-esp_err_t init_code_application(DATOS_APLICACION *datosApp) {
-
-
-
-	esp_err_t error = ESP_OK;
-	ESP_LOGW(TAG, "appuser_inicializar_aplicacion %p", datosApp);
-    datosApp->datosGenerales->botonPulsado = false;
-
-    ESP_LOGI(TAG, ""TRAZAR"INICIALIZAR PARAMETROS PARTICULARES DE LA APLICACION", INFOTRAZA);
-
-    gpio_config_t io_conf;
-    //disable interrupt
-    io_conf.intr_type = GPIO_INTR_DISABLE;
-    //set as output mode
-    io_conf.mode = GPIO_MODE_OUTPUT;
-    //bit mask of the pins that you want to set,e.g.GPIO15/16
-    io_conf.pin_bit_mask = GPIO_OUTPUT_PIN_SEL;
-    //disable pull-down mode
-    io_conf.pull_down_en = 0;
-    //disable pull-up mode
-    io_conf.pull_up_en = 0;
-    //configure GPIO with the given settings
-    //ESP_LOGI(TAG, ""TRAZAR" VAMOS (0)", INFOTRAZA);
-    gpio_config(&io_conf);
-    //ESP_LOGI(TAG, ""TRAZAR" VAMOS (1)", INFOTRAZA);
-    //interrupt of rising edge
-    io_conf.intr_type = GPIO_INTR_POSEDGE;
-    //bit mask of the pins, use GPIO4/5 here
-    io_conf.pin_bit_mask = GPIO_INPUT_PIN_SEL;
-    //set as input mode
-    io_conf.mode = GPIO_MODE_INPUT;
-    //enable pull-up mode
-    io_conf.pull_up_en = 1;
-
-    gpio_config(&io_conf);
-
-    //gpio_set_level(CONFIG_GPIO_PIN_RELE, OFF);
-    //change gpio intrrupt type for one pin
-    //gpio_set_intr_type(CONFIG_GPIO_PIN_BOTON, GPIO_INTR_ANYEDGE);
-
-
-    gpio_rele_in_out();
-#ifdef CONFIG_GPIO_PIN_DHT
-    gpio_set_pull_mode(CONFIG_GPIO_PIN_DHT, GPIO_PULLUP_ONLY);
-#endif
-
-#ifdef CONFIG_GPIO_PIN_DS18B20
-    gpio_set_pull_mode(CONFIG_GPIO_PIN_DS18B20, GPIO_PULLUP_ONLY);
-#endif
-
-    const esp_timer_create_args_t timer_refresh_led_args = {
-            .callback = &refresco_lcd,
-            /* name is optional, but may help identify the timer when debugging */
-            .name = "led refresh",
-			.arg = (void*) datosApp
-    };
-
-    ESP_ERROR_CHECK(esp_timer_create(&timer_refresh_led_args, &temporizador_refresco_led));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(temporizador_refresco_led, TASA_REFRESCO_LED * 1000));
-
-    /*
-    ets_timer_disarm(&temporizador_refresco_led);
-    ets_timer_setfn(&temporizador_refresco_led, (ETSTimerFunc*) refresco_lcd, NULL);
-    ets_timer_arm(&temporizador_refresco_led, TASA_REFRESCO_LED,true);
-*/
-
-
-    gpio_set_level(CONFIG_GPIO_PIN_RELE, OFF);
-    //change gpio intrrupt type for one pin
-    gpio_set_intr_type(CONFIG_GPIO_PIN_BOTON, GPIO_INTR_ANYEDGE);
-
-
-    ESP_LOGI(TAG, ""TRAZAR" VAMOS A CREAR LA COLA GPIO", INFOTRAZA);
-    //create a queue to handle gpio event from isr
-    cola_gpio = xQueueCreate(3, sizeof(DATOS_APLICACION));
-    ESP_LOGI(TAG, ""TRAZAR" COLA GPIO CREADA", INFOTRAZA);
-    //xTaskCreate(tratar_interrupciones, "tratar_interrupciones", 4096, NULL, 10, NULL);
-    ESP_LOGI(TAG, ""TRAZAR" RUTINA DE TRATAR INTERRUPCIONES LANZADA", INFOTRAZA);
-    //install gpio isr service
-    gpio_install_isr_service(0);
-    //hook isr handler for specific gpio pin
-    gpio_isr_handler_add(CONFIG_GPIO_PIN_BOTON, tratarInterrupcionesPulsador,datosApp);
-    ESP_LOGI(TAG, ""TRAZAR"RUTINA ISR_HANDLER LANZADA", INFOTRAZA);
-
-
-    return error;
-
-}
 

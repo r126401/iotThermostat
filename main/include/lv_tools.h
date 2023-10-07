@@ -13,6 +13,9 @@
 #include <stdio.h>
 #include "lvgl.h"
 
+
+
+
 lv_coord_t calculate_center_obj_x(lv_coord_t width, bool offset_left);
 bool  scale_dimensions(lv_coord_t *x, lv_coord_t *y);
 

@@ -425,7 +425,7 @@ void lv_init_thermostat() {
 
 
 	  //create_screen_layout_search_ssid(datosApp);
-
+	ESP_LOGI(TAG, ""TRAZAR"FIN DE INIT THERMOSTAT...", INFOTRAZA);
 
 
 }
@@ -701,7 +701,7 @@ void lv_connecting_to_wifi_station() {
 
 	lv_label_set_text_fmt(lv_label_connection_wifi, "Conectando a : %s", conf_wifi.sta.ssid );
 	lv_obj_clear_flag(lv_label_connection_wifi, LV_OBJ_FLAG_HIDDEN);
-	lv_obj_invalidate(lv_screen_init_thermostat);
+	//lv_obj_invalidate(lv_screen_init_thermostat);
 	ESP_LOGI(TAG, ""TRAZAR"INVALIDADA LA PANTALLA", INFOTRAZA);
 
 
@@ -710,7 +710,7 @@ void lv_connecting_to_wifi_station() {
 
 
 
-void lv_set_button_wifi(bool fail) {
+void lv_update_button_wifi(bool fail) {
 
 	wifi_config_t conf_wifi;
 	esp_wifi_get_config(WIFI_IF_STA, &conf_wifi);
@@ -735,6 +735,7 @@ void lv_set_button_wifi(bool fail) {
 
 void lv_delete_init_thermostat() {
 
+	if (lv_screen_init_thermostat != NULL)
 	lv_obj_del(lv_screen_init_thermostat);
 }
 

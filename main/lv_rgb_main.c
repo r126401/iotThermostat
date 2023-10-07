@@ -1,3 +1,4 @@
+
 /*
  * lv_rgb_main.c
  *
@@ -30,6 +31,11 @@
 
 #include "driver/i2c.h"
 #include "logging.h"
+
+#include "configuracion.h"
+#include "code_application.h"
+#include "conexiones.h"
+#include "conexiones_mqtt.h"
 
 
 static const char *TAG = "iotThermostat";
@@ -141,6 +147,43 @@ static void increase_lvgl_tick(void *arg)
 }
 
 
+void main_function(DATOS_APLICACION *datosApp) {
+
+	esp_err_t error;
+
+	if (init_code_application(datosApp) != ESP_OK) {
+		ESP_LOGE(TAG, ""TRAZAR" FALLO LA INICIALIZACION DE LA APLICACION", INFOTRAZA);
+	}
+
+
+
+
+	error = inicializacion(datosApp, CONFIG_CARGA_CONFIGURACION);
+	if (error == ESP_OK) {
+		ESP_LOGI(TAG, ""TRAZAR"INICIALIZACION CORRECTA", INFOTRAZA);
+	} else {
+		if (datosApp->datosGenerales->estadoApp == ARRANQUE_FABRICA) {
+			ESP_LOGI(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
+		} else {
+			ESP_LOGE(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
+			return;
+		}
+
+	}
+
+
+
+
+	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
+	conectar_dispositivo_wifi();
+
+	sync_app_by_ntp(datosApp);
+	crear_tarea_mqtt(datosApp);
+
+
+
+}
+
 
 
 static void lv_init_app(DATOS_APLICACION *datosApp) {
@@ -153,6 +196,7 @@ static void lv_init_app(DATOS_APLICACION *datosApp) {
 	case ESPERA_FIN_ARRANQUE:
 	case NORMAL_ARRANCANDO:
 		lv_init_thermostat();
+		main_function(datosApp);
 		break;
 
 	default:
@@ -307,7 +351,7 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
     init_app_touch_gt911(disp);
 #endif
 
-    
+/*
     lv_init_app(datosApp);
 
     while (1) {
@@ -316,6 +360,7 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
         // The task running lv_timer_handler should have lower priority than that running `lv_tick_inc`
         lv_timer_handler();
     }
+    */
 }
 
 
