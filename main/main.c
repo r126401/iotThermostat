@@ -97,7 +97,8 @@ void app_main(void) {
 	}
 
 
-
+	lv_screen_thermostat(&datosApp);
+	lv_timer_handler();
 
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 	conectar_dispositivo_wifi();
@@ -105,13 +106,13 @@ void app_main(void) {
 	crear_tarea_mqtt(&datosApp);
 
 
-
+	ESP_LOGI(TAG, ""TRAZAR" ESTADO ANTES DE INICIAR GESTION: %d", INFOTRAZA, datosApp.datosGenerales->estadoApp);
 	iniciar_gestion_programacion(&datosApp);
 
 	xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 1, NULL);
 
     //pintar_fecha();
-	lv_screen_thermostat(&datosApp);
+
 
     while (1) {
         // raise the task priority of LVGL and/or reduce the handler period can improve the performance

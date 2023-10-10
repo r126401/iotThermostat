@@ -20,6 +20,7 @@
 #include "dialogos_json.h"
 #include "esp_interface.h"
 #include "esp_netif.h"
+#include "lv_thermostat.h"
 
 
 
@@ -115,8 +116,10 @@ void tarea_lectura_temperatura(void *parametros) {
 
     	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
     	leer_temperatura(datosApp);
+    	lv_update_temperature(datosApp);
     	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
     	accionar_termostato(datosApp);
+    	lv_update_relay();
 
 
 
@@ -183,29 +186,6 @@ enum TIPO_ACCION_TERMOSTATO calcular_accion_termostato(DATOS_APLICACION *datosAp
 
 }
 
-esp_err_t notify_end_starting(DATOS_APLICACION *datosApp) {
-
-	cJSON *informe;
-
-
-	if (datosApp->datosGenerales->estadoApp == ESPERA_FIN_ARRANQUE) {
-
-		//lv_cargar_pantalla_principal();
-		//calcular_estado_aplicacion(datosApp);
-		//appuser_cambiar_modo_aplicacion(datosApp, estado_app);
-		informe = appuser_send_spontaneous_report(datosApp, ARRANQUE_APLICACION, NULL);
-
-		if (informe != NULL) {
-			publicar_mensaje_json(datosApp, informe, NULL);
-		}
-
-	}
-
-
-
-	return ESP_OK;
-
-}
 
 
 
@@ -267,7 +247,9 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
     }
 
     if (datosApp->alarmas[ALARMA_SENSOR_DHT].estado_alarma > ALARMA_OFF) {
+    	ESP_LOGE(TAG, ""TRAZAR"LA ALARMA DE SENSOR SE DESACTIVA", INFOTRAZA);
     	registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_OFF, true);
+    	lv_update_alarm_device(datosApp);
     }
     sprintf(temp,"%.02lf ºC", datosApp->termostato.tempActual);
     notify_end_starting(datosApp);

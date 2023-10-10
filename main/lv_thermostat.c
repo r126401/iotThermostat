@@ -55,7 +55,7 @@ lv_style_t lv_style_bar_schedule;
 
 lv_obj_t *lv_date_text;
 lv_obj_t *lv_icon_broker_status;
-lv_obj_t *lv_icon_device_status_communication;
+lv_obj_t *lv_icon_device_status_wifi;
 lv_obj_t *lv_icon_waiting_response;
 lv_obj_t *lv_icon_action_upgrade;
 lv_obj_t *lv_icon_ntp;
@@ -95,24 +95,6 @@ static const char *TAG = "lv_thermostat";
 
 
 
-static lv_obj_t *meter;
-static lv_obj_t * btn;
-static lv_disp_rot_t rotation = LV_DISP_ROT_NONE;
-
-static void set_value(void *indic, int32_t v)
-{
-    lv_meter_set_indicator_end_value(meter, indic, v);
-}
-
-static void btn_cb(lv_event_t * e)
-{
-    lv_disp_t *disp = lv_event_get_user_data(e);
-    rotation++;
-    if (rotation > LV_DISP_ROT_270) {
-        rotation = LV_DISP_ROT_NONE;
-    }
-    lv_disp_set_rotation(disp, rotation);
-}
 
 void lv_set_style_screen(lv_obj_t *display) {
 
@@ -188,43 +170,21 @@ void lv_create_layout_nofitification(DATOS_APLICACION *datosApp) {
 	//callback functions
 
 
-
-
-
-
-
-
-
-
-
-	//Etiqueta hora
-
-
-	//lv_obj_center(lv_date_text);
-
-
+	//Icono conexion del dispositivo
+	lv_icon_device_status_wifi = lv_img_create(lv_layout_notification);
+	lv_img_set_src(lv_icon_device_status_wifi, &ic_wifi_off);
 
 	//icono conexion al broker
 	lv_icon_broker_status = lv_img_create(lv_layout_notification);
-	lv_img_set_src(lv_icon_broker_status, &ic_wifi_off);
+	lv_img_set_src(lv_icon_broker_status, &ic_action_offline);
 
 
-
-	//Icono conexion del dispositivo
-	lv_icon_device_status_communication = lv_img_create(lv_layout_notification);
-	lv_img_set_src(lv_icon_device_status_communication, &ic_action_offline);
 
 	lv_icon_action_upgrade = lv_img_create(lv_layout_notification);
-	lv_img_set_src(lv_icon_action_upgrade, &ic_action_upgrade);
-	lv_obj_add_flag(lv_icon_action_upgrade, LV_OBJ_FLAG_HIDDEN);
-
 	lv_icon_ntp = lv_img_create(lv_layout_notification);
 	lv_img_set_src(lv_icon_ntp, &ic_ntp_off);
-	lv_obj_add_flag(lv_icon_ntp, LV_OBJ_FLAG_HIDDEN);
-
 	lv_icon_alarm = lv_img_create(lv_layout_notification);
 	lv_img_set_src(lv_icon_alarm, &ic_warning);
-	lv_obj_add_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
 
 
 
@@ -268,29 +228,6 @@ void lv_create_layout_temperature(DATOS_APLICACION *datosApp) {
 
 	//callback functions
 
-
-
-
-
-
-
-
-
-
-	// icono temperatura
-
-
-	// texto temperatura
-
-
-
-
-
-
-
-
-
-
 }
 
 void lv_set_style_status_application() {
@@ -309,7 +246,7 @@ void lv_create_status_aplication(DATOS_APLICACION *datosApp) {
 	lv_text_status_application = lv_label_create(lv_main_screen);
 	lv_obj_align_to(lv_text_status_application, lv_layout_temperature, LV_ALIGN_OUT_TOP_RIGHT, 65,10);
 	lv_set_style_status_application();
-	lv_status_application(datosApp);
+	lv_update_status_application(datosApp);
 
 
 }
@@ -323,7 +260,7 @@ void lv_create_status_aplication(DATOS_APLICACION *datosApp) {
 
 void lv_status_device(DATOS_APLICACION *datosApp) {
 
-	lv_status_communication(datosApp);
+	lv_update_alarm_device(datosApp);
 }
 
 void lv_set_style_layout_temperature() {
@@ -379,27 +316,30 @@ void lv_create_layout_threshold(DATOS_APLICACION *datosApp) {
 
 
 
-void lv_status_application(DATOS_APLICACION *datosApp) {
+void lv_update_status_application(DATOS_APLICACION *datosApp) {
 
 
-	switch(datosApp->datosGenerales->estadoApp) {
+	if (lv_text_status_application != NULL) {
+		switch(datosApp->datosGenerales->estadoApp) {
 
-	case NORMAL_AUTO:
-	case NORMAL_AUTOMAN:
-		lv_label_set_text(lv_text_status_application, "AUTO");
-		break;
-	case NORMAL_MANUAL:
-		lv_label_set_text(lv_text_status_application, "MANUAL");
-		break;
-	case UPGRADE_EN_PROGRESO:
-		lv_label_set_text(lv_text_status_application, "ACTUALIZANDO VERSION");
-		break;
-	default:
-		lv_label_set_text(lv_text_status_application, "----");
-		break;
+		case NORMAL_AUTO:
+		case NORMAL_AUTOMAN:
+			lv_label_set_text(lv_text_status_application, "AUTO");
+			break;
+		case NORMAL_MANUAL:
+			lv_label_set_text(lv_text_status_application, "MANUAL");
+			break;
+		case UPGRADE_EN_PROGRESO:
+			lv_label_set_text(lv_text_status_application, "ACTUALIZANDO VERSION");
+			break;
+		default:
+			lv_label_set_text(lv_text_status_application, "----");
+			break;
 
 
+		}
 	}
+
 
 }
 
@@ -572,131 +512,76 @@ void lv_update_bar_schedule(DATOS_APLICACION *datosApp) {
 
 
 
-void lv_status_communication(DATOS_APLICACION *datosApp) {
+void lv_update_alarm_device(DATOS_APLICACION *datosApp) {
 
-#define ALARMA_WIFI 0
-#define ALARMA_MQTT 1
-#define ALARMA_NTP 2
-#define ALARMA_NVS 3
-#define ALARMA_SENSOR_DHT 4
-#define ALARMA_SENSOR_REMOTO 5
+
 
 	// ALARMA WIFI
-	if (datosApp->alarmas[0].estado_alarma == ALARMA_ON) {
 
-		lv_img_set_src(lv_icon_device_status_communication, &ic_action_offline);
+	if (lv_icon_device_status_wifi != NULL) {
+		if (datosApp->alarmas[0].estado_alarma == ALARMA_ON) {
+			ESP_LOGE(TAG, "ALARMA WIFI ACTIVA");
+			lv_img_set_src(lv_icon_device_status_wifi, &ic_wifi_off);
+			lv_img_set_src(lv_icon_broker_status, &ic_action_offline);
 
-
-	} else {
-		lv_img_set_src(lv_icon_device_status_communication, &ic_action_online);
-
+		} else {
+			lv_img_set_src(lv_icon_device_status_wifi, &ic_wifi_on);
+		}
 	}
 
 	//ALARMA MQTT
+	if (lv_icon_broker_status != NULL) {
+		if(datosApp->alarmas[1].estado_alarma == ALARMA_ON) {
+			ESP_LOGE(TAG, "ALARMA MQTT ACTIVA");
+			lv_img_set_src(lv_icon_broker_status, &ic_action_offline);
 
-	if(datosApp->alarmas[1].estado_alarma == ALARMA_ON) {
-		lv_img_set_src(lv_icon_broker_status, &ic_wifi_off);
-
-	} else {
-		lv_img_set_src(lv_icon_broker_status, &ic_wifi_on);
+			} else {
+				lv_img_set_src(lv_icon_broker_status, &ic_action_online);
+			}
 	}
 
 	//ALARMA NTP
-
-	if(datosApp->alarmas[2].estado_alarma == ALARMA_ON) {
-
-		lv_obj_clear_flag(lv_icon_ntp, LV_OBJ_FLAG_HIDDEN);
-	} else {
-		lv_obj_add_flag(lv_icon_ntp, LV_OBJ_FLAG_HIDDEN);
+	if (lv_icon_ntp != NULL) {
+		if (datosApp->alarmas[2].estado_alarma == ALARMA_ON) {
+			lv_obj_clear_flag(lv_icon_ntp, LV_OBJ_FLAG_HIDDEN);
+		} else {
+			lv_obj_add_flag(lv_icon_ntp, LV_OBJ_FLAG_HIDDEN);
+		}
 	}
 
-	// ALARMA NVS
-	if((datosApp->alarmas[3].estado_alarma == ALARMA_ON) ||
-			(datosApp->alarmas[4].estado_alarma == ALARMA_ON) ||
-					((datosApp->alarmas[5].estado_alarma == ALARMA_ON))){
-		lv_img_set_src(lv_icon_alarm, &ic_warning);
-		lv_obj_clear_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
-	} else {
-		lv_obj_add_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
+
+	//ALARMA_NVS
+	if (lv_icon_alarm != NULL) {
+		if ((datosApp->alarmas[3].estado_alarma == ALARMA_ON) ||
+				(datosApp->alarmas[4].estado_alarma == ALARMA_ON) ||
+				(datosApp->alarmas[5].estado_alarma == ALARMA_ON) ) {
+
+
+
+			if (datosApp->alarmas[3].estado_alarma == ALARMA_ON) {
+				lv_obj_clear_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
+				ESP_LOGE(TAG, "ALARMA NVS ACTIVA");
+			} else {
+
+			}
+			if ((datosApp->alarmas[4].estado_alarma == ALARMA_ON) && (datosApp->termostato.master == true)){
+				lv_obj_clear_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
+				ESP_LOGE(TAG, "ALARMA SENSOR LOCAL ACTIVA");
+			} else {
+				lv_obj_add_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
+			}
+			if ((datosApp->alarmas[5].estado_alarma == ALARMA_ON) &&  (datosApp->termostato.master == false)){
+				lv_obj_clear_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
+				ESP_LOGE(TAG, "ALARMA SENSOR REMOTO ACTIVA");
+			} else {
+				lv_obj_add_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
+			}
+		} else {
+			lv_obj_add_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
+		}
 	}
 
-/*
-	//ALARMA SENSOR TEMPERATURA LOCAL
-	if(datosApp->alarmas[4].estado_alarma == ALARMA_ON) {
-		lv_img_set_src(lv_icon_alarm, &ic_warning);
-		lv_obj_clear_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
-	} else {
-		lv_obj_add_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
-	}
 
-	//ALARMA SENSOR_TEMPERATURA_REMOTO
-
-	if(datosApp->alarmas[5].estado_alarma == ALARMA_ON) {
-		lv_img_set_src(lv_icon_alarm, &ic_warning);
-		lv_obj_clear_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
-	} else {
-		lv_obj_add_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
-	}
-	*/
-
-}
-
-void example_lvgl_demo_ui(lv_disp_t *disp)
-{
-    lv_obj_t *scr = lv_disp_get_scr_act(disp);
-    meter = lv_meter_create(scr);
-    lv_obj_center(meter);
-    lv_obj_set_size(meter, 200, 200);
-
-    /*Add a scale first*/
-    lv_meter_scale_t *scale = lv_meter_add_scale(meter);
-    lv_meter_set_scale_ticks(meter, scale, 41, 2, 10, lv_palette_main(LV_PALETTE_GREY));
-    lv_meter_set_scale_major_ticks(meter, scale, 8, 4, 15, lv_color_black(), 10);
-
-    lv_meter_indicator_t *indic;
-
-    /*Add a blue arc to the start*/
-    indic = lv_meter_add_arc(meter, scale, 3, lv_palette_main(LV_PALETTE_BLUE), 0);
-    lv_meter_set_indicator_start_value(meter, indic, 0);
-    lv_meter_set_indicator_end_value(meter, indic, 20);
-
-    /*Make the tick lines blue at the start of the scale*/
-    indic = lv_meter_add_scale_lines(meter, scale, lv_palette_main(LV_PALETTE_BLUE), lv_palette_main(LV_PALETTE_BLUE), false, 0);
-    lv_meter_set_indicator_start_value(meter, indic, 0);
-    lv_meter_set_indicator_end_value(meter, indic, 20);
-
-    /*Add a red arc to the end*/
-    indic = lv_meter_add_arc(meter, scale, 3, lv_palette_main(LV_PALETTE_RED), 0);
-    lv_meter_set_indicator_start_value(meter, indic, 80);
-    lv_meter_set_indicator_end_value(meter, indic, 100);
-
-    /*Make the tick lines red at the end of the scale*/
-    indic = lv_meter_add_scale_lines(meter, scale, lv_palette_main(LV_PALETTE_RED), lv_palette_main(LV_PALETTE_RED), false, 0);
-    lv_meter_set_indicator_start_value(meter, indic, 80);
-    lv_meter_set_indicator_end_value(meter, indic, 100);
-
-    /*Add a needle line indicator*/
-    indic = lv_meter_add_needle_line(meter, scale, 4, lv_palette_main(LV_PALETTE_GREY), -10);
-
-    btn = lv_btn_create(scr);
-    lv_obj_t * lbl = lv_label_create(btn);
-    lv_label_set_text_static(lbl, LV_SYMBOL_REFRESH" ROTATE");
-    lv_obj_align(btn, LV_ALIGN_BOTTOM_LEFT, 30, -30);
-    /*Button event*/
-    lv_obj_add_event_cb(btn, btn_cb, LV_EVENT_CLICKED, disp);
-
-    /*Create an animation to set the value*/
-    lv_anim_t a;
-    lv_anim_init(&a);
-    lv_anim_set_exec_cb(&a, set_value);
-    lv_anim_set_var(&a, indic);
-    lv_anim_set_values(&a, 0, 100);
-    lv_anim_set_time(&a, 2000);
-    lv_anim_set_repeat_delay(&a, 100);
-    lv_anim_set_playback_time(&a, 500);
-    lv_anim_set_playback_delay(&a, 100);
-    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);
-    lv_anim_start(&a);
 }
 
 
@@ -706,16 +591,7 @@ void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 
 	enum ESTADO_RELE estado = ON;
 
-	  datosApp->datosGenerales->estadoApp = NORMAL_AUTO;
-	  datosApp->datosGenerales->estadoProgramacion = VALID_PROG;
-	  datosApp->termostato.tempActual = 21.254;
-	  datosApp->termostato.tempUmbral = 20;
-	  datosApp->alarmas[0].estado_alarma = ALARMA_OFF;
-	  datosApp->alarmas[1].estado_alarma = ALARMA_OFF;
-	  datosApp->alarmas[2].estado_alarma = ALARMA_ON;
-	  datosApp->alarmas[3].estado_alarma = ALARMA_ON;
-	  datosApp->alarmas[4].estado_alarma = ALARMA_OFF;
-	  datosApp->termostato.incdec = 0.5;
+
 
 
 	  //creating objects
@@ -739,33 +615,16 @@ void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 
 	  //callback functions
 
-
-
-
-
-
-
-
-	lv_status_device(datosApp);
+	 lv_update_alarm_device(datosApp);
+	//lv_status_device(datosApp);
 	lv_set_status_heating(datosApp, estado);
 	lv_update_threshold(datosApp);
-
-
-
+	lv_update_temperature(datosApp);
 
 }
 
 
-void lv_update_threshold(DATOS_APLICACION *datosApp) {
 
-	char threshold[10];
-
-	sprintf(threshold, "%.1f ºC", datosApp->termostato.tempUmbral);
-
-
-	lv_label_set_text(lv_text_threshold, threshold);
-
-}
 
 
 
@@ -777,7 +636,23 @@ void lv_update_device(DATOS_APLICACION *datosApp) {
 
 }
 
+static void lv_update_temp_threshold(float parameter, lv_obj_t *obj) {
 
+	char data[10];
+
+	if (obj != NULL) {
+
+		if (parameter == -1000) {
+			ESP_LOGE(TAG, "TEMPERATURA ACTUAL NO DISPONIBLE");
+			lv_label_set_text_fmt(obj, "--.- ºC");
+		} else {
+			sprintf(data, "%.1f", parameter);
+			lv_label_set_text_fmt(obj, "%s ºC", data);
+		}
+
+
+	}
+}
 
 bool lv_update_hour(char* hour) {
 
@@ -789,11 +664,37 @@ bool lv_update_hour(char* hour) {
 		return true;
 
 	} else {
-		ESP_LOGI(TAG, ""TRAZAR"Todavia no hay que actualizar hora", INFOTRAZA);
+		ESP_LOGW(TAG, ""TRAZAR"No se puede actualizar la hora en el display", INFOTRAZA);
 		return false;
 	}
 }
 
+void lv_update_temperature(DATOS_APLICACION *datosApp) {
+
+	lv_update_temp_threshold(datosApp->termostato.tempActual, lv_text_temperature);
+
+}
+
+void lv_update_threshold(DATOS_APLICACION *datosApp) {
+
+	lv_update_temp_threshold(datosApp->termostato.tempUmbral, lv_text_threshold);
+
+}
+
+
+void lv_update_relay() {
+
+
+	if (lv_icon_heating != NULL) {
+		if (gpio_get_level(CONFIG_GPIO_PIN_RELE) == ON) {
+			lv_obj_clear_flag(lv_icon_heating, LV_OBJ_FLAG_HIDDEN);
+
+		} else {
+			lv_obj_add_flag(lv_icon_heating, LV_OBJ_FLAG_HIDDEN);
+		}
+	}
+
+}
 
 
 

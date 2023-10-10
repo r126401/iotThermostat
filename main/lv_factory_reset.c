@@ -55,8 +55,8 @@ void lv_screen_factory_reset() {
 	  datosApp->termostato.tempUmbral = 20;
 	  datosApp->alarmas[0].estado_alarma = ALARMA_OFF;
 	  datosApp->alarmas[1].estado_alarma = ALARMA_OFF;
-	  datosApp->alarmas[2].estado_alarma = ALARMA_ON;
-	  datosApp->alarmas[3].estado_alarma = ALARMA_ON;
+	  datosApp->alarmas[2].estado_alarma = ALARMA_OFF;
+	  datosApp->alarmas[3].estado_alarma = ALARMA_OFF;
 	  datosApp->alarmas[4].estado_alarma = ALARMA_OFF;
 	  datosApp->termostato.incdec = 0.5;
 	  lv_create_screen_factory(datosApp);
