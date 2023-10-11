@@ -60,56 +60,60 @@ void app_main(void) {
 		error = ESP_OK;
 	}
 
+
 /*
 #ifdef CONFIG_RGB_PANEL
 	xTaskCreate(lv_app_rgb_main, "tarea LCD", 4096, (void*) &datosApp, 4, NULL);
 #endif
 	*/
 
-	lv_app_rgb_main(&datosApp);
 
-	if(configurado_de_fabrica() == ESP_OK) {
 
-		datosApp.datosGenerales->estadoApp = ARRANQUE_FABRICA;
-		ESP_LOGW(TAG, ""TRAZAR" ESTAMOS ARRANCANDO DE FABRICA", INFOTRAZA);
-		lv_screen_factory_reset(datosApp);
 
-	} else {
-		datosApp.datosGenerales->estadoApp = NORMAL_ARRANCANDO;
-		ESP_LOGE(TAG, ""TRAZAR" NORMAL ARRANCANDO...", INFOTRAZA);
-		lv_init_thermostat();
 
-	}
 
-	lv_timer_handler();
 
+
+	//init_nvs e init_app
 	error = inicializacion(&datosApp, CONFIG_CARGA_CONFIGURACION);
 	if (error == ESP_OK) {
 		ESP_LOGI(TAG, ""TRAZAR"INICIALIZACION CORRECTA", INFOTRAZA);
 	} else {
-		if (datosApp.datosGenerales->estadoApp == ARRANQUE_FABRICA) {
-			ESP_LOGI(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
-		} else {
-			ESP_LOGE(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
-			return;
-		}
+
 
 	}
 
+	if (lv_app_rgb_main(&datosApp) != ESP_OK) {
+		datosApp.datosGenerales->estadoApp = ERROR_APP;
+		return;
+	}
 
 	lv_screen_thermostat(&datosApp);
+
 	lv_timer_handler();
+
+	if(configurado_de_fabrica() == ESP_OK) {
+
+		datosApp.datosGenerales->estadoApp = FACTORY;
+		ESP_LOGW(TAG, ""TRAZAR" ESTADO:FACTORY", INFOTRAZA);
+		lv_configure_smartconfig();
+		lv_timer_handler();
+
+	} else {
+		datosApp.datosGenerales->estadoApp = STARTING;
+		ESP_LOGW(TAG, ""TRAZAR" ESTADO: STARTING...", INFOTRAZA);
+
+	}
+	xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 1, NULL);
 
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 	conectar_dispositivo_wifi();
-	sync_app_by_ntp(&datosApp);
+	//sync_app_by_ntp(&datosApp);
 	crear_tarea_mqtt(&datosApp);
 
 
 	ESP_LOGI(TAG, ""TRAZAR" ESTADO ANTES DE INICIAR GESTION: %d", INFOTRAZA, datosApp.datosGenerales->estadoApp);
 	iniciar_gestion_programacion(&datosApp);
-
-	xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 1, NULL);
 
     //pintar_fecha();
 

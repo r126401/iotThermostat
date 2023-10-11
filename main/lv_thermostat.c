@@ -39,6 +39,7 @@ lv_obj_t *lv_text_threshold;
 lv_obj_t *lv_text_status_application;
 lv_obj_t *lv_text_from_schedule;
 lv_obj_t *lv_text_to_schedule;
+lv_obj_t *lv_text_smartconfig = NULL;
 lv_obj_t *lv_progress_schedule;
 
 
@@ -234,7 +235,10 @@ void lv_set_style_status_application() {
 
 	lv_style_init(&lv_style_status_application);
 	lv_style_set_text_font(&lv_style_status_application, &lv_font_montserrat_22);
-	lv_obj_add_style(lv_text_status_application, &lv_style_status_application, LV_STATE_DEFAULT);
+	if (lv_text_status_application != NULL) {
+		lv_obj_add_style(lv_text_status_application, &lv_style_status_application, LV_STATE_DEFAULT);
+	}
+
 	//lv_obj_align_to(lv_text_status_application, lv_layout_temperature, LV_ALIGN_OUT_TOP_MID, 0, 0);
 
 
@@ -695,6 +699,28 @@ void lv_update_relay() {
 	}
 
 }
+
+void lv_configure_smartconfig() {
+
+	//creating objects
+	if (lv_text_smartconfig == NULL) {
+		lv_text_smartconfig = lv_label_create(lv_main_screen);
+	}
+	lv_label_set_text(lv_text_smartconfig, "Configura tu wifi");
+
+	//style objects
+	lv_set_style_status_application();
+	lv_obj_add_style(lv_text_smartconfig, &lv_style_status_application, LV_STATE_DEFAULT);
+
+	//position objects
+	lv_obj_set_pos(lv_text_smartconfig, 150, 40);
+	//size objects
+	lv_obj_set_size(lv_text_smartconfig, 200,20);
+
+	//callback functions
+
+}
+
 
 
 

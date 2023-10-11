@@ -162,7 +162,7 @@ void main_function(DATOS_APLICACION *datosApp) {
 	if (error == ESP_OK) {
 		ESP_LOGI(TAG, ""TRAZAR"INICIALIZACION CORRECTA", INFOTRAZA);
 	} else {
-		if (datosApp->datosGenerales->estadoApp == ARRANQUE_FABRICA) {
+		if (datosApp->datosGenerales->estadoApp == FACTORY) {
 			ESP_LOGI(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
 		} else {
 			ESP_LOGE(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
@@ -186,33 +186,11 @@ void main_function(DATOS_APLICACION *datosApp) {
 
 
 
-static void lv_init_app(DATOS_APLICACION *datosApp) {
-
-	switch (datosApp->datosGenerales->estadoApp) {
-
-	case ARRANQUE_FABRICA:
-			lv_screen_factory_reset(datosApp);
-			break;
-	case ESPERA_FIN_ARRANQUE:
-	case NORMAL_ARRANCANDO:
-		lv_init_thermostat();
-		main_function(datosApp);
-		break;
-
-	default:
-		lv_delete_init_thermostat();
-		lv_screen_thermostat(datosApp);
-		break;
-
-	}
-
-
-}
 
 
 
 
-void lv_app_rgb_main(DATOS_APLICACION *datosApp)
+esp_err_t lv_app_rgb_main(DATOS_APLICACION *datosApp)
 {
     static lv_disp_draw_buf_t disp_buf; // contains internal graphic buffer(s) called draw buffer(s)
     static lv_disp_drv_t disp_drv;      // contains callback functions
@@ -351,6 +329,8 @@ void lv_app_rgb_main(DATOS_APLICACION *datosApp)
     init_app_touch_gt911(disp);
 #endif
 
+
+    return ESP_OK;
 /*
     lv_init_app(datosApp);
 
