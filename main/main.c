@@ -89,7 +89,6 @@ void app_main(void) {
 	}
 
 	lv_screen_thermostat(&datosApp);
-
 	lv_timer_handler();
 
 	if(configurado_de_fabrica() == ESP_OK) {
@@ -108,12 +107,12 @@ void app_main(void) {
 
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 	conectar_dispositivo_wifi();
+	ESP_LOGI(TAG, ""TRAZAR" ESTADO ANTES DE INICIAR GESTION: %d", INFOTRAZA, datosApp.datosGenerales->estadoApp);
+	iniciar_gestion_programacion(&datosApp);
 	//sync_app_by_ntp(&datosApp);
 	crear_tarea_mqtt(&datosApp);
 
 
-	ESP_LOGI(TAG, ""TRAZAR" ESTADO ANTES DE INICIAR GESTION: %d", INFOTRAZA, datosApp.datosGenerales->estadoApp);
-	iniciar_gestion_programacion(&datosApp);
 
     //pintar_fecha();
 

@@ -251,8 +251,8 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
     	registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_OFF, true);
     	lv_update_alarm_device(datosApp);
     }
-    sprintf(temp,"%.02lf ºC", datosApp->termostato.tempActual);
-    notify_end_starting(datosApp);
+    //sprintf(temp,"%.02lf ºC", datosApp->termostato.tempActual);
+    //notify_end_starting(datosApp);
 
     return ESP_OK;
 
