@@ -193,7 +193,6 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
 
     esp_err_t error = ESP_FAIL;
     static uint8_t contador = 0;
-    char temp[15]={0};
 	float temperatura_a_redondear;
 
 
@@ -233,11 +232,13 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
     	} else {
     		contador++;
     		if (contador == 4)  {
-    			registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_WARNING, true);
+    			//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_WARNING, true);
+    			send_event(EVENT_WARNING_DEVICE);
 
     		}
     		if (contador == 10) {
-    			registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_ON, true);
+    			//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_ON, true);
+    			send_event(EVENT_ERROR_DEVICE);
 
     		}
     		ESP_LOGE(TAG, ""TRAZAR" ERROR AL TOMAR LA LECTURA. REINTENTAMOS EN %d SEGUNDOS", INFOTRAZA, datosApp->termostato.intervaloReintentos);
@@ -248,7 +249,8 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
 
     if (datosApp->alarmas[ALARMA_SENSOR_DHT].estado_alarma > ALARMA_OFF) {
     	ESP_LOGE(TAG, ""TRAZAR"LA ALARMA DE SENSOR SE DESACTIVA", INFOTRAZA);
-    	registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_OFF, true);
+    	//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_OFF, true);
+    	send_event(EVENT_ERROR_DEVICE);
     	lv_update_alarm_device(datosApp);
     }
     //sprintf(temp,"%.02lf ºC", datosApp->termostato.tempActual);
@@ -287,7 +289,8 @@ static void temporizacion_lectura_remota(void *arg) {
 	switch(datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma) {
 
 	case ALARMA_INDETERMINADA:
-		registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_WARNING, true);
+		//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_WARNING, true);
+		send_event(EVENT_WARNING_DEVICE);
 		break;
 	case ALARMA_OFF:
 		contador = 0;
@@ -296,7 +299,8 @@ static void temporizacion_lectura_remota(void *arg) {
 		ESP_LOGE(TAG, ""TRAZAR" ALARMA WARNING EN SENSOR REMOTO. CONTADOR %d ", INFOTRAZA, contador);
 		if (contador == 5) {
 			if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma != ALARMA_ON) {
-				registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_ON, true);
+				//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_ON, true);
+				send_event(EVENT_ERROR_DEVICE);
 			}
 		}
 		break;
@@ -332,7 +336,8 @@ esp_err_t leer_temperatura_remota(DATOS_APLICACION *datosApp) {
 
 
     if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma == ALARMA_OFF) {
-    	registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_INDETERMINADA, false);
+    	//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_INDETERMINADA, false);
+    	send_event(EVENT_ERROR_DEVICE);
     }
 
     const esp_timer_create_args_t timer_remote_read_args = {

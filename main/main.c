@@ -16,6 +16,7 @@
 #include "conexiones.h"
 #include "conexiones_mqtt.h"
 #include "code_application.h"
+#include "alarmas.h"
 
 
 
@@ -51,7 +52,8 @@ void app_main(void) {
 	aplicacion = esp_app_get_description();
 	ESP_LOGW(TAG, ""TRAZAR" app:%s, version: %s, hora: %s, dia:%s, idfver:%s", INFOTRAZA,
 			aplicacion->project_name, aplicacion->version, aplicacion->time, aplicacion->date, aplicacion->idf_ver);
-
+	change_status_application(&datosApp, STARTING);
+	create_event_task(&datosApp);
 	error = inicializar_nvs(CONFIG_NAMESPACE, &datosApp.handle);
 	if (error != ESP_OK) {
 		ESP_LOGW(TAG, ""TRAZAR" ERROR AL INICIALIZAR NVS", INFOTRAZA);
@@ -68,12 +70,6 @@ void app_main(void) {
 	*/
 
 
-
-
-
-
-
-
 	//init_nvs e init_app
 	error = inicializacion(&datosApp, CONFIG_CARGA_CONFIGURACION);
 	if (error == ESP_OK) {
@@ -83,9 +79,13 @@ void app_main(void) {
 
 	}
 
+
+
 	if (lv_app_rgb_main(&datosApp) != ESP_OK) {
-		datosApp.datosGenerales->estadoApp = ERROR_APP;
+		send_event(EVENT_ERROR_LCD);
 		return;
+	} else {
+		send_event(EVENT_LCD_OK);
 	}
 
 	lv_screen_thermostat(&datosApp);
@@ -107,6 +107,7 @@ void app_main(void) {
 
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 	conectar_dispositivo_wifi();
+	sync_app_by_ntp(&datosApp);
 	ESP_LOGI(TAG, ""TRAZAR" ESTADO ANTES DE INICIAR GESTION: %d", INFOTRAZA, datosApp.datosGenerales->estadoApp);
 	iniciar_gestion_programacion(&datosApp);
 	//sync_app_by_ntp(&datosApp);

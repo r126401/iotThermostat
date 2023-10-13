@@ -329,7 +329,6 @@ esp_err_t lv_app_rgb_main(DATOS_APLICACION *datosApp)
     init_app_touch_gt911(disp);
 #endif
 
-
     return ESP_OK;
 /*
     lv_init_app(datosApp);
