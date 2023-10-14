@@ -115,11 +115,16 @@ void tarea_lectura_temperatura(void *parametros) {
     	vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
 
     	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
-    	leer_temperatura(datosApp);
-    	lv_update_temperature(datosApp);
-    	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
-    	accionar_termostato(datosApp);
-    	lv_update_relay();
+    	if (leer_temperatura(datosApp) == ESP_OK) {
+    		send_event(EVENT_DEVICE_OK);
+        	lv_update_temperature(datosApp);
+        	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
+        	accionar_termostato(datosApp);
+        	lv_update_relay();
+
+    	} else {
+    		send_event(EVENT_ERROR_DEVICE);
+    	}
 
 
 
@@ -238,7 +243,7 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
     		}
     		if (contador == 10) {
     			//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_ON, true);
-    			send_event(EVENT_ERROR_DEVICE);
+    			return ESP_FAIL;
 
     		}
     		ESP_LOGE(TAG, ""TRAZAR" ERROR AL TOMAR LA LECTURA. REINTENTAMOS EN %d SEGUNDOS", INFOTRAZA, datosApp->termostato.intervaloReintentos);
@@ -247,14 +252,17 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
 
     }
 
+ /*
+
     if (datosApp->alarmas[ALARMA_SENSOR_DHT].estado_alarma > ALARM_OFF) {
     	ESP_LOGE(TAG, ""TRAZAR"LA ALARMA DE SENSOR SE DESACTIVA", INFOTRAZA);
     	//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_OFF, true);
     	send_event(EVENT_ERROR_DEVICE);
     	lv_update_alarm_device(datosApp);
     }
-    //sprintf(temp,"%.02lf ºC", datosApp->termostato.tempActual);
-    //notify_end_starting(datosApp);
+*/
+
+
 
     return ESP_OK;
 
@@ -262,21 +270,25 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
 
 esp_err_t leer_temperatura(DATOS_APLICACION *datosApp) {
 
+
+	esp_err_t error;
+
 	if ((datosApp->termostato.master == false)) {
 		if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma == ALARM_ON) {
 			ESP_LOGW(TAG, ""TRAZAR" termostato en remoto. ADEMAS LA ALARMA ESTA A ON", INFOTRAZA);
-			leer_temperatura_local(datosApp);
+			error = leer_temperatura_local(datosApp);
 		}
-		leer_temperatura_remota(datosApp);
+		error = leer_temperatura_remota(datosApp);
+
 
 	} else {
-		leer_temperatura_local(datosApp);
+		error = leer_temperatura_local(datosApp);
 	}
 
 
 
 
-	return ESP_OK;
+	return error;
 }
 
 static void temporizacion_lectura_remota(void *arg) {
@@ -334,11 +346,6 @@ esp_err_t leer_temperatura_remota(DATOS_APLICACION *datosApp) {
 		publicar_mensaje_json(datosApp, comando, topic);
 	}
 
-
-    if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma == ALARM_OFF) {
-    	//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_INDETERMINADA, false);
-    	send_event(EVENT_ERROR_DEVICE);
-    }
 
     const esp_timer_create_args_t timer_remote_read_args = {
     		.callback = &temporizacion_lectura_remota,
