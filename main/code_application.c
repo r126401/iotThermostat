@@ -247,7 +247,7 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
 
     }
 
-    if (datosApp->alarmas[ALARMA_SENSOR_DHT].estado_alarma > ALARMA_OFF) {
+    if (datosApp->alarmas[ALARMA_SENSOR_DHT].estado_alarma > ALARM_OFF) {
     	ESP_LOGE(TAG, ""TRAZAR"LA ALARMA DE SENSOR SE DESACTIVA", INFOTRAZA);
     	//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_OFF, true);
     	send_event(EVENT_ERROR_DEVICE);
@@ -263,7 +263,7 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
 esp_err_t leer_temperatura(DATOS_APLICACION *datosApp) {
 
 	if ((datosApp->termostato.master == false)) {
-		if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma == ALARMA_ON) {
+		if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma == ALARM_ON) {
 			ESP_LOGW(TAG, ""TRAZAR" termostato en remoto. ADEMAS LA ALARMA ESTA A ON", INFOTRAZA);
 			leer_temperatura_local(datosApp);
 		}
@@ -288,23 +288,23 @@ static void temporizacion_lectura_remota(void *arg) {
 	contador++;
 	switch(datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma) {
 
-	case ALARMA_INDETERMINADA:
+	case ALARM_UNDEFINED:
 		//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_WARNING, true);
 		send_event(EVENT_WARNING_DEVICE);
 		break;
-	case ALARMA_OFF:
+	case ALARM_OFF:
 		contador = 0;
 		break;
-	case ALARMA_WARNING:
+	case ALARM_WARNING:
 		ESP_LOGE(TAG, ""TRAZAR" ALARMA WARNING EN SENSOR REMOTO. CONTADOR %d ", INFOTRAZA, contador);
 		if (contador == 5) {
-			if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma != ALARMA_ON) {
+			if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma != ALARM_ON) {
 				//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_ON, true);
 				send_event(EVENT_ERROR_DEVICE);
 			}
 		}
 		break;
-	case ALARMA_ON:
+	case ALARM_ON:
 		ESP_LOGE(TAG, ""TRAZAR" ALARMA ON EN SENSOR REMOTO. LEEMOS EN LOCAL", INFOTRAZA);
 		break;
 	}
@@ -335,7 +335,7 @@ esp_err_t leer_temperatura_remota(DATOS_APLICACION *datosApp) {
 	}
 
 
-    if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma == ALARMA_OFF) {
+    if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma == ALARM_OFF) {
     	//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_INDETERMINADA, false);
     	send_event(EVENT_ERROR_DEVICE);
     }

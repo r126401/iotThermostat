@@ -158,7 +158,7 @@ void main_function(DATOS_APLICACION *datosApp) {
 
 
 
-	error = inicializacion(datosApp, CONFIG_CARGA_CONFIGURACION);
+	error = init_application(datosApp, CONFIG_CARGA_CONFIGURACION);
 	if (error == ESP_OK) {
 		ESP_LOGI(TAG, ""TRAZAR"INICIALIZACION CORRECTA", INFOTRAZA);
 	} else {
@@ -190,7 +190,7 @@ void main_function(DATOS_APLICACION *datosApp) {
 
 
 
-esp_err_t lv_app_rgb_main(DATOS_APLICACION *datosApp)
+esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp)
 {
     static lv_disp_draw_buf_t disp_buf; // contains internal graphic buffer(s) called draw buffer(s)
     static lv_disp_drv_t disp_drv;      // contains callback functions

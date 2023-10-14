@@ -523,7 +523,7 @@ void lv_update_alarm_device(DATOS_APLICACION *datosApp) {
 	// ALARMA WIFI
 
 	if (lv_icon_device_status_wifi != NULL) {
-		if (datosApp->alarmas[0].estado_alarma == ALARMA_ON) {
+		if (datosApp->alarmas[0].estado_alarma == ALARM_ON) {
 			ESP_LOGE(TAG, "ALARMA WIFI ACTIVA");
 			lv_img_set_src(lv_icon_device_status_wifi, &ic_wifi_off);
 			lv_img_set_src(lv_icon_broker_status, &ic_action_offline);
@@ -535,7 +535,7 @@ void lv_update_alarm_device(DATOS_APLICACION *datosApp) {
 
 	//ALARMA MQTT
 	if (lv_icon_broker_status != NULL) {
-		if(datosApp->alarmas[1].estado_alarma == ALARMA_ON) {
+		if(datosApp->alarmas[1].estado_alarma == ALARM_ON) {
 			ESP_LOGE(TAG, "ALARMA MQTT ACTIVA");
 			lv_img_set_src(lv_icon_broker_status, &ic_action_offline);
 
@@ -546,7 +546,7 @@ void lv_update_alarm_device(DATOS_APLICACION *datosApp) {
 
 	//ALARMA NTP
 	if (lv_icon_ntp != NULL) {
-		if (datosApp->alarmas[2].estado_alarma == ALARMA_ON) {
+		if (datosApp->alarmas[2].estado_alarma == ALARM_ON) {
 			lv_obj_clear_flag(lv_icon_ntp, LV_OBJ_FLAG_HIDDEN);
 		} else {
 			lv_obj_add_flag(lv_icon_ntp, LV_OBJ_FLAG_HIDDEN);
@@ -556,25 +556,25 @@ void lv_update_alarm_device(DATOS_APLICACION *datosApp) {
 
 	//ALARMA_NVS
 	if (lv_icon_alarm != NULL) {
-		if ((datosApp->alarmas[3].estado_alarma == ALARMA_ON) ||
-				(datosApp->alarmas[4].estado_alarma == ALARMA_ON) ||
-				(datosApp->alarmas[5].estado_alarma == ALARMA_ON) ) {
+		if ((datosApp->alarmas[3].estado_alarma == ALARM_ON) ||
+				(datosApp->alarmas[4].estado_alarma == ALARM_ON) ||
+				(datosApp->alarmas[5].estado_alarma == ALARM_ON) ) {
 
 
 
-			if (datosApp->alarmas[3].estado_alarma == ALARMA_ON) {
+			if (datosApp->alarmas[3].estado_alarma == ALARM_ON) {
 				lv_obj_clear_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
 				ESP_LOGE(TAG, "ALARMA NVS ACTIVA");
 			} else {
 
 			}
-			if ((datosApp->alarmas[4].estado_alarma == ALARMA_ON) && (datosApp->termostato.master == true)){
+			if ((datosApp->alarmas[4].estado_alarma == ALARM_ON) && (datosApp->termostato.master == true)){
 				lv_obj_clear_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
 				ESP_LOGE(TAG, "ALARMA SENSOR LOCAL ACTIVA");
 			} else {
 				lv_obj_add_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
 			}
-			if ((datosApp->alarmas[5].estado_alarma == ALARMA_ON) &&  (datosApp->termostato.master == false)){
+			if ((datosApp->alarmas[5].estado_alarma == ALARM_ON) &&  (datosApp->termostato.master == false)){
 				lv_obj_clear_flag(lv_icon_alarm, LV_OBJ_FLAG_HIDDEN);
 				ESP_LOGE(TAG, "ALARMA SENSOR REMOTO ACTIVA");
 			} else {

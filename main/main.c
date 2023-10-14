@@ -52,7 +52,7 @@ void app_main(void) {
 	aplicacion = esp_app_get_description();
 	ESP_LOGW(TAG, ""TRAZAR" app:%s, version: %s, hora: %s, dia:%s, idfver:%s", INFOTRAZA,
 			aplicacion->project_name, aplicacion->version, aplicacion->time, aplicacion->date, aplicacion->idf_ver);
-	change_status_application(&datosApp, STARTING);
+	//change_status_application(&datosApp, STARTING);
 	create_event_task(&datosApp);
 	error = inicializar_nvs(CONFIG_NAMESPACE, &datosApp.handle);
 	if (error != ESP_OK) {
@@ -71,7 +71,7 @@ void app_main(void) {
 
 
 	//init_nvs e init_app
-	error = inicializacion(&datosApp, CONFIG_CARGA_CONFIGURACION);
+	error = init_application(&datosApp, CONFIG_CARGA_CONFIGURACION);
 	if (error == ESP_OK) {
 		ESP_LOGI(TAG, ""TRAZAR"INICIALIZACION CORRECTA", INFOTRAZA);
 	} else {
@@ -81,7 +81,7 @@ void app_main(void) {
 
 
 
-	if (lv_app_rgb_main(&datosApp) != ESP_OK) {
+	if (lv_init_lcd_application(&datosApp) != ESP_OK) {
 		send_event(EVENT_ERROR_LCD);
 		return;
 	} else {
@@ -91,18 +91,14 @@ void app_main(void) {
 	lv_screen_thermostat(&datosApp);
 	lv_timer_handler();
 
-	if(configurado_de_fabrica() == ESP_OK) {
+	if(is_factory() == ESP_OK) {
 
-		datosApp.datosGenerales->estadoApp = FACTORY;
-		ESP_LOGW(TAG, ""TRAZAR" ESTADO:FACTORY", INFOTRAZA);
+		send_event(EVENT_FACTORY);
 		lv_configure_smartconfig();
 		lv_timer_handler();
 
-	} else {
-		datosApp.datosGenerales->estadoApp = STARTING;
-		ESP_LOGW(TAG, ""TRAZAR" ESTADO: STARTING...", INFOTRAZA);
-
 	}
+
 	xTaskCreate(tarea_lectura_temperatura, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 1, NULL);
 
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);

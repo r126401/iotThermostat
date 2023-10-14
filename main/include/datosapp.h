@@ -61,11 +61,11 @@ typedef enum ESTADO_RELE {
     ON = 1
 }ESTADO_RELE;
 
-typedef enum ESTADO_ALARMA {
-	ALARMA_INDETERMINADA = -1,
-	ALARMA_OFF,
-	ALARMA_WARNING,
-	ALARMA_ON,
+typedef enum ALARM_STATUS {
+	ALARM_UNDEFINED = -1,
+	ALARM_OFF,
+	ALARM_WARNING,
+	ALARM_ON,
 
 
 }ESTADO_ALARMA;
@@ -74,7 +74,7 @@ typedef enum ESTADO_ALARMA {
 typedef struct ALARMA {
 
 	uint8_t tipo_alarma;
-	enum ESTADO_ALARMA estado_alarma;
+	enum ALARM_STATUS estado_alarma;
 	time_t fecha_alarma;
 	char nemonico[50];
 
