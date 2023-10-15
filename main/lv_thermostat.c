@@ -204,15 +204,15 @@ void lv_create_layout_nofitification(DATOS_APLICACION *datosApp) {
 
 void lv_create_layout_temperature(DATOS_APLICACION *datosApp) {
 
-	char temperature[10];
+	//char temperature[10];
 
 	//create objects
 	lv_layout_temperature = lv_obj_create(lv_main_screen);
 	lv_icon_themometer = lv_img_create(lv_layout_temperature);
 	lv_img_set_src(lv_icon_themometer, &ic_thermometer);
 	lv_text_temperature = lv_label_create(lv_layout_temperature);
-	sprintf(temperature, "%.1f", datosApp->termostato.tempActual);
-	lv_label_set_text_fmt(lv_text_temperature, "%s ºC", temperature);
+	//sprintf(temperature, "%.1f", datosApp->termostato.tempActual);
+	lv_label_set_text(lv_text_temperature, "--.- ºC");
 
 	//style objects
 	lv_obj_set_style_text_font(lv_text_temperature, &russo48, LV_PART_MAIN);
@@ -248,9 +248,9 @@ void lv_set_style_status_application() {
 void lv_create_status_aplication(DATOS_APLICACION *datosApp) {
 
 	lv_text_status_application = lv_label_create(lv_main_screen);
-	lv_obj_align_to(lv_text_status_application, lv_layout_temperature, LV_ALIGN_OUT_TOP_RIGHT, 65,10);
+	lv_obj_align_to(lv_text_status_application, lv_layout_temperature, LV_ALIGN_OUT_TOP_LEFT, 100,-30);
 	lv_set_style_status_application();
-	lv_update_status_application(datosApp);
+
 
 
 }
@@ -320,28 +320,11 @@ void lv_create_layout_threshold(DATOS_APLICACION *datosApp) {
 
 
 
-void lv_update_status_application(DATOS_APLICACION *datosApp) {
+void lv_update_status_application(char *status) {
 
 
 	if (lv_text_status_application != NULL) {
-		switch(datosApp->datosGenerales->estadoApp) {
-
-		case NORMAL_AUTO:
-		case NORMAL_AUTOMAN:
-			lv_label_set_text(lv_text_status_application, "AUTO");
-			break;
-		case NORMAL_MANUAL:
-			lv_label_set_text(lv_text_status_application, "MANUAL");
-			break;
-		case UPGRADE_EN_PROGRESO:
-			lv_label_set_text(lv_text_status_application, "ACTUALIZANDO VERSION");
-			break;
-		default:
-			lv_label_set_text(lv_text_status_application, "----");
-			break;
-
-
-		}
+		lv_label_set_text(lv_text_status_application, status);
 	}
 
 
@@ -599,7 +582,7 @@ void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 	//lv_status_device(datosApp);
 	lv_set_status_heating(datosApp, estado);
 	lv_update_threshold(datosApp);
-	lv_update_temperature(datosApp);
+	//lv_update_temperature(datosApp);
 
 }
 
@@ -662,11 +645,11 @@ void lv_update_threshold(DATOS_APLICACION *datosApp) {
 }
 
 
-void lv_update_relay() {
+void lv_update_relay(ESTADO_RELE relay) {
 
 
 	if (lv_icon_heating != NULL) {
-		if (gpio_get_level(CONFIG_GPIO_PIN_RELE) == ON) {
+		if (relay == ON) {
 			lv_obj_clear_flag(lv_icon_heating, LV_OBJ_FLAG_HIDDEN);
 
 		} else {

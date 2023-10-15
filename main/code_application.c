@@ -67,8 +67,7 @@ enum ESTADO_RELE operacion_rele(DATOS_APLICACION *datosApp, enum TIPO_ACTUACION_
 	//gpio_rele_out();
 	gpio_set_level(CONFIG_GPIO_PIN_RELE, rele);
 	ESP_LOGW(TAG, ""TRAZAR"EL RELE SE HA PUESTO A %d", INFOTRAZA, rele);
-	//lv_actualizar_rele_lcd(rele);
-	//gpio_set_direction(CONFIG_GPIO_PIN_RELE, GPIO_MODE_INPUT);
+	lv_update_relay(rele);
 
 	return rele;
 }
@@ -120,7 +119,7 @@ void tarea_lectura_temperatura(void *parametros) {
         	lv_update_temperature(datosApp);
         	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
         	accionar_termostato(datosApp);
-        	lv_update_relay();
+
 
     	} else {
     		send_event(EVENT_ERROR_DEVICE);
@@ -148,12 +147,15 @@ float redondear_temperatura(float temperatura) {
 
 	redondeado = lround(temperatura);
 	diferencia = temperatura - redondeado;
+	ESP_LOGE(TAG, "temperatura: %.2f, redondeado: %.2f, diferencia: %.2f", temperatura, redondeado, diferencia);
 	valor_absoluto = fabs(redondeado);
+	ESP_LOGE(TAG, "temperatura: %.2f, redondeado: %.2f, diferencia: %.2f, valor absoluto :%.2f", temperatura, redondeado, diferencia, valor_absoluto);
 	if (diferencia < 0.25) resultado = valor_absoluto;
 	if ((diferencia > 0.25 ) && (diferencia < 0.5)) resultado = valor_absoluto + 0.5;
 
 	if ((diferencia < -0.25)) resultado = valor_absoluto - 0.5;
 
+	ESP_LOGI(TAG, ""TRAZAR"TEMPERATURA ORIGINAL: %.2f, TEMPERATURA REDONDEADA: %.2f,", INFOTRAZA, temperatura, resultado);
 	return resultado;
 
 }

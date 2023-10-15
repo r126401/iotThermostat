@@ -177,7 +177,7 @@ void main_function(DATOS_APLICACION *datosApp) {
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 	conectar_dispositivo_wifi();
 
-	sync_app_by_ntp(datosApp);
+	//sync_app_by_ntp(datosApp);
 	crear_tarea_mqtt(datosApp);
 
 

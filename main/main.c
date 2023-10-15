@@ -103,7 +103,7 @@ void app_main(void) {
 
 	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
 	conectar_dispositivo_wifi();
-	sync_app_by_ntp(&datosApp);
+	//sync_app_by_ntp(&datosApp);
 	ESP_LOGI(TAG, ""TRAZAR" ESTADO ANTES DE INICIAR GESTION: %d", INFOTRAZA, datosApp.datosGenerales->estadoApp);
 	iniciar_gestion_programacion(&datosApp);
 	//sync_app_by_ntp(&datosApp);
