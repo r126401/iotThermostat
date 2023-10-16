@@ -45,7 +45,7 @@ void lv_set_style_layout_buttons_threshold();
 void lv_create_layout_schedule(DATOS_APLICACION *datosApp);
 void lv_set_style_layout_schedule();
 void lv_set_style_bar_schedule();
-void lv_update_bar_schedule(DATOS_APLICACION *datosApp);
+void lv_update_bar_schedule(DATOS_APLICACION *datosApp, bool show);
 void lv_update_threshold(DATOS_APLICACION *datosApp);
 void example_lvgl_demo_ui(lv_disp_t *disp);
 void lv_update_device(DATOS_APLICACION *datosApp);

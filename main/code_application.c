@@ -148,12 +148,27 @@ float redondear_temperatura(float temperatura) {
 	redondeado = lround(temperatura);
 	diferencia = temperatura - redondeado;
 	ESP_LOGE(TAG, "temperatura: %.2f, redondeado: %.2f, diferencia: %.2f", temperatura, redondeado, diferencia);
+	if (diferencia == 0) {
+		resultado = temperatura;
+		ESP_LOGI(TAG, ""TRAZAR"TEMPERATURA ORIGINAL: %.2f, TEMPERATURA REDONDEADA: %.2f,", INFOTRAZA, temperatura, resultado);
+		return resultado;
+
+	}
 	valor_absoluto = fabs(redondeado);
 	ESP_LOGE(TAG, "temperatura: %.2f, redondeado: %.2f, diferencia: %.2f, valor absoluto :%.2f", temperatura, redondeado, diferencia, valor_absoluto);
-	if (diferencia < 0.25) resultado = valor_absoluto;
-	if ((diferencia > 0.25 ) && (diferencia < 0.5)) resultado = valor_absoluto + 0.5;
+	if (diferencia <= 0.25) {
+		ESP_LOGI(TAG, "diferencia <= 0.25");
+		resultado = valor_absoluto;
+	}
+	if ((diferencia > 0.25 ) && (diferencia < 0.5)) {
+		ESP_LOGI(TAG, "((diferencia > 0.25 ) && (diferencia < 0.5))");
+		resultado = valor_absoluto + 0.5;
+	}
 
-	if ((diferencia < -0.25)) resultado = valor_absoluto - 0.5;
+	if ((diferencia < -0.25)) {
+		ESP_LOGI(TAG, "diferencia < -0.25");
+		resultado = valor_absoluto - 0.5;
+	}
 
 	ESP_LOGI(TAG, ""TRAZAR"TEMPERATURA ORIGINAL: %.2f, TEMPERATURA REDONDEADA: %.2f,", INFOTRAZA, temperatura, resultado);
 	return resultado;

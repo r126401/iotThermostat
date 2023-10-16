@@ -14,6 +14,8 @@
 #include "lvgl.h"
 #include "esp_log.h"
 #include "logging.h"
+#include "time.h"
+#include "programmer.h"
 
 #ifndef CONFIG_LCD_H_RES
 
@@ -436,7 +438,7 @@ void lv_create_layout_schedule(DATOS_APLICACION *datosApp) {
 	lv_obj_align_to(lv_layout_schedule, lv_main_screen, LV_ALIGN_BOTTOM_MID, 0, 20);
 	lv_set_style_layout_schedule();
 	lv_bar_set_range(lv_progress_schedule, 0, 100);
-	lv_update_bar_schedule(datosApp);
+	lv_update_bar_schedule(datosApp, true);
 	lv_set_style_bar_schedule();
 
 
@@ -464,32 +466,42 @@ void lv_set_style_bar_schedule() {
 }
 
 
-void lv_update_bar_schedule(DATOS_APLICACION *datosApp) {
+void lv_update_bar_schedule(DATOS_APLICACION *datosApp, bool show) {
 
-	uint8_t hour_from = 12;
-	uint8_t minute_from = 35;
-	uint8_t hour_to = 18;
-	uint8_t minute_to = 0;
-	//TIME_PROGRAM schedules;
-	//int current_schedule;
+
+	struct tm timing;
+	time_t sig;
+	esp_err_t error;
+
+	int active_schedule = datosApp->datosGenerales->nProgramaCandidato;
+	int duration;
+
+	timing = datosApp->datosGenerales->programacion[active_schedule].programacion;
+	duration = datosApp->datosGenerales->programacion[active_schedule].duracion;
+
+
+	error = calcular_programa_activo(datosApp, &sig);
+
+	ESP_LOGI(TAG, "hora inicio: %d, minuto inicio:%d, ini :%lld, fin:%lld", timing.tm_hour, timing.tm_min, datosApp->datosGenerales->programacion[active_schedule].programa, sig);
+	return;
 	int current_value =35;
 	int progress;
-	bool active_schedule = true;
 
 	time_t interval_from = 25;
 	time_t interval_to = 250;
 
 	//pendiente determinar si el schedule esta activo o no
-	if (!active_schedule) {
+	if (show == false) {
 		lv_obj_add_flag(lv_layout_schedule, LV_OBJ_FLAG_HIDDEN);
+		ESP_LOGI(TAG, "ESCONDEMOS EL LAYOUT SCHEDULE");
 
 		return;
 	}
 
 	lv_obj_clear_flag(lv_layout_schedule, LV_OBJ_FLAG_HIDDEN);
 
-	lv_label_set_text_fmt(lv_text_from_schedule, "%02d:%02d", hour_from, minute_from);
-	lv_label_set_text_fmt(lv_text_to_schedule, "%02d:%02d", hour_to, minute_to);
+	//lv_label_set_text_fmt(lv_text_from_schedule, "%02d:%02d", hour_from, minute_from);
+	//lv_label_set_text_fmt(lv_text_to_schedule, "%02d:%02d", hour_to, minute_to);
 
 	progress = (current_value * 100) / (interval_to - interval_from);
 
