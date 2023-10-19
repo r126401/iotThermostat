@@ -91,7 +91,6 @@ void accionar_termostato(DATOS_APLICACION *datosApp) {
     	ESP_LOGI(TAG, ""TRAZAR"HA HABIDO CAMBIO DE TEMPERATURA", INFOTRAZA);
         informe = appuser_send_spontaneous_report(datosApp, CAMBIO_TEMPERATURA, NULL);
         if (informe != NULL) {
-        	ESP_LOGI(TAG, "mensaje: %s", cJSON_Print(informe));
         	publicar_mensaje_json(datosApp, informe, NULL);
         } else {
         	ESP_LOGI(TAG, "El informe iba vacio");

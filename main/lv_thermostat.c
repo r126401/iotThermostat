@@ -16,6 +16,7 @@
 #include "logging.h"
 #include "time.h"
 #include "programmer.h"
+#include "alarmas.h"
 
 #ifndef CONFIG_LCD_H_RES
 
@@ -369,11 +370,8 @@ void lv_set_style_buttons_threshold() {
 
 static void event_handler_up_threshold(lv_event_t *event) {
 
-	DATOS_APLICACION *datosApp;
-	datosApp = (DATOS_APLICACION*) 	lv_event_get_user_data(event);
-	datosApp->termostato.tempUmbral += datosApp->termostato.incdec;
-	lv_update_threshold(datosApp);
-	//appuser_send_update_threshold
+
+	send_event_device(EVENT_UP_THRESHOLD);
 	ESP_LOGI("HOLA", "HE PULSADO ARRIBA");
 
 }
@@ -381,11 +379,8 @@ static void event_handler_up_threshold(lv_event_t *event) {
 
 static void event_handler_down_threshold(lv_event_t *event) {
 
-	DATOS_APLICACION *datosApp;
-	datosApp = (DATOS_APLICACION*) 	lv_event_get_user_data(event);
-	datosApp->termostato.tempUmbral -= datosApp->termostato.incdec;
-	lv_update_threshold(datosApp);
 
+	send_event_device(EVENT_DOWN_THRESHOLD);
 	ESP_LOGI("HOLA", "HE PULSADO ABAJO");
 
 }
@@ -438,7 +433,7 @@ void lv_create_layout_schedule(DATOS_APLICACION *datosApp) {
 	lv_obj_align_to(lv_layout_schedule, lv_main_screen, LV_ALIGN_BOTTOM_MID, 0, 20);
 	lv_set_style_layout_schedule();
 	lv_bar_set_range(lv_progress_schedule, 0, 100);
-	lv_update_bar_schedule(datosApp, true);
+	lv_update_bar_schedule(datosApp, false);
 	lv_set_style_bar_schedule();
 
 
@@ -469,26 +464,17 @@ void lv_set_style_bar_schedule() {
 void lv_update_bar_schedule(DATOS_APLICACION *datosApp, bool show) {
 
 
-	struct tm timing;
-	time_t sig;
+	struct tm current_schedule;
+	time_t next_interval;
+	time_t begin_interval;
+	time_t now;
 	esp_err_t error;
-
-	int active_schedule = datosApp->datosGenerales->nProgramaCandidato;
+	int active_schedule;
 	int duration;
 
-	timing = datosApp->datosGenerales->programacion[active_schedule].programacion;
-	duration = datosApp->datosGenerales->programacion[active_schedule].duracion;
-
-
-	error = calcular_programa_activo(datosApp, &sig);
-
-	ESP_LOGI(TAG, "hora inicio: %d, minuto inicio:%d, ini :%lld, fin:%lld", timing.tm_hour, timing.tm_min, datosApp->datosGenerales->programacion[active_schedule].programa, sig);
-	return;
-	int current_value =35;
 	int progress;
 
-	time_t interval_from = 25;
-	time_t interval_to = 250;
+
 
 	//pendiente determinar si el schedule esta activo o no
 	if (show == false) {
@@ -498,12 +484,55 @@ void lv_update_bar_schedule(DATOS_APLICACION *datosApp, bool show) {
 		return;
 	}
 
-	lv_obj_clear_flag(lv_layout_schedule, LV_OBJ_FLAG_HIDDEN);
+	active_schedule = datosApp->datosGenerales->nProgramaCandidato;
+
+
+	current_schedule = datosApp->datosGenerales->programacion[active_schedule].programacion;
+	begin_interval = mktime(&current_schedule);
+	duration = datosApp->datosGenerales->programacion[active_schedule].duracion;
+
+
+
+	struct tm fecha;
+	//ESP_LOGI(TAG, ""TRAZAR"ACTUALIZAR_HORA", INFOTRAZA);
+    time(&now);
+    localtime_r(&now, &fecha);
+
+
+	error = calcular_programa_activo(datosApp, &next_interval);
+
+	if (error != ACTIVE_SCHEDULE) {
+		ESP_LOGE(TAG, "SALIDA NO PREVISTA EN LV_UPDATE_BAR_SCHEDULE");
+	}
+
+	if (next_interval >= duration) {
+		next_interval = begin_interval + duration;
+
+	}
+
+
+	ESP_LOGI(TAG, "intervalo inicio :%lld, intervalo fin : %lld y hora actual %lld", begin_interval, next_interval, now);
+
+
+	//ESP_LOGI(TAG, "hora inicio: %d, minuto inicio:%d, ini :%lld, fin:%lld", current_schedule.tm_hour, current_schedule.tm_min, datosApp->datosGenerales->programacion[active_schedule].programa, next_interval);
+
+
+
+
+
 
 	//lv_label_set_text_fmt(lv_text_from_schedule, "%02d:%02d", hour_from, minute_from);
 	//lv_label_set_text_fmt(lv_text_to_schedule, "%02d:%02d", hour_to, minute_to);
 
-	progress = (current_value * 100) / (interval_to - interval_from);
+	progress = (now - begin_interval)* 100 / (next_interval - begin_interval);
+
+	lv_label_set_text_fmt(lv_text_from_schedule, "%02d:%02d", current_schedule.tm_hour, current_schedule.tm_min);
+	localtime_r(&next_interval, &fecha);
+	lv_label_set_text_fmt(lv_text_to_schedule, "%02d:%02d", fecha.tm_hour, fecha.tm_min);
+	ESP_LOGE(TAG, "PROGRESS: %d, %02d:%02d to %02d:%02d", progress, current_schedule.tm_hour, current_schedule.tm_min, fecha.tm_hour, fecha.tm_min);
+
+
+	lv_obj_clear_flag(lv_layout_schedule, LV_OBJ_FLAG_HIDDEN);
 
 	lv_bar_set_value(lv_progress_schedule, progress, LV_ANIM_OFF);
 
@@ -593,7 +622,7 @@ void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 	 lv_update_alarm_device(datosApp);
 	//lv_status_device(datosApp);
 	lv_set_status_heating(datosApp, estado);
-	lv_update_threshold(datosApp);
+	lv_update_threshold(datosApp, true);
 	//lv_update_temperature(datosApp);
 
 }
@@ -650,9 +679,19 @@ void lv_update_temperature(DATOS_APLICACION *datosApp) {
 
 }
 
-void lv_update_threshold(DATOS_APLICACION *datosApp) {
+void lv_update_threshold(DATOS_APLICACION *datosApp, bool permanent) {
+
+	if (lv_text_threshold != NULL) {
+		if (permanent) {
+			lv_obj_set_style_text_color(lv_text_threshold, lv_color_hex(0x0534F0), LV_PART_MAIN);
+
+		} else {
+			lv_obj_set_style_text_color(lv_text_threshold, lv_color_hex(0xDEFF00), LV_PART_MAIN);
+		}
+	}
 
 	lv_update_temp_threshold(datosApp->termostato.tempUmbral, lv_text_threshold);
+
 
 }
 

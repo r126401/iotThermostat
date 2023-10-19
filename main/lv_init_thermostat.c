@@ -722,14 +722,18 @@ void lv_update_button_wifi(bool fail) {
 		ESP_LOGW(TAG, ""TRAZAR"WARNING", INFOTRAZA);
 	} else {
 
-		if (lv_obj_has_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN)) {
-			lv_obj_clear_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN);
+		if (lv_button_wifi_stations != NULL) {
+			if (lv_obj_has_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN)) {
+				lv_obj_clear_flag(lv_button_wifi_stations, LV_OBJ_FLAG_HIDDEN);
 
-			lv_label_set_text_fmt(lv_label_connection_wifi, "Error al conectar a : %s", conf_wifi.sta.ssid);
-			lv_style_set_text_color(&lv_style_text_fail, lv_color_hex(0xFF0000));
-			ESP_LOGW(TAG, ""TRAZAR"FALLO", INFOTRAZA);
+				lv_label_set_text_fmt(lv_label_connection_wifi, "Error al conectar a : %s", conf_wifi.sta.ssid);
+				lv_style_set_text_color(&lv_style_text_fail, lv_color_hex(0xFF0000));
+				ESP_LOGW(TAG, ""TRAZAR"FALLO", INFOTRAZA);
 
+			}
 		}
+
+
 	}
 }
 
