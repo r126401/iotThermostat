@@ -48,11 +48,13 @@ void app_main(void) {
 
 
 
+
 	aplicacion = calloc(1, sizeof(esp_app_desc_t));
 	aplicacion = esp_app_get_description();
 	ESP_LOGW(TAG, ""TRAZAR" app:%s, version: %s, hora: %s, dia:%s, idfver:%s", INFOTRAZA,
 			aplicacion->project_name, aplicacion->version, aplicacion->time, aplicacion->date, aplicacion->idf_ver);
 	//change_status_application(&datosApp, STARTING);
+	init_code_application(&datosApp);
 	create_event_task(&datosApp);
 	error = inicializar_nvs(CONFIG_NAMESPACE, &datosApp.handle);
 	if (error != ESP_OK) {

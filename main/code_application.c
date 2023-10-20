@@ -81,6 +81,9 @@ void accionar_termostato(DATOS_APLICACION *datosApp) {
 	cJSON* informe = NULL;
 	static float lecturaAnterior = -1000;
 
+	ESP_LOGI(TAG, ""TRAZAR"accionar_termostato: LECTURA ANTERIOR: %.2f, LECTURA POSTERIOR: %.2f HA HABIDO CAMBIO DE TEMPERATURA", INFOTRAZA,
+			lecturaAnterior, datosApp->termostato.tempActual);
+
     if (((accion_termostato = calcular_accion_termostato(datosApp, &accion_rele)) == ACCIONAR_TERMOSTATO)) {
     	ESP_LOGI(TAG, ""TRAZAR"VAMOS A ACCIONAR EL RELE", INFOTRAZA);
     	operacion_rele(datosApp, TEMPORIZADA, accion_rele);
@@ -378,5 +381,31 @@ esp_err_t leer_temperatura_remota(DATOS_APLICACION *datosApp) {
 
 	return ESP_OK;
 }
+
+
+void gpio_rele_in_out() {
+	gpio_config_t io_conf;
+	io_conf.intr_type = GPIO_INTR_DISABLE;
+	io_conf.pin_bit_mask = 1ULL<<CONFIG_GPIO_PIN_RELE;
+	io_conf.mode = GPIO_MODE_INPUT_OUTPUT;
+    io_conf.pull_down_en = 0;
+    //disable pull-up mode
+    io_conf.pull_up_en = 0;
+    gpio_config(&io_conf);
+    ESP_LOGW(TAG, ""TRAZAR" gpio rele en E/S", INFOTRAZA);
+
+}
+
+
+
+esp_err_t init_code_application(DATOS_APLICACION *datosApp) {
+
+	gpio_rele_in_out();
+	gpio_set_level(CONFIG_GPIO_PIN_RELE, OFF);
+
+	return ESP_OK;
+
+}
+
 
 

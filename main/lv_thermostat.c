@@ -484,12 +484,7 @@ void lv_update_bar_schedule(DATOS_APLICACION *datosApp, bool show) {
 		return;
 	}
 
-	active_schedule = datosApp->datosGenerales->nProgramaCandidato;
 
-
-	current_schedule = datosApp->datosGenerales->programacion[active_schedule].programacion;
-	begin_interval = mktime(&current_schedule);
-	duration = datosApp->datosGenerales->programacion[active_schedule].duracion;
 
 
 
@@ -500,6 +495,13 @@ void lv_update_bar_schedule(DATOS_APLICACION *datosApp, bool show) {
 
 
 	error = calcular_programa_activo(datosApp, &next_interval);
+
+	active_schedule = datosApp->datosGenerales->nProgramaCandidato;
+
+
+	current_schedule = datosApp->datosGenerales->programacion[active_schedule].programacion;
+	begin_interval = mktime(&current_schedule);
+	duration = datosApp->datosGenerales->programacion[active_schedule].duracion;
 
 	if (error != ACTIVE_SCHEDULE) {
 		ESP_LOGE(TAG, "SALIDA NO PREVISTA EN LV_UPDATE_BAR_SCHEDULE");
