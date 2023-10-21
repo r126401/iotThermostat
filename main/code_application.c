@@ -112,6 +112,8 @@ void tarea_lectura_temperatura(void *parametros) {
 
     ESP_LOGI(TAG, ""TRAZAR"COMIENZA LA TAREA DE LECTURA DE TEMPERATURA", INFOTRAZA);
 
+    lv_update_relay(gpio_get_level(CONFIG_GPIO_PIN_RELE));
+
     while(1) {
     	vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
 
@@ -190,18 +192,18 @@ enum TIPO_ACCION_TERMOSTATO calcular_accion_termostato(DATOS_APLICACION *datosAp
                    *accion = ON;
                    return ACCIONAR_TERMOSTATO;
                } else {
-            	   ESP_LOGI(TAG, ""TRAZAR"RELE OFF Y SIGUE OFF. tempMedida: %.2f, tempUmbral: %.02f", INFOTRAZA, datosApp->termostato.tempActual, datosApp->termostato.tempUmbral);
+            	   ESP_LOGI(TAG, ""TRAZAR"RELE OFF Y DEBE SEGUIR SIGUE OFF. tempMedida: %.2f, tempUmbral: %.02f", INFOTRAZA, datosApp->termostato.tempActual, datosApp->termostato.tempUmbral);
                    *accion = OFF;
                    return NO_ACCIONAR_TERMOSTATO;
 
                }
            } else {
                if (datosApp->termostato.tempActual >= (datosApp->termostato.tempUmbral + datosApp->termostato.margenTemperatura) ) {
-            	   ESP_LOGI(TAG, ""TRAZAR"RELE ON Y SE ENCIENDE. tempMedida: %.2f, tempUmbral: %.02f", INFOTRAZA, datosApp->termostato.tempActual, datosApp->termostato.tempUmbral);
+            	   ESP_LOGI(TAG, ""TRAZAR"RELE ON Y SE APAGA. tempMedida: %.2f, tempUmbral: %.02f", INFOTRAZA, datosApp->termostato.tempActual, datosApp->termostato.tempUmbral);
                    *accion = OFF;
                    return ACCIONAR_TERMOSTATO;
                } else {
-            	   ESP_LOGI(TAG, ""TRAZAR"RELE ON Y SIGUE ON. tempMedida: %.2f, tempUmbral: %.02f", INFOTRAZA, datosApp->termostato.tempActual, datosApp->termostato.tempUmbral);
+            	   ESP_LOGI(TAG, ""TRAZAR"RELE ON Y DEBE SEGUIR SIGUE ON. tempMedida: %.2f, tempUmbral: %.02f", INFOTRAZA, datosApp->termostato.tempActual, datosApp->termostato.tempUmbral);
                    *accion = ON;
                    return NO_ACCIONAR_TERMOSTATO;
 
