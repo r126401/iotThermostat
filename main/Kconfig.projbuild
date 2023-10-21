@@ -27,11 +27,11 @@ config GPIO_PIN_LED_LCD
 	help 
 		GPIO to implement LED indicator
 	
-config GPIO_PIN_BOTON
-	int "Pin gipo para activar el boton"
-	default 0
+config TIME_OFF_BACKLIGHT
+	int "Tiempo de apagado del LCD"
+	default 60
 	help 
-		Indica el pin gpio con el que se activa el boton
+		Indica el tiempo en segundos en el que se apagara la pantalla
 
 
 menu "Tipo de touch"

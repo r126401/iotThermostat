@@ -38,68 +38,13 @@
 #include "conexiones_mqtt.h"
 
 
+
 static const char *TAG = "iotThermostat";
 #define	I2C_HOST	0
 esp_lcd_touch_handle_t tp = NULL;
+static esp_timer_handle_t timer_backlight;
+//#define TIMING_BACKLIGHT 15
 
-
-
-
-
-#ifndef CONFIG_LCD_H_RES
-
-#define CONFIG_LCD_H_RES 480
-#define CONFIG_LCD_V_RES 272
-
-#endif
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////// Please update the following configuration according to your LCD spec //////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-#define CONFIG_LCD_PIXEL_CLOCK_HZ     (7 * 1000 * 1000)
-#define CONFIG_LCD_BK_LIGHT_ON_LEVEL  1
-#define CONFIG_LCD_BK_LIGHT_OFF_LEVEL !CONFIG_LCD_BK_LIGHT_ON_LEVEL
-#define CONFIG_PIN_NUM_BK_LIGHT       2
-#define CONFIG_PIN_NUM_HSYNC          39
-#define CONFIG_PIN_NUM_VSYNC          41
-#define CONFIG_PIN_NUM_DE             40
-#define CONFIG_PIN_NUM_PCLK           42
-#define CONFIG_PIN_NUM_DATA0          8 // B0
-#define CONFIG_PIN_NUM_DATA1          3 // B1
-#define CONFIG_PIN_NUM_DATA2          46 // B2
-#define CONFIG_PIN_NUM_DATA3          9 // B3
-#define CONFIG_PIN_NUM_DATA4          1 // B4
-#define CONFIG_PIN_NUM_DATA5          5 // G0
-#define CONFIG_PIN_NUM_DATA6          6 // G1
-#define CONFIG_PIN_NUM_DATA7          7 // G2
-#define CONFIG_PIN_NUM_DATA8          15 // G3
-#define CONFIG_PIN_NUM_DATA9          16 // G4
-#define CONFIG_PIN_NUM_DATA10         4 // G5
-#define CONFIG_PIN_NUM_DATA11         45  // R0
-#define CONFIG_PIN_NUM_DATA12         48  // R1
-#define CONFIG_PIN_NUM_DATA13         47 // R2
-#define CONFIG_PIN_NUM_DATA14         21 // R3
-#define CONFIG_PIN_NUM_DATA15         14 // R4
-#define CONFIG_PIN_NUM_DISP_EN        -1
-
-// The pixel number in horizontal and vertical
-//#define CONFIG_LCD_H_RES              480
-//#define CONFIG_LCD_V_RES              272
-
-#if CONFIG_DOUBLE_FB
-#define CONFIG_LCD_NUM_FB             2
-#else
-#define CONFIG_LCD_NUM_FB             1
-#endif // CONFIG_DOUBLE_FB
-
-#define CONFIG_LVGL_TICK_PERIOD_MS    2
-
-// we use two semaphores to sync the VSYNC event and the LVGL task, to avoid potential tearing effect
-#if CONFIG_AVOID_TEAR_EFFECT_WITH_SEM
-SemaphoreHandle_t sem_vsync_end;
-SemaphoreHandle_t sem_gui_ready;
-#endif
 
 
 
@@ -206,7 +151,7 @@ esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp)
 #if CONFIG_PIN_NUM_BK_LIGHT >= 0
     ESP_LOGI(TAG, "Turn off LCD backlight");
     gpio_config_t bk_gpio_config = {
-        .mode = GPIO_MODE_OUTPUT,
+        .mode = GPIO_MODE_INPUT_OUTPUT,
         .pin_bit_mask = 1ULL << CONFIG_PIN_NUM_BK_LIGHT
     };
     ESP_ERROR_CHECK(gpio_config(&bk_gpio_config));
@@ -260,6 +205,7 @@ esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp)
         },
         .flags.fb_in_psram = true, // allocate frame buffer in PSRAM
     };
+
     ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&panel_config, &panel_handle));
 
     ESP_LOGI(TAG, "Register event callbacks");
@@ -329,6 +275,7 @@ esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp)
     init_app_touch_gt911(disp);
 #endif
 
+    timing_backlight();
     return ESP_OK;
 /*
     lv_init_app(datosApp);
@@ -465,6 +412,8 @@ static void lvgl_touch_cb2(lv_indev_drv_t * drv, lv_indev_data_t * data) {
         data->point.y = y[0];
         data->state = LV_INDEV_STATE_PR;
         ESP_LOGI(TAG, "XPT2046: x=%d, y=%d",data->point.x, data->point.y);
+        //backlight_on();
+
     }
 
     data->continue_reading = false;
@@ -527,3 +476,76 @@ void init_app_touch_xpt2046(lv_disp_t *disp) {
 #endif
 
 
+esp_err_t backlight_on() {
+
+
+
+	if (gpio_get_level(CONFIG_PIN_NUM_BK_LIGHT) == 0) {
+		gpio_set_level(CONFIG_PIN_NUM_BK_LIGHT, 1);
+		ESP_LOGE(TAG, "SE ENCIENDE LA PANTALLA");
+	} else {
+		if (esp_timer_is_active(timer_backlight)) {
+			ESP_LOGE(TAG, "CANCELAMOS TEMPORIZADOS Y REINICIAMOS");
+			ESP_ERROR_CHECK(esp_timer_stop(timer_backlight));
+			ESP_ERROR_CHECK(esp_timer_delete(timer_backlight));
+		} else {
+			ESP_LOGE(TAG, "REBOTE");
+		}
+
+
+	}
+
+	timing_backlight();
+
+
+
+
+	return ESP_OK;
+}
+
+
+
+void backlight_off(void *arg) {
+
+
+
+	//gpio_set_level(CONFIG_PIN_NUM_BK_LIGHT, 0);
+	//ESP_LOGE(TAG, "PANTALLA APAGADA");
+
+
+
+	if (gpio_get_level(CONFIG_PIN_NUM_BK_LIGHT) == 1) {
+		gpio_set_level(CONFIG_PIN_NUM_BK_LIGHT, 0);
+		ESP_LOGE(TAG, "PANTALLA APAGADA");
+	} else {
+
+		ESP_LOGE(TAG, "LA PANTALLA SIGUE ENCENDIDA");
+
+	}
+
+
+
+}
+
+
+void timing_backlight() {
+
+
+
+
+    const esp_timer_create_args_t backlight_shot_timer_args = {
+            .callback = &backlight_off,
+            /* name is optional, but may help identify the timer when debugging */
+            .name = "end schedule"
+    };
+
+
+
+	    ESP_ERROR_CHECK(esp_timer_create(&backlight_shot_timer_args, &timer_backlight));
+	    ESP_ERROR_CHECK(esp_timer_start_once(timer_backlight, (CONFIG_TIME_OFF_BACKLIGHT * 1000000)));
+	    ESP_LOGW(TAG, "TIMER PARA APAGADO DEL LCD COMENZADO");
+
+
+
+
+}

@@ -17,6 +17,8 @@
 #include "time.h"
 #include "programmer.h"
 #include "alarmas.h"
+#include "lv_rgb_main.h"
+
 
 #ifndef CONFIG_LCD_H_RES
 
@@ -592,6 +594,14 @@ void lv_update_alarm_device(DATOS_APLICACION *datosApp) {
 
 
 
+static void event_handler_screen(lv_event_t *event) {
+
+
+	backlight_on();
+
+}
+
+
 
 void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 
@@ -620,6 +630,7 @@ void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 	  //size objects
 
 	  //callback functions
+		lv_obj_add_event_cb(lv_main_screen, event_handler_screen, LV_EVENT_CLICKED, datosApp);
 
 	 lv_update_alarm_device(datosApp);
 	//lv_status_device(datosApp);
@@ -732,6 +743,10 @@ void lv_configure_smartconfig() {
 	//callback functions
 
 }
+
+
+
+
 
 
 
