@@ -255,6 +255,7 @@ void lv_create_status_aplication(DATOS_APLICACION *datosApp) {
 	lv_text_status_application = lv_label_create(lv_main_screen);
 	lv_obj_align_to(lv_text_status_application, lv_layout_temperature, LV_ALIGN_OUT_TOP_LEFT, 100,-30);
 	lv_set_style_status_application();
+	lv_label_set_text(lv_text_status_application, " ");
 
 
 
