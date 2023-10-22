@@ -229,6 +229,11 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_hw_support/regi2c_ctrl.c</location>
 		</link>
 		<link>
+			<name>build/ide/esp_idf_components/esp_hw_support/revision.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_hw_support/revision.c</location>
+		</link>
+		<link>
 			<name>build/ide/esp_idf_components/esp_hw_support/rtc_module.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_hw_support/rtc_module.c</location>
@@ -242,6 +247,11 @@
 			<name>build/ide/esp_idf_components/esp_hw_support/sleep_cpu.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_hw_support/sleep_cpu.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/esp_hw_support/sleep_event.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_hw_support/sleep_event.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/esp_hw_support/sleep_gpio.c</name>
@@ -454,14 +464,24 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/hal/efuse_hal.c</location>
 		</link>
 		<link>
-			<name>build/ide/esp_idf_components/hal/gdma_hal.c</name>
+			<name>build/ide/esp_idf_components/hal/gdma_hal_ahb_v1.c</name>
 			<type>1</type>
-			<location>/opt/esp/espidf/v5.2/esp-idf/components/hal/gdma_hal.c</location>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/hal/gdma_hal_ahb_v1.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/hal/gdma_hal_top.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/hal/gdma_hal_top.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/hal/gpio_hal.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/hal/gpio_hal.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/hal/hal_utils.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/hal/hal_utils.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/hal/hmac_hal.c</name>
@@ -599,11 +619,6 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/hal/timer_hal.c</location>
 		</link>
 		<link>
-			<name>build/ide/esp_idf_components/hal/timer_hal_iram.c</name>
-			<type>1</type>
-			<location>/opt/esp/espidf/v5.2/esp-idf/components/hal/timer_hal_iram.c</location>
-		</link>
-		<link>
 			<name>build/ide/esp_idf_components/hal/touch_sensor_hal.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/hal/touch_sensor_hal.c</location>
@@ -692,6 +707,11 @@
 			<name>build/ide/esp_idf_components/newlib/assert.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/newlib/assert.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/newlib/getentropy.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/newlib/getentropy.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/newlib/heap.c</name>
@@ -1379,6 +1399,16 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/driver/i2c/i2c.c</location>
 		</link>
 		<link>
+			<name>build/ide/esp_idf_components/driver/i2c/i2c_common.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/driver/i2c/i2c_common.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/driver/i2c/i2c_master.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/driver/i2c/i2c_master.c</location>
+		</link>
+		<link>
 			<name>build/ide/esp_idf_components/driver/i2s/i2s_common.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/driver/i2s/i2s_common.c</location>
@@ -1387,6 +1417,11 @@
 			<name>build/ide/esp_idf_components/driver/i2s/i2s_pdm.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/driver/i2s/i2s_pdm.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/driver/i2s/i2s_platform.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/driver/i2s/i2s_platform.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/driver/i2s/i2s_std.c</name>
@@ -1674,14 +1709,19 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_https_ota/src/esp_https_ota.c</location>
 		</link>
 		<link>
-			<name>build/ide/esp_idf_components/esp_hw_support/dma/async_memcpy_impl_gdma.c</name>
+			<name>build/ide/esp_idf_components/esp_hw_support/dma/async_memcpy_gdma.c</name>
 			<type>1</type>
-			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_hw_support/dma/async_memcpy_impl_gdma.c</location>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_hw_support/dma/async_memcpy_gdma.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/esp_hw_support/dma/esp_async_memcpy.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_hw_support/dma/esp_async_memcpy.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/esp_hw_support/dma/esp_dma_utils.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_hw_support/dma/esp_dma_utils.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/esp_hw_support/dma/gdma.c</name>
@@ -1709,9 +1749,14 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_lcd/src/esp_lcd_panel_io.c</location>
 		</link>
 		<link>
-			<name>build/ide/esp_idf_components/esp_lcd/src/esp_lcd_panel_io_i2c.c</name>
+			<name>build/ide/esp_idf_components/esp_lcd/src/esp_lcd_panel_io_i2c_v1.c</name>
 			<type>1</type>
-			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_lcd/src/esp_lcd_panel_io_i2c.c</location>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_lcd/src/esp_lcd_panel_io_i2c_v1.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/esp_lcd/src/esp_lcd_panel_io_i2c_v2.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_lcd/src/esp_lcd_panel_io_i2c_v2.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/esp_lcd/src/esp_lcd_panel_io_i80.c</name>
@@ -1794,6 +1839,11 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_phy/src/lib_printf.c</location>
 		</link>
 		<link>
+			<name>build/ide/esp_idf_components/esp_phy/src/phy_common.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_phy/src/phy_common.c</location>
+		</link>
+		<link>
 			<name>build/ide/esp_idf_components/esp_phy/src/phy_init.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_phy/src/phy_init.c</location>
@@ -1812,6 +1862,11 @@
 			<name>build/ide/esp_idf_components/esp_rom/patches/esp_rom_cache_esp32s2_esp32s3.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_rom/patches/esp_rom_cache_esp32s2_esp32s3.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/esp_rom/patches/esp_rom_cache_writeback_esp32s3.S</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_rom/patches/esp_rom_cache_writeback_esp32s3.S</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/esp_rom/patches/esp_rom_crc.c</name>
@@ -1864,6 +1919,11 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_system/port/cpu_start.c</location>
 		</link>
 		<link>
+			<name>build/ide/esp_idf_components/esp_system/port/esp_ipc_isr.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_system/port/esp_ipc_isr.c</location>
+		</link>
+		<link>
 			<name>build/ide/esp_idf_components/esp_system/port/esp_system_chip.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_system/port/esp_system_chip.c</location>
@@ -1887,6 +1947,11 @@
 			<name>build/ide/esp_idf_components/esp_timer/src/esp_timer.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_timer/src/esp_timer.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/esp_timer/src/esp_timer_impl_common.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_timer/src/esp_timer_impl_common.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/esp_timer/src/esp_timer_impl_systimer.c</name>
@@ -2054,9 +2119,9 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/freertos/FreeRTOS-Kernel/timers.c</location>
 		</link>
 		<link>
-			<name>build/ide/esp_idf_components/freertos/esp_additions/freertos_v8_compat.c</name>
+			<name>build/ide/esp_idf_components/freertos/esp_additions/freertos_compatibility.c</name>
 			<type>1</type>
-			<location>/opt/esp/espidf/v5.2/esp-idf/components/freertos/esp_additions/freertos_v8_compat.c</location>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/freertos/esp_additions/freertos_compatibility.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/freertos/esp_additions/idf_additions.c</name>
@@ -3304,6 +3369,11 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/wpa_supplicant/esp_supplicant/src/esp_common.c</location>
 		</link>
 		<link>
+			<name>build/ide/esp_idf_components/wpa_supplicant/esp_supplicant/src/esp_eap_client.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/wpa_supplicant/esp_supplicant/src/esp_eap_client.c</location>
+		</link>
+		<link>
 			<name>build/ide/esp_idf_components/wpa_supplicant/esp_supplicant/src/esp_hostap.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/wpa_supplicant/esp_supplicant/src/esp_hostap.c</location>
@@ -3319,9 +3389,9 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/wpa_supplicant/esp_supplicant/src/esp_scan.c</location>
 		</link>
 		<link>
-			<name>build/ide/esp_idf_components/wpa_supplicant/esp_supplicant/src/esp_wpa2.c</name>
+			<name>build/ide/esp_idf_components/wpa_supplicant/esp_supplicant/src/esp_wpa2_api_port.c</name>
 			<type>1</type>
-			<location>/opt/esp/espidf/v5.2/esp-idf/components/wpa_supplicant/esp_supplicant/src/esp_wpa2.c</location>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/wpa_supplicant/esp_supplicant/src/esp_wpa2_api_port.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/wpa_supplicant/esp_supplicant/src/esp_wpa3.c</name>
@@ -3427,11 +3497,6 @@
 			<name>build/ide/esp_idf_components/wpa_supplicant/src/crypto/aes-gcm.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/wpa_supplicant/src/crypto/aes-gcm.c</location>
-		</link>
-		<link>
-			<name>build/ide/esp_idf_components/wpa_supplicant/src/crypto/aes-omac1.c</name>
-			<type>1</type>
-			<location>/opt/esp/espidf/v5.2/esp-idf/components/wpa_supplicant/src/crypto/aes-omac1.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/wpa_supplicant/src/crypto/aes-siv.c</name>
@@ -3719,14 +3784,14 @@
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_system/port/arch/xtensa/debug_stubs.c</location>
 		</link>
 		<link>
-			<name>build/ide/esp_idf_components/esp_system/port/arch/xtensa/esp_ipc_isr.c</name>
-			<type>1</type>
-			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_system/port/arch/xtensa/esp_ipc_isr.c</location>
-		</link>
-		<link>
 			<name>build/ide/esp_idf_components/esp_system/port/arch/xtensa/esp_ipc_isr_handler.S</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_system/port/arch/xtensa/esp_ipc_isr_handler.S</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/esp_system/port/arch/xtensa/esp_ipc_isr_port.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/esp_system/port/arch/xtensa/esp_ipc_isr_port.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/esp_system/port/arch/xtensa/esp_ipc_isr_routines.S</name>
@@ -4027,6 +4092,11 @@
 			<name>build/ide/esp_idf_components/wpa_supplicant/esp_supplicant/src/crypto/crypto_mbedtls.c</name>
 			<type>1</type>
 			<location>/opt/esp/espidf/v5.2/esp-idf/components/wpa_supplicant/esp_supplicant/src/crypto/crypto_mbedtls.c</location>
+		</link>
+		<link>
+			<name>build/ide/esp_idf_components/wpa_supplicant/esp_supplicant/src/crypto/fastpbkdf2.c</name>
+			<type>1</type>
+			<location>/opt/esp/espidf/v5.2/esp-idf/components/wpa_supplicant/esp_supplicant/src/crypto/fastpbkdf2.c</location>
 		</link>
 		<link>
 			<name>build/ide/esp_idf_components/wpa_supplicant/esp_supplicant/src/crypto/tls_mbedtls.c</name>
