@@ -7,11 +7,40 @@ config TIPO_DISPOSITIVO
 		indica el tipo de dispositivo
 
 
+config NUM_TOPICS
+	int "Topics de la aplicacion"
+	default 3
+	help 
+		Indica los topics a gestionar por el dispositivo
+
+config INDEX_REMOTE_TOPIC_TEMPERATURE
+	int "indice del topic para la lectura remota"
+	default 2
+	help 
+		Indica cual es el indice de la estructura de topics para almacenar el topic remoto. 0 el de la aplicacion, 1 debug. A partir del 2 los topics de usuario
+		
+config PREFIX_TOPIC_PUBLISH_REMOTE_TEMPERATURE
+	string "Prefix publish remote temperature"
+	default "/sub_"
+	help
+		Indica el prefijo para la publicacion de comandos al sensor remoto
+
+config PREFIX_TOPIC_SUBSCRIBE_REMOTE_TEMPERATURE
+	string "Prefix subscribe remote temperature"
+	default "/pub_"
+	help
+		Indica el prefijo para la subscripcion de comandos al sensor remoto
+
+
 config IMPLEMENTS_LEDS
 	bool "identify GPIOS to leds"
 	default n
 	help 
 		Configure GPIOS to implements LEDS
+
+
+
+
 
 config GPIO_PIN_LED
 	int "PIN GPIO LED INDICATOR"

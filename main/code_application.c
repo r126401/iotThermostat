@@ -43,7 +43,7 @@ static esp_timer_handle_t temporizador_lectura_remota;
 
 
 
-enum ESTADO_RELE operacion_rele(DATOS_APLICACION *datosApp, enum TIPO_ACTUACION_RELE tipo, enum ESTADO_RELE operacion) {
+enum ESTADO_RELE relay_operation(DATOS_APLICACION *datosApp, enum TIPO_ACTUACION_RELE tipo, enum ESTADO_RELE operacion) {
 
 	enum ESTADO_RELE rele;
 
@@ -74,7 +74,7 @@ enum ESTADO_RELE operacion_rele(DATOS_APLICACION *datosApp, enum TIPO_ACTUACION_
 
 
 
-void accionar_termostato(DATOS_APLICACION *datosApp) {
+void thermostat_action(DATOS_APLICACION *datosApp) {
 
 	enum ESTADO_RELE accion_rele;
 	enum TIPO_ACCION_TERMOSTATO accion_termostato;
@@ -86,7 +86,7 @@ void accionar_termostato(DATOS_APLICACION *datosApp) {
 
     if (((accion_termostato = calcular_accion_termostato(datosApp, &accion_rele)) == ACCIONAR_TERMOSTATO)) {
     	ESP_LOGI(TAG, ""TRAZAR"VAMOS A ACCIONAR EL RELE", INFOTRAZA);
-    	operacion_rele(datosApp, TEMPORIZADA, accion_rele);
+    	relay_operation(datosApp, TEMPORIZADA, accion_rele);
     }
 
     if ((accion_termostato == ACCIONAR_TERMOSTATO) || (lecturaAnterior != datosApp->termostato.tempActual)) {
@@ -105,7 +105,7 @@ void accionar_termostato(DATOS_APLICACION *datosApp) {
 
 
 
-void tarea_lectura_temperatura(void *parametros) {
+void task_iotThermostat(void *parametros) {
 
     DATOS_APLICACION *datosApp = (DATOS_APLICACION*) parametros;
 
@@ -113,16 +113,21 @@ void tarea_lectura_temperatura(void *parametros) {
     ESP_LOGI(TAG, ""TRAZAR"COMIENZA LA TAREA DE LECTURA DE TEMPERATURA", INFOTRAZA);
 
     lv_update_relay(gpio_get_level(CONFIG_GPIO_PIN_RELE));
-
+/*
+    if (datosApp->termostato.master == false) {
+    	ESP_LOGI(TAG, ""TRAZAR"sensor remoto. Nos subscribimos a %s", INFOTRAZA, datosApp->datosGenerales->parametrosMqtt.topics[CONFIG_INDEX_REMOTE_TOPIC_TEMPERATURE].subscribe);
+    	subscribe_topic(datosApp, datosApp->datosGenerales->parametrosMqtt.topics[CONFIG_INDEX_REMOTE_TOPIC_TEMPERATURE].subscribe);
+    }
+*/
     while(1) {
     	vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
 
     	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
-    	if (leer_temperatura(datosApp) == ESP_OK) {
+    	if (reading_temperature(datosApp) == ESP_OK) {
     		send_event(EVENT_DEVICE_OK);
         	lv_update_temperature(datosApp);
         	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
-        	accionar_termostato(datosApp);
+        	thermostat_action(datosApp);
 
 
     	} else {
@@ -215,7 +220,7 @@ enum TIPO_ACCION_TERMOSTATO calcular_accion_termostato(DATOS_APLICACION *datosAp
 
 
 
-esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
+esp_err_t reading_local_temperature(DATOS_APLICACION *datosApp) {
 
     esp_err_t error = ESP_FAIL;
     static uint8_t contador = 0;
@@ -289,7 +294,7 @@ esp_err_t leer_temperatura_local(DATOS_APLICACION *datosApp) {
 
 }
 
-esp_err_t leer_temperatura(DATOS_APLICACION *datosApp) {
+esp_err_t reading_temperature(DATOS_APLICACION *datosApp) {
 
 
 	esp_err_t error;
@@ -297,13 +302,13 @@ esp_err_t leer_temperatura(DATOS_APLICACION *datosApp) {
 	if ((datosApp->termostato.master == false)) {
 		if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma == ALARM_ON) {
 			ESP_LOGW(TAG, ""TRAZAR" termostato en remoto. ADEMAS LA ALARMA ESTA A ON", INFOTRAZA);
-			error = leer_temperatura_local(datosApp);
+			error = reading_local_temperature(datosApp);
 		}
-		error = leer_temperatura_remota(datosApp);
+		error = reading_remote_temperature(datosApp);
 
 
 	} else {
-		error = leer_temperatura_local(datosApp);
+		error = reading_local_temperature(datosApp);
 	}
 
 
@@ -312,6 +317,7 @@ esp_err_t leer_temperatura(DATOS_APLICACION *datosApp) {
 	return error;
 }
 
+/*
 static void temporizacion_lectura_remota(void *arg) {
 
 	static int contador = 0;
@@ -346,28 +352,32 @@ static void temporizacion_lectura_remota(void *arg) {
 
 
 }
-
-esp_err_t leer_temperatura_remota(DATOS_APLICACION *datosApp) {
+*/
+esp_err_t reading_remote_temperature(DATOS_APLICACION *datosApp) {
 
 	ESP_LOGI(TAG, ""TRAZAR" Leyendo desde el sensor remoto %s", INFOTRAZA, datosApp->termostato.sensor_remoto);
 	cJSON *objeto = NULL;
 	cJSON *comando;
 	comando = cJSON_CreateObject();
+	/*
 	char topic[50];
 	ESP_LOGI(TAG, ""TRAZAR"debug 1", INFOTRAZA);
 	strcpy(topic, "/sub_");
 	strcat(topic, datosApp->termostato.sensor_remoto);
 	ESP_LOGI(TAG, ""TRAZAR"debug 2", INFOTRAZA);
+	*/
 	objeto = cabeceraGeneral(datosApp);
 	if (objeto != NULL) {
 
 
 		cJSON_AddNumberToObject(objeto, DLG_COMANDO, STATUS_DISPOSITIVO);
 		cJSON_AddItemToObject(comando, COMANDO, objeto);
-		publicar_mensaje_json(datosApp, comando, topic);
+		publicar_mensaje_json(datosApp, comando, datosApp->datosGenerales->parametrosMqtt.topics[CONFIG_INDEX_REMOTE_TOPIC_TEMPERATURE].publish);
 	}
 
+	send_event_device(EVENT_REQUEST_TEMPERATURE);
 
+/*
     const esp_timer_create_args_t timer_remote_read_args = {
     		.callback = &temporizacion_lectura_remota,
 			.name = "timer remote read",
@@ -378,8 +388,9 @@ esp_err_t leer_temperatura_remota(DATOS_APLICACION *datosApp) {
     ESP_ERROR_CHECK(esp_timer_start_once(temporizador_lectura_remota, TIMEOUT_LECTURA_REMOTA * 1000));
 
 
-    ESP_LOGI(TAG, ""TRAZAR"debug 3", INFOTRAZA);
 
+    ESP_LOGI(TAG, ""TRAZAR"debug 3", INFOTRAZA);
+*/
 
 	return ESP_OK;
 }
