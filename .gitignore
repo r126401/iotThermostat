@@ -2,4 +2,6 @@ build
 managed_components
 .metadata
 .settings/
+.$flujoAplicacion.drawio.bkp
+
 
