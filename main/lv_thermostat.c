@@ -704,6 +704,7 @@ void lv_update_threshold(DATOS_APLICACION *datosApp, bool permanent) {
 		}
 	}
 
+
 	lv_update_temp_threshold(datosApp->termostato.tempUmbral, lv_text_threshold);
 
 
