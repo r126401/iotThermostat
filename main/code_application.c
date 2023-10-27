@@ -167,7 +167,7 @@ void task_iotThermostat(void *parametros) {
 
 
 		} else {
-			ESP_LOGW(TAG, ""TRAZAR" Leemos temperatura en local porque el remoto no esta disponible", INFOTRAZA);
+			ESP_LOGW(TAG, ""TRAZAR" Leemos temperatura en local", INFOTRAZA);
 			event = reading_local_temperature(datosApp);
 
 		}
