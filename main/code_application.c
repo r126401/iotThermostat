@@ -154,6 +154,8 @@ void task_iotThermostat(void *parametros) {
     	//event = reading_temperature(datosApp);
 
 		if ((datosApp->termostato.master == false)) {
+
+			event = reading_remote_temperature(datosApp);
 			if (get_status_alarm(datosApp, ALARM_REMOTE_DEVICE) == ALARM_ON) {
 				ESP_LOGW(TAG, ""TRAZAR" termostato en remoto. ADEMAS LA ALARMA ESTA A ON", INFOTRAZA);
 				event = reading_local_temperature(datosApp);
@@ -162,7 +164,7 @@ void task_iotThermostat(void *parametros) {
 					event = EVENT_ERROR_READ_LOCAL_TEMPERATURE;
 				}
 			}
-			event = reading_remote_temperature(datosApp);
+
 
 		} else {
 			ESP_LOGW(TAG, ""TRAZAR" Leemos temperatura en local porque el remoto no esta disponible", INFOTRAZA);
