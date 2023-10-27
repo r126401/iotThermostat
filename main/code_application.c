@@ -105,10 +105,20 @@ void thermostat_action(DATOS_APLICACION *datosApp) {
 }
 
 
+void update_thermostat_device(DATOS_APLICACION *datosApp) {
+
+	lv_update_temperature(datosApp);
+	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
+	thermostat_action(datosApp);
+
+
+}
+
 
 void task_iotThermostat(void *parametros) {
 
     DATOS_APLICACION *datosApp = (DATOS_APLICACION*) parametros;
+    EVENT_DEVICE event = EVENT_NONE;
 
 
     ESP_LOGI(TAG, ""TRAZAR"COMIENZA LA TAREA DE LECTURA DE TEMPERATURA", INFOTRAZA);
@@ -116,21 +126,78 @@ void task_iotThermostat(void *parametros) {
     lv_update_relay(gpio_get_level(CONFIG_GPIO_PIN_RELE));
 
     while(1) {
-    	vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
+		if (get_status_alarm(datosApp, ALARM_APP) == ALARM_ON) {
+			vTaskDelay(datosApp->termostato.read_interval * 1000 / portTICK_RATE_MS);
+		} else {
+			vTaskDelay(datosApp->termostato.retry_interval * 1000 / portTICK_RATE_MS);
+			ESP_LOGI(TAG, ""TRAZAR"ERROR EN LA LECTURA LOCAL, PASAMOS A LA LOGICA DE REINTENTOS", INFOTRAZA);
+		}
+/*
 
-    	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
-    	if (reading_temperature(datosApp) == ESP_OK) {
-    		send_event(EVENT_DEVICE_OK);
-        	lv_update_temperature(datosApp);
-        	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
-        	thermostat_action(datosApp);
+
+    	if (datosApp->termostato.master) {
+    		if (get_status_alarm(datosApp, ALARM_APP) == ALARM_ON) {
+    			vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
+    		} else {
+    			vTaskDelay(datosApp->termostato.intervaloReintentos * 1000 / portTICK_RATE_MS);
+    			ESP_LOGI(TAG, ""TRAZAR"ERROR EN LA LECTURA LOCAL, PASAMOS A LA LOGICA DE REINTENTOS", INFOTRAZA);
+    		}
+    	} else {
+    		if ((get_status_alarm(datosApp, ALARM_APP) == ALARM_ON) ||  (get_status_alarm(datosApp, ALARM_REMOTE_DEVICE) == ALARM_ON)) {
+    			vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
+    		} else {
+    			vTaskDelay(datosApp->termostato.intervaloReintentos * 1000 / portTICK_RATE_MS);
+    			ESP_LOGI(TAG, ""TRAZAR"ERROR EN LA LECTURA REMOTA, PASAMOS A LA LOGICA DE REINTENTOS", INFOTRAZA);
+    		}
+    	}
+*/
+    	//event = reading_temperature(datosApp);
+
+		if ((datosApp->termostato.master == false)) {
+			if (get_status_alarm(datosApp, ALARM_REMOTE_DEVICE) == ALARM_ON) {
+				ESP_LOGW(TAG, ""TRAZAR" termostato en remoto. ADEMAS LA ALARMA ESTA A ON", INFOTRAZA);
+				event = reading_local_temperature(datosApp);
+				if (event != EVENT_ANSWER_TEMPERATURE) {
+					ESP_LOGE(TAG, ""TRAZAR"ERROR EN LA LECTURA EN LOCAL CUANDO ESTA SELECCIONADA LA LECTURA REMOTA", INFOTRAZA);
+					event = EVENT_ERROR_READ_LOCAL_TEMPERATURE;
+				}
+			}
+			event = reading_remote_temperature(datosApp);
+
+		} else {
+			ESP_LOGW(TAG, ""TRAZAR" Leemos temperatura en local porque el remoto no esta disponible", INFOTRAZA);
+			event = reading_local_temperature(datosApp);
+
+		}
+
+
+
+    	switch(event) {
+
+    	case EVENT_ANSWER_TEMPERATURE:
+    		send_event_device(EVENT_ANSWER_TEMPERATURE);
+    		//update_thermostat_device(datosApp);
+    		break;
+    	case EVENT_ERROR_READ_LOCAL_TEMPERATURE:
+    		send_event_device(EVENT_ERROR_READ_LOCAL_TEMPERATURE);
+    		break;
+    	case EVENT_WAITING_RESPONSE_TEMPERATURE:
+    		send_event_device(EVENT_WAITING_RESPONSE_TEMPERATURE);
+    	default:
+    		break;
+
+    	}
+    	/*
+    	if (reading_temperature(datosApp) == EVENT_ANSWER_TEMPERATURE) {
+    		//send_event(EVENT_DEVICE_OK);
+
 
 
     	} else {
     		send_event(EVENT_ERROR_DEVICE);
     	}
 
-
+*/
 
 
     }
@@ -216,7 +283,7 @@ enum TIPO_ACCION_TERMOSTATO calcular_accion_termostato(DATOS_APLICACION *datosAp
 
 
 
-esp_err_t reading_local_temperature(DATOS_APLICACION *datosApp) {
+EVENT_DEVICE reading_local_temperature(DATOS_APLICACION *datosApp) {
 
     esp_err_t error = ESP_FAIL;
     static uint8_t contador = 0;
@@ -257,19 +324,20 @@ esp_err_t reading_local_temperature(DATOS_APLICACION *datosApp) {
             	ESP_LOGI(TAG, ""TRAZAR" Temp sin redondeo %.01lf, Temp redondeada %.01lf ", INFOTRAZA, temperatura_a_redondear,datosApp->termostato.tempActual );
       		contador = 0;
     	} else {
-    		contador++;
-    		if (contador == 4)  {
-    			//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_WARNING, true);
-    			send_event(EVENT_ERROR_REMOTE_DEVICE);
 
-    		}
-    		if (contador == 10) {
+    		ESP_LOGE(TAG, ""TRAZAR" ERROR AL TOMAR LA LECTURA", INFOTRAZA);
+    		return EVENT_ERROR_READ_LOCAL_TEMPERATURE;
+
+    		/*
+    		contador++;
+    		if (contador == 5) {
     			//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_ON, true);
     			return ESP_FAIL;
 
     		}
     		ESP_LOGE(TAG, ""TRAZAR" ERROR AL TOMAR LA LECTURA. REINTENTAMOS EN %d SEGUNDOS", INFOTRAZA, datosApp->termostato.intervaloReintentos);
         	vTaskDelay(datosApp->termostato.intervaloReintentos * 1000 / portTICK_RATE_MS);
+        	*/
     	}
 
     }
@@ -286,32 +354,40 @@ esp_err_t reading_local_temperature(DATOS_APLICACION *datosApp) {
 
 
 
-    return ESP_OK;
+    return EVENT_ANSWER_TEMPERATURE;
 
 }
 
-esp_err_t reading_temperature(DATOS_APLICACION *datosApp) {
+EVENT_DEVICE reading_temperature(DATOS_APLICACION *datosApp) {
 
 
-	esp_err_t error;
+	EVENT_DEVICE event = EVENT_DEVICE_OK;
+
+	ESP_LOGI(TAG, ""TRAZAR"LEEMOS TEMPERATURA!!!!!!!!!!!!!!!!!!!!!!!", INFOTRAZA);
 
 	if ((datosApp->termostato.master == false)) {
-		if (get_status_alarm(datosApp, ALARM_REMOTE_DEVICE)) {
+		if (get_status_alarm(datosApp, ALARM_REMOTE_DEVICE) == ALARM_ON) {
 			ESP_LOGW(TAG, ""TRAZAR" termostato en remoto. ADEMAS LA ALARMA ESTA A ON", INFOTRAZA);
-			error = reading_local_temperature(datosApp);
-		} else {
-			error = reading_remote_temperature(datosApp);
+			event = reading_local_temperature(datosApp);
+			if (event != EVENT_ANSWER_TEMPERATURE) {
+				ESP_LOGE(TAG, ""TRAZAR"ERROR EN LA LECTURA EN LOCAL CUANDO ESTA SELECCIONADA LA LECTURA REMOTA", INFOTRAZA);
+				event = EVENT_ERROR_READ_LOCAL_TEMPERATURE;
+			}
 		}
+		event = reading_remote_temperature(datosApp);
 
 	} else {
 		ESP_LOGW(TAG, ""TRAZAR" Leemos temperatura en local porque el remoto no esta disponible", INFOTRAZA);
-		error = reading_local_temperature(datosApp);
+		event = reading_local_temperature(datosApp);
+
 	}
 
 
 
+	ESP_LOGW(TAG,""TRAZAR"reading_temperature: RETURN %s", INFOTRAZA, local_event_2_mnemonic(event));
 
-	return error;
+
+	return event;
 }
 
 /*
@@ -362,9 +438,9 @@ esp_err_t reading_remote_temperature(DATOS_APLICACION *datosApp) {
 		cJSON_AddItemToObject(comando, COMANDO, objeto);
 		publicar_mensaje_json(datosApp, comando, datosApp->datosGenerales->parametrosMqtt.topics[CONFIG_INDEX_REMOTE_TOPIC_TEMPERATURE].publish);
 	}
-	send_event_device(EVENT_REQUEST_TEMPERATURE);
+	return EVENT_WAITING_RESPONSE_TEMPERATURE;
 
-	return ESP_OK;
+
 }
 
 

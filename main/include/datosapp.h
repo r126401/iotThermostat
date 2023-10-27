@@ -137,8 +137,8 @@ typedef struct DATOS_TERMOSTATO {
     float humedad;
     double margenTemperatura;
     uint8_t reintentosLectura;
-    uint8_t intervaloReintentos;
-    uint8_t intervaloLectura;
+    uint8_t retry_interval;
+    uint8_t read_interval;
     double calibrado;
     bool master;
     char sensor_remoto[13];
