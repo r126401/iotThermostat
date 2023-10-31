@@ -53,7 +53,7 @@ void app_main(void) {
 	aplicacion = esp_app_get_description();
 	ESP_LOGW(TAG, ""TRAZAR" app:%s, version: %s, hora: %s, dia:%s, idfver:%s", INFOTRAZA,
 			aplicacion->project_name, aplicacion->version, aplicacion->time, aplicacion->date, aplicacion->idf_ver);
-	//change_status_application(&datosApp, STARTING);
+
 	init_code_application(&datosApp);
 	create_event_task(&datosApp);
 	error = inicializar_nvs(CONFIG_NAMESPACE, &datosApp.handle);
@@ -93,34 +93,46 @@ void app_main(void) {
 	lv_screen_thermostat(&datosApp);
 	lv_timer_handler();
 
+	xTaskCreate(task_iotThermostat, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 1, NULL);
 	if(is_factory() == ESP_OK) {
 
 		send_event(EVENT_FACTORY);
-		lv_configure_smartconfig();
-		lv_timer_handler();
 
+	    while (1) {
+	        // raise the task priority of LVGL and/or reduce the handler period can improve the performance
+	        vTaskDelay(pdMS_TO_TICKS(10));
+	        // The task running lv_timer_handler should have lower priority than that running `lv_tick_inc`
+	        lv_timer_handler();
+	    }
+
+
+
+
+
+	} else {
+		ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
+		conectar_dispositivo_wifi();
+		//sync_app_by_ntp(&datosApp);
+		ESP_LOGI(TAG, ""TRAZAR" ESTADO ANTES DE INICIAR GESTION: %d", INFOTRAZA, datosApp.datosGenerales->estadoApp);
+		iniciar_gestion_programacion(&datosApp);
+		//sync_app_by_ntp(&datosApp);
+		crear_tarea_mqtt(&datosApp);
+
+
+
+	    //pintar_fecha();
+
+
+	    while (1) {
+	        // raise the task priority of LVGL and/or reduce the handler period can improve the performance
+	        vTaskDelay(pdMS_TO_TICKS(10));
+	        // The task running lv_timer_handler should have lower priority than that running `lv_tick_inc`
+	        lv_timer_handler();
+	    }
 	}
 
-	xTaskCreate(task_iotThermostat, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 1, NULL);
-
-	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
-	conectar_dispositivo_wifi();
-	//sync_app_by_ntp(&datosApp);
-	ESP_LOGI(TAG, ""TRAZAR" ESTADO ANTES DE INICIAR GESTION: %d", INFOTRAZA, datosApp.datosGenerales->estadoApp);
-	iniciar_gestion_programacion(&datosApp);
-	//sync_app_by_ntp(&datosApp);
-	crear_tarea_mqtt(&datosApp);
 
 
 
-    //pintar_fecha();
-
-
-    while (1) {
-        // raise the task priority of LVGL and/or reduce the handler period can improve the performance
-        vTaskDelay(pdMS_TO_TICKS(10));
-        // The task running lv_timer_handler should have lower priority than that running `lv_tick_inc`
-        lv_timer_handler();
-    }
 
 }

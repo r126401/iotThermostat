@@ -120,14 +120,14 @@ static void event_handler_focused(lv_event_t *e) {
 }
 
 
-void lv_create_screen_factory(DATOS_APLICACION *datosApp) {
+void lv_create_screen_factory() {
 
 
 
 	//create objects
 	lv_screen_factory = lv_obj_create(NULL);
 	lv_scr_load(lv_screen_factory);
-	lv_create_text_area(datosApp);
+	lv_create_text_area();
 	lv_textarea_add_text(lv_text_area_factory, "PUESTA EN SERVICIO...\n\n");
 	lv_textarea_add_text(lv_text_area_factory, "Por favor, abre la aplicacion MyHomeIot e instala un nuevo dispositivo.\n\n");
 	lv_textarea_add_text(lv_text_area_factory, "Una vez instalado el dispositivo se conectara a la red y comenzara a funcionar.");
@@ -175,7 +175,7 @@ void lv_create_screen_factory(DATOS_APLICACION *datosApp) {
 
 
 }
-void lv_create_text_area(DATOS_APLICACION *datosApp){
+void lv_create_text_area(){
 
 	//creamos el text_area
 

@@ -22,8 +22,8 @@ void lv_set_style_factory_screen();
 void lv_set_style_text_area_factory();
 void lv_set_style_button_reset();
 
-void lv_create_screen_factory(DATOS_APLICACION *datosApp);
-void lv_create_text_area(DATOS_APLICACION *datosApp);
+void lv_create_screen_factory();
+void lv_create_text_area();
 void lv_screen_factory_reset();
 
 

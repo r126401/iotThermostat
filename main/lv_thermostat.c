@@ -18,6 +18,7 @@
 #include "programmer.h"
 #include "events_device.h"
 #include "lv_rgb_main.h"
+#include "lv_factory_reset.h"
 
 
 #ifndef CONFIG_LCD_H_RES
@@ -44,7 +45,9 @@ lv_obj_t *lv_text_threshold;
 lv_obj_t *lv_text_status_application;
 lv_obj_t *lv_text_from_schedule;
 lv_obj_t *lv_text_to_schedule;
-lv_obj_t *lv_text_smartconfig = NULL;
+lv_obj_t *lv_text_smartconfig;
+lv_obj_t *lv_text_icon_wifi;
+lv_obj_t *lv_text_icon_reset;
 lv_obj_t *lv_progress_schedule;
 
 
@@ -70,6 +73,8 @@ lv_obj_t *lv_button_up_threshold;
 lv_obj_t *lv_button_down_threshold;
 lv_obj_t *lv_icon_up_threshold;
 lv_obj_t *lv_icon_down_threshold;
+lv_obj_t *lv_icon_wifi;
+lv_obj_t *lv_icon_reset;
 
 LV_IMG_DECLARE(ic_action_online);
 LV_IMG_DECLARE(ic_action_offline);
@@ -243,6 +248,9 @@ void lv_set_style_status_application() {
 	if (lv_text_status_application != NULL) {
 		lv_obj_add_style(lv_text_status_application, &lv_style_status_application, LV_STATE_DEFAULT);
 	}
+	lv_style_set_pad_all(&lv_style_status_application, 0);
+	lv_style_set_bg_opa(&lv_style_status_application, LV_OPA_TRANSP);
+    lv_style_set_border_width(&lv_style_status_application, 0);
 
 	//lv_obj_align_to(lv_text_status_application, lv_layout_temperature, LV_ALIGN_OUT_TOP_MID, 0, 0);
 
@@ -604,6 +612,24 @@ static void event_handler_screen(lv_event_t *event) {
 
 
 
+void lv_normal_boot() {
+
+	lv_obj_clear_flag(lv_layout_notification, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_clear_flag(lv_text_status_application, LV_OBJ_FLAG_HIDDEN);
+
+
+}
+
+void lv_factory_boot() {
+
+	lv_obj_add_flag(lv_layout_notification, LV_OBJ_FLAG_HIDDEN);
+	lv_obj_add_flag(lv_text_status_application, LV_OBJ_FLAG_HIDDEN);
+
+
+}
+
+
+
 void lv_screen_thermostat(DATOS_APLICACION *datosApp) {
 
 	enum ESTADO_RELE estado = ON;
@@ -664,11 +690,13 @@ static void lv_update_temp_threshold(float parameter, lv_obj_t *obj) {
 			ESP_LOGE(TAG, "TEMPERATURA ACTUAL NO DISPONIBLE");
 			lv_label_set_text_fmt(obj, "--.- ºC");
 		} else {
+			ESP_LOGI(TAG, ""TRAZAR"PINTAMOS LA TEMPERATURA ACTUAL: %.1f", INFOTRAZA, parameter);
 			sprintf(data, "%.1f", parameter);
 			lv_label_set_text_fmt(obj, "%s ºC", data);
 		}
 
-
+	} else {
+		ESP_LOGE(TAG, ""TRAZAR"LA TEMPERATURA TODAVIA ES NULA:", INFOTRAZA);
 	}
 }
 
@@ -725,24 +753,50 @@ void lv_update_relay(ESTADO_RELE relay) {
 
 }
 
+
+
+static void event_handler_smartconfig(lv_event_t *event) {
+
+
+	ESP_LOGI(TAG, ""TRAZAR"event_handler_smartconfig", INFOTRAZA);
+	send_event(EVENT_SMARTCONFIG);
+	lv_label_set_text_fmt(lv_text_smartconfig, "%s Recibiendo wifi", LV_SYMBOL_WIFI);
+	lv_obj_add_flag(lv_icon_wifi, LV_OBJ_FLAG_HIDDEN);
+	lv_create_screen_factory();
+}
+
 void lv_configure_smartconfig() {
+
 
 	//creating objects
 	if (lv_text_smartconfig == NULL) {
 		lv_text_smartconfig = lv_label_create(lv_main_screen);
+
 	}
-	lv_label_set_text(lv_text_smartconfig, "Configura tu wifi");
+
+	if (lv_icon_wifi == NULL) {
+		lv_icon_wifi = lv_btn_create(lv_main_screen);
+		lv_text_icon_wifi = lv_label_create(lv_icon_wifi);
+	}
+
+	lv_label_set_text_fmt(lv_text_smartconfig, "%s para configurar", LV_SYMBOL_WIFI);
+	lv_label_set_text(lv_text_icon_wifi, LV_SYMBOL_WIFI);
 
 	//style objects
 	lv_set_style_status_application();
 	lv_obj_add_style(lv_text_smartconfig, &lv_style_status_application, LV_STATE_DEFAULT);
+	lv_obj_add_style(lv_icon_wifi, &lv_style_status_application, LV_STATE_DEFAULT);
+	lv_obj_add_style(lv_text_icon_wifi, &lv_style_status_application, LV_STATE_DEFAULT);
 
 	//position objects
-	lv_obj_set_pos(lv_text_smartconfig, 150, 40);
+	lv_obj_set_pos(lv_text_smartconfig, 100, 20);
+	lv_obj_set_pos(lv_icon_wifi, CONFIG_LCD_H_RES/2, 50);
 	//size objects
-	lv_obj_set_size(lv_text_smartconfig, 200,20);
+	lv_obj_set_size(lv_text_smartconfig, 400,20);
+	lv_obj_set_size(lv_icon_wifi, 40,40);
 
 	//callback functions
+	lv_obj_add_event_cb(lv_icon_wifi, event_handler_smartconfig, LV_EVENT_CLICKED, NULL);
 
 }
 

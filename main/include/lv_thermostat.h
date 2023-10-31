@@ -54,5 +54,7 @@ void lv_update_temperature(DATOS_APLICACION *datosApp);
 bool lv_update_hour(char* hour);
 void lv_update_relay(ESTADO_RELE relay);
 void lv_configure_smartconfig();
+void lv_normal_boot();
+void lv_factory_boot();
 
 #endif /* LV_SRC_INCLUDE_LV_THERMOSTAT_H_ */

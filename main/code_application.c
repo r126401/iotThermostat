@@ -69,6 +69,9 @@ enum ESTADO_RELE relay_operation(DATOS_APLICACION *datosApp, enum TIPO_ACTUACION
 	gpio_set_level(CONFIG_GPIO_PIN_RELE, rele);
 	ESP_LOGW(TAG, ""TRAZAR"EL RELE SE HA PUESTO A %d", INFOTRAZA, rele);
 	lv_update_relay(rele);
+	if (get_current_status_application(datosApp) == FACTORY) {
+		lv_timer_handler();
+	}
 
 	return rele;
 }
@@ -110,6 +113,10 @@ void update_thermostat_device(DATOS_APLICACION *datosApp) {
 	lv_update_temperature(datosApp);
 	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
 	thermostat_action(datosApp);
+	// Esto lo metemos de manera provisional para pintar la temperatura mientras estamos en factory
+	if (get_current_status_application(datosApp) == FACTORY) {
+		lv_timer_handler();
+	}
 
 
 }
@@ -156,6 +163,7 @@ void task_iotThermostat(void *parametros) {
 		if ((datosApp->termostato.master == false)) {
 
 			event = reading_remote_temperature(datosApp);
+			/*
 			if (get_status_alarm(datosApp, ALARM_REMOTE_DEVICE) == ALARM_ON) {
 				ESP_LOGW(TAG, ""TRAZAR" termostato en remoto. ADEMAS LA ALARMA ESTA A ON", INFOTRAZA);
 				event = reading_local_temperature(datosApp);
@@ -164,7 +172,7 @@ void task_iotThermostat(void *parametros) {
 					event = EVENT_ERROR_READ_LOCAL_TEMPERATURE;
 				}
 			}
-
+*/
 
 		} else {
 			ESP_LOGW(TAG, ""TRAZAR" Leemos temperatura en local", INFOTRAZA);
@@ -360,74 +368,7 @@ EVENT_DEVICE reading_local_temperature(DATOS_APLICACION *datosApp) {
 
 }
 
-EVENT_DEVICE reading_temperature(DATOS_APLICACION *datosApp) {
 
-
-	EVENT_DEVICE event = EVENT_DEVICE_OK;
-
-	ESP_LOGI(TAG, ""TRAZAR"LEEMOS TEMPERATURA!!!!!!!!!!!!!!!!!!!!!!!", INFOTRAZA);
-
-	if ((datosApp->termostato.master == false)) {
-		if (get_status_alarm(datosApp, ALARM_REMOTE_DEVICE) == ALARM_ON) {
-			ESP_LOGW(TAG, ""TRAZAR" termostato en remoto. ADEMAS LA ALARMA ESTA A ON", INFOTRAZA);
-			event = reading_local_temperature(datosApp);
-			if (event != EVENT_ANSWER_TEMPERATURE) {
-				ESP_LOGE(TAG, ""TRAZAR"ERROR EN LA LECTURA EN LOCAL CUANDO ESTA SELECCIONADA LA LECTURA REMOTA", INFOTRAZA);
-				event = EVENT_ERROR_READ_LOCAL_TEMPERATURE;
-			}
-		}
-		event = reading_remote_temperature(datosApp);
-
-	} else {
-		ESP_LOGW(TAG, ""TRAZAR" Leemos temperatura en local porque el remoto no esta disponible", INFOTRAZA);
-		event = reading_local_temperature(datosApp);
-
-	}
-
-
-
-	ESP_LOGW(TAG,""TRAZAR"reading_temperature: RETURN %s", INFOTRAZA, local_event_2_mnemonic(event));
-
-
-	return event;
-}
-
-/*
-static void temporizacion_lectura_remota(void *arg) {
-
-	static int contador = 0;
-	DATOS_APLICACION *datosApp;
-	datosApp = (DATOS_APLICACION*) arg;
-
-	contador++;
-	switch(datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma) {
-
-	case ALARM_UNDEFINED:
-		//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_WARNING, true);
-		send_event(EVENT_WARNING_DEVICE);
-		break;
-	case ALARM_OFF:
-		contador = 0;
-		break;
-	case ALARM_WARNING:
-		ESP_LOGE(TAG, ""TRAZAR" ALARMA WARNING EN SENSOR REMOTO. CONTADOR %d ", INFOTRAZA, contador);
-		if (contador == 5) {
-			if (datosApp->alarmas[ALARMA_SENSOR_REMOTO].estado_alarma != ALARM_ON) {
-				//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_REMOTO, ALARMA_SENSOR_REMOTO, ALARMA_ON, true);
-				send_event(EVENT_ERROR_DEVICE);
-			}
-		}
-		break;
-	case ALARM_ON:
-		ESP_LOGE(TAG, ""TRAZAR" ALARMA ON EN SENSOR REMOTO. LEEMOS EN LOCAL", INFOTRAZA);
-		break;
-	}
-
-
-
-
-}
-*/
 esp_err_t reading_remote_temperature(DATOS_APLICACION *datosApp) {
 
 	ESP_LOGI(TAG, ""TRAZAR" Leyendo desde el sensor remoto %s", INFOTRAZA, datosApp->termostato.sensor_remoto);
@@ -449,7 +390,7 @@ esp_err_t reading_remote_temperature(DATOS_APLICACION *datosApp) {
 void gpio_rele_in_out() {
 	gpio_config_t io_conf;
 	io_conf.intr_type = GPIO_INTR_DISABLE;
-	io_conf.pin_bit_mask = 1ULL<<CONFIG_GPIO_PIN_RELE;
+	io_conf.pin_bit_mask = 1ULL<< CONFIG_GPIO_PIN_RELE;
 	io_conf.mode = GPIO_MODE_INPUT_OUTPUT;
     io_conf.pull_down_en = 0;
     //disable pull-up mode
