@@ -768,16 +768,25 @@ static void event_handler_smartconfig(lv_event_t *event) {
 void lv_configure_smartconfig() {
 
 
+	ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI", INFOTRAZA);
 	//creating objects
 	if (lv_text_smartconfig == NULL) {
 		lv_text_smartconfig = lv_label_create(lv_main_screen);
-
+		ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 1", INFOTRAZA);
+	} else {
+		ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 2", INFOTRAZA);
 	}
 
 	if (lv_icon_wifi == NULL) {
 		lv_icon_wifi = lv_btn_create(lv_main_screen);
 		lv_text_icon_wifi = lv_label_create(lv_icon_wifi);
+		ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 3", INFOTRAZA);
+	} else {
+		ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 4", INFOTRAZA);
 	}
+
+	lv_obj_clear_flag(lv_icon_wifi, LV_OBJ_FLAG_HIDDEN);
+
 
 	lv_label_set_text_fmt(lv_text_smartconfig, "%s para configurar", LV_SYMBOL_WIFI);
 	lv_label_set_text(lv_text_icon_wifi, LV_SYMBOL_WIFI);
