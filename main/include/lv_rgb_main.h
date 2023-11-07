@@ -105,4 +105,5 @@ void lv_receive_lcd_commands(DATOS_APLICACION *datosApp);
 void lv_send_lcd_commands(LCD_COMMANDS command);
 void timing_backlight();
 esp_err_t backlight_on();
+void lv_cancel_timing_backlight();
 #endif /* MAIN_INCLUDE_LV_RGB_MAIN_H_ */

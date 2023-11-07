@@ -21,6 +21,8 @@
 #include "lv_factory_reset.h"
 
 
+
+
 #ifndef CONFIG_LCD_H_RES
 
 #define CONFIG_LCD_H_RES 800

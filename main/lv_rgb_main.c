@@ -37,7 +37,7 @@
 #include "conexiones.h"
 #include "conexiones_mqtt.h"
 
-
+#include "events_device.h"
 
 static const char *TAG = "iotThermostat";
 #define	I2C_HOST	0
@@ -276,6 +276,8 @@ esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp)
 #endif
 
     timing_backlight();
+
+
     return ESP_OK;
 /*
     lv_init_app(datosApp);
@@ -531,8 +533,6 @@ void backlight_off(void *arg) {
 void timing_backlight() {
 
 
-
-
     const esp_timer_create_args_t backlight_shot_timer_args = {
             .callback = &backlight_off,
             /* name is optional, but may help identify the timer when debugging */
@@ -543,9 +543,18 @@ void timing_backlight() {
 
 	    ESP_ERROR_CHECK(esp_timer_create(&backlight_shot_timer_args, &timer_backlight));
 	    ESP_ERROR_CHECK(esp_timer_start_once(timer_backlight, (CONFIG_TIME_OFF_BACKLIGHT * 1000000)));
-	    ESP_LOGW(TAG, "TIMER PARA APAGADO DEL LCD COMENZADO");
 
 
+}
+
+
+void lv_cancel_timing_backlight() {
+
+	if (esp_timer_is_active(timer_backlight)) {
+		ESP_LOGI(TAG, ""TRAZAR"se cancela temporizador", INFOTRAZA);
+		esp_timer_stop(timer_backlight);
+		esp_timer_delete(timer_backlight);
+	}
 
 
 }

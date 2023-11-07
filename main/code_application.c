@@ -112,11 +112,13 @@ void update_thermostat_device(DATOS_APLICACION *datosApp) {
 
 	lv_update_temperature(datosApp);
 	ESP_LOGE(TAG, ""TRAZAR" tempUmbral %.02f", INFOTRAZA, datosApp->termostato.tempUmbral);
-	thermostat_action(datosApp);
+
 	// Esto lo metemos de manera provisional para pintar la temperatura mientras estamos en factory
 	if (get_current_status_application(datosApp) == FACTORY) {
+		lv_update_threshold(datosApp, true);
 		lv_timer_handler();
 	}
+	thermostat_action(datosApp);
 
 
 }
