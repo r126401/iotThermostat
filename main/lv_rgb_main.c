@@ -39,7 +39,7 @@
 
 #include "events_device.h"
 
-static const char *TAG = "iotThermostat";
+static const char *TAG = "lv_rgb_main";
 #define	I2C_HOST	0
 esp_lcd_touch_handle_t tp = NULL;
 static esp_timer_handle_t timer_backlight;
@@ -130,15 +130,22 @@ void main_function(DATOS_APLICACION *datosApp) {
 }
 
 
+void report_error_lcd() {
+
+	send_event(__func__,EVENT_ERROR_LCD);
+	vTaskDelete(NULL);
+
+}
 
 
 
 
 
-esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp)
+void lv_init_lcd_application(void *arg)
 {
     static lv_disp_draw_buf_t disp_buf; // contains internal graphic buffer(s) called draw buffer(s)
     static lv_disp_drv_t disp_drv;      // contains callback functions
+    DATOS_APLICACION *datosApp = (DATOS_APLICACION *) arg;
 
 #if CONFIG_AVOID_TEAR_EFFECT_WITH_SEM
     ESP_LOGI(TAG, "Create semaphores");
@@ -206,17 +213,50 @@ esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp)
         .flags.fb_in_psram = true, // allocate frame buffer in PSRAM
     };
 
-    ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&panel_config, &panel_handle));
+    if (esp_lcd_new_rgb_panel(&panel_config, &panel_handle) != ESP_OK) {
+
+    	report_error_lcd();
+    	return;
+
+    }
+
+
+
+
+
+    //ESP_ERROR_CHECK(esp_lcd_new_rgb_panel(&panel_config, &panel_handle));
 
     ESP_LOGI(TAG, "Register event callbacks");
     esp_lcd_rgb_panel_event_callbacks_t cbs = {
         .on_vsync = on_vsync_event,
     };
-    ESP_ERROR_CHECK(esp_lcd_rgb_panel_register_event_callbacks(panel_handle, &cbs, &disp_drv));
+
+    if (esp_lcd_rgb_panel_register_event_callbacks(panel_handle, &cbs, &disp_drv) != ESP_OK) {
+    	report_error_lcd();
+    	return;
+    }
+
+
+
+    //ESP_ERROR_CHECK(esp_lcd_rgb_panel_register_event_callbacks(panel_handle, &cbs, &disp_drv));
 
     ESP_LOGI(TAG, "Initialize RGB LCD panel");
-    ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
-    ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
+    if (esp_lcd_panel_reset(panel_handle) !=ESP_OK) {
+    	report_error_lcd();
+    	return;
+
+    }
+
+
+
+    //ESP_ERROR_CHECK(esp_lcd_panel_reset(panel_handle));
+
+    if (esp_lcd_panel_init(panel_handle) != ESP_OK) {
+    	report_error_lcd();
+    	return;
+
+    }
+    //ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
 
 #if CONFIG_PIN_NUM_BK_LIGHT >= 0
     ESP_LOGI(TAG, "Turn on LCD backlight");
@@ -229,6 +269,14 @@ esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp)
     void *buf2 = NULL;
 #if CONFIG_DOUBLE_FB
     ESP_LOGI(TAG, "Use frame buffers as LVGL draw buffers");
+
+    if (esp_lcd_rgb_panel_get_frame_buffer(panel_handle, 2, &buf1, &buf2) != ESP_OK) {
+    	report_error_lcd();
+    	return;
+
+    }
+
+
     ESP_ERROR_CHECK(esp_lcd_rgb_panel_get_frame_buffer(panel_handle, 2, &buf1, &buf2));
     // initialize LVGL draw buffers
     lv_disp_draw_buf_init(&disp_buf, buf1, buf2, CONFIG_LCD_H_RES * CONFIG_LCD_V_RES);
@@ -275,12 +323,10 @@ esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp)
     init_app_touch_gt911(disp);
 #endif
 
+    lv_screen_thermostat(datosApp);
     timing_backlight();
+    send_event(__func__,EVENT_LCD_OK);
 
-
-    return ESP_OK;
-/*
-    lv_init_app(datosApp);
 
     while (1) {
         // raise the task priority of LVGL and/or reduce the handler period can improve the performance
@@ -288,7 +334,7 @@ esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp)
         // The task running lv_timer_handler should have lower priority than that running `lv_tick_inc`
         lv_timer_handler();
     }
-    */
+
 }
 
 

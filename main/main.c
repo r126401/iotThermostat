@@ -65,11 +65,9 @@ void app_main(void) {
 	}
 
 
-/*
-#ifdef CONFIG_RGB_PANEL
-	xTaskCreate(lv_app_rgb_main, "tarea LCD", 4096, (void*) &datosApp, 4, NULL);
-#endif
-	*/
+
+
+
 
 
 	//init_nvs e init_app
@@ -81,31 +79,36 @@ void app_main(void) {
 
 	}
 
-
+/*
 
 	if (lv_init_lcd_application(&datosApp) != ESP_OK) {
-		send_event(EVENT_ERROR_LCD);
+		send_event(__func__,EVENT_ERROR_LCD);
 		return;
 	} else {
-		send_event(EVENT_LCD_OK);
+		send_event(__func__,EVENT_LCD_OK);
 	}
+*/
 
-	lv_screen_thermostat(&datosApp);
-	lv_timer_handler();
+#ifdef CONFIG_RGB_PANEL
+	xTaskCreate(lv_init_lcd_application, "tarea LCD", 4096,  &datosApp, 4, NULL);
+#endif
+
+	//lv_screen_thermostat(&datosApp);
+	//lv_timer_handler();
 
 	xTaskCreate(task_iotThermostat, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 1, NULL);
 	if(is_factory() == ESP_OK) {
 
-		send_event(EVENT_FACTORY);
-
+		send_event(__func__,EVENT_FACTORY);
+/*
 	    while (1) {
 	        // raise the task priority of LVGL and/or reduce the handler period can improve the performance
 	        vTaskDelay(pdMS_TO_TICKS(10));
 	        // The task running lv_timer_handler should have lower priority than that running `lv_tick_inc`
-	        lv_timer_handler();
+	        //lv_timer_handler();
 	    }
 
-
+*/
 
 
 
@@ -114,9 +117,9 @@ void app_main(void) {
 		conectar_dispositivo_wifi();
 		//sync_app_by_ntp(&datosApp);
 		ESP_LOGI(TAG, ""TRAZAR" ESTADO ANTES DE INICIAR GESTION: %d", INFOTRAZA, datosApp.datosGenerales->estadoApp);
-		iniciar_gestion_programacion(&datosApp);
+		//iniciar_gestion_programacion(&datosApp);
 		//sync_app_by_ntp(&datosApp);
-		crear_tarea_mqtt(&datosApp);
+		//crear_tarea_mqtt(&datosApp);
 
 
 

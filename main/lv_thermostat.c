@@ -384,7 +384,7 @@ void lv_set_style_buttons_threshold() {
 static void event_handler_up_threshold(lv_event_t *event) {
 
 
-	send_event_device(EVENT_UP_THRESHOLD);
+	send_event_device(__func__,EVENT_UP_THRESHOLD);
 	ESP_LOGI("HOLA", "HE PULSADO ARRIBA");
 
 }
@@ -393,7 +393,7 @@ static void event_handler_up_threshold(lv_event_t *event) {
 static void event_handler_down_threshold(lv_event_t *event) {
 
 
-	send_event_device(EVENT_DOWN_THRESHOLD);
+	send_event_device(__func__,EVENT_DOWN_THRESHOLD);
 	ESP_LOGI("HOLA", "HE PULSADO ABAJO");
 
 }
@@ -761,7 +761,7 @@ static void event_handler_smartconfig(lv_event_t *event) {
 
 
 	ESP_LOGI(TAG, ""TRAZAR"event_handler_smartconfig", INFOTRAZA);
-	send_event(EVENT_SMARTCONFIG);
+	send_event(__func__,EVENT_SMARTCONFIG_START);
 	lv_label_set_text_fmt(lv_text_smartconfig, "%s Recibiendo wifi", LV_SYMBOL_WIFI);
 	lv_obj_add_flag(lv_icon_wifi, LV_OBJ_FLAG_HIDDEN);
 	lv_create_screen_factory();
@@ -793,8 +793,10 @@ void lv_configure_smartconfig() {
 	lv_label_set_text_fmt(lv_text_smartconfig, "%s para configurar", LV_SYMBOL_WIFI);
 	lv_label_set_text(lv_text_icon_wifi, LV_SYMBOL_WIFI);
 
+	ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 5", INFOTRAZA);
 	//style objects
 	lv_set_style_status_application();
+	ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 6", INFOTRAZA);
 	lv_obj_add_style(lv_text_smartconfig, &lv_style_status_application, LV_STATE_DEFAULT);
 	lv_obj_add_style(lv_icon_wifi, &lv_style_status_application, LV_STATE_DEFAULT);
 	lv_obj_add_style(lv_text_icon_wifi, &lv_style_status_application, LV_STATE_DEFAULT);

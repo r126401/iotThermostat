@@ -70,7 +70,7 @@ enum ESTADO_RELE relay_operation(DATOS_APLICACION *datosApp, enum TIPO_ACTUACION
 	ESP_LOGW(TAG, ""TRAZAR"EL RELE SE HA PUESTO A %d", INFOTRAZA, rele);
 	lv_update_relay(rele);
 	if (get_current_status_application(datosApp) == FACTORY) {
-		lv_timer_handler();
+		//lv_timer_handler();
 	}
 
 	return rele;
@@ -116,7 +116,7 @@ void update_thermostat_device(DATOS_APLICACION *datosApp) {
 	// Esto lo metemos de manera provisional para pintar la temperatura mientras estamos en factory
 	if (get_current_status_application(datosApp) == FACTORY) {
 		lv_update_threshold(datosApp, true);
-		lv_timer_handler();
+		//lv_timer_handler();
 	}
 	thermostat_action(datosApp);
 
@@ -187,14 +187,14 @@ void task_iotThermostat(void *parametros) {
     	switch(event) {
 
     	case EVENT_ANSWER_TEMPERATURE:
-    		send_event_device(EVENT_ANSWER_TEMPERATURE);
+    		send_event_device(__func__,EVENT_ANSWER_TEMPERATURE);
     		//update_thermostat_device(datosApp);
     		break;
     	case EVENT_ERROR_READ_LOCAL_TEMPERATURE:
-    		send_event_device(EVENT_ERROR_READ_LOCAL_TEMPERATURE);
+    		send_event_device(__func__,EVENT_ERROR_READ_LOCAL_TEMPERATURE);
     		break;
     	case EVENT_WAITING_RESPONSE_TEMPERATURE:
-    		send_event_device(EVENT_WAITING_RESPONSE_TEMPERATURE);
+    		send_event_device(__func__,EVENT_WAITING_RESPONSE_TEMPERATURE);
     	default:
     		break;
 

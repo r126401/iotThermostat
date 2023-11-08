@@ -97,7 +97,7 @@ typedef enum LCD_COMMANDS {
 
 } LCD_COMMANDS;
 
-esp_err_t lv_init_lcd_application(DATOS_APLICACION *datosApp);
+void lv_init_lcd_application(void *arg);
 void init_app_touch_xpt2046(lv_disp_t *disp);
 void init_app_touch_gt911(lv_disp_t *disp);
 void lv_command_list(DATOS_APLICACION *datosApp, LCD_COMMANDS *command);
