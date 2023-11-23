@@ -1,0 +1,1663 @@
+
+(rules PCB Autorouter_PCB_iotThermostat_2023-11-22
+  (snap_angle 
+    fortyfive_degree
+  )
+  (autoroute_settings
+    (fanout off)
+    (autoroute on)
+    (postroute on)
+    (vias on)
+    (via_costs 50)
+    (plane_via_costs 5)
+    (start_ripup_costs 100)
+    (start_pass_no 18)
+    (layer_rule 1
+      (active on)
+      (preferred_direction horizontal)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 2.5)
+    )
+    (layer_rule 2
+      (active on)
+      (preferred_direction vertical)
+      (preferred_direction_trace_costs 1.0)
+      (against_preferred_direction_trace_costs 1.7)
+    )
+  )
+  (rule
+    (width 1.004)
+    (clear 0.474)
+    (clear 0.502 (type smd_to_turn_gap))
+    (clear 0.468 (type IO17-IO17))
+    (clear 0.468 (type GND-GND))
+    (clear 0.468 (type "3.3V-ESP"-"3.3V-ESP"))
+    (clear 0.468 (type "UART_1"-"UART_1"))
+    (clear 0.468 (type "UART_2"-"UART_2"))
+    (clear 0.468 (type "UART_3"-"UART_3"))
+    (clear 0.468 (type IO0-IO0))
+    (clear 0.468 (type IO42-IO42))
+    (clear 0.468 (type "J1_30"-"J1_30"))
+    (clear 0.468 (type "LED1_2"-"LED1_2"))
+    (clear 0.468 (type +5V-+5V))
+    (clear 0.468 (type "R7_1"-"R7_1"))
+    (clear 0.468 (type RST-RST))
+    (clear 0.468 (type IO4-IO4))
+    (clear 0.468 (type IO5-IO5))
+    (clear 0.468 (type IO6-IO6))
+    (clear 0.468 (type IO7-IO7))
+    (clear 0.468 (type IO15-IO15))
+    (clear 0.468 (type IO16-IO16))
+    (clear 0.468 (type IO18-IO18))
+    (clear 0.468 (type IO8-IO8))
+    (clear 0.468 (type IO19-IO19))
+    (clear 0.468 (type IO20-IO20))
+    (clear 0.468 (type IO3-IO3))
+    (clear 0.468 (type IO46-IO46))
+    (clear 0.468 (type IO9-IO9))
+    (clear 0.468 (type IO10-IO10))
+    (clear 0.468 (type IO11-IO11))
+    (clear 0.468 (type IO12-IO12))
+    (clear 0.468 (type IO13-IO13))
+    (clear 0.468 (type IO14-IO14))
+    (clear 0.468 (type IO21-IO21))
+    (clear 0.468 (type IO47-IO47))
+    (clear 0.468 (type IO48-IO48))
+    (clear 0.468 (type IO45-IO45))
+    (clear 0.468 (type IO38-IO38))
+    (clear 0.468 (type IO39-IO39))
+    (clear 0.468 (type IO40-IO40))
+    (clear 0.468 (type IO41-IO41))
+    (clear 0.468 (type U0RXD-U0RXD))
+    (clear 0.468 (type U0TXD-U0TXD))
+    (clear 0.468 (type IO2-IO2))
+    (clear 0.468 (type IO1-IO1))
+    (clear 0.468 (type LEDK-LEDK))
+    (clear 0.468 (type LEDA-LEDA))
+    (clear 0.468 (type 3.3V-3.3V))
+    (clear 0.468 (type "J1_31"-"J1_31"))
+    (clear 0.468 (type X+-X+))
+    (clear 0.468 (type Y+-Y+))
+    (clear 0.468 (type "X-"-"X-"))
+    (clear 0.468 (type "Y-"-"Y-"))
+    (clear 0.468 (type "U10_6"-"U10_6"))
+    (clear 0.468 (type "U4_1"-"U4_1"))
+    (clear 0.468 (type "U4_4"-"U4_4"))
+    (clear 0.468 (type "R10_2"-"R10_2"))
+    (clear 0.468 (type "U9_14"-"U9_14"))
+    (clear 0.468 (type "R11_2"-"R11_2"))
+    (clear 0.468 (type "U9_13"-"U9_13"))
+    (clear 0.468 (type "USB_DP"-"USB_DP"))
+    (clear 0.468 (type "USB_DN"-"USB_DN"))
+    (clear 0.468 (type +POWER-+POWER))
+    (clear 0.468 (type "CN2_2"-"CN2_2"))
+    (clear 0.468 (type "CN2_1"-"CN2_1"))
+    (clear 0.468 (type VBUS-VBUS))
+    (clear 0.468 (type "U1_2"-"U1_2"))
+    (clear 0.468 (type "U5_8"-"U5_8"))
+  )
+  (padstack via0
+    (shape
+      (circle 1 2.402 0.0 0.0)
+    )
+    (shape
+      (circle 2 2.402 0.0 0.0)
+    )
+  )
+  (padstack via1
+    (shape
+      (circle 1 11.812 0.0 0.0)
+    )
+    (shape
+      (circle 2 11.812 0.0 0.0)
+    )
+  )
+  (padstack via2
+    (shape
+      (circle 1 3.15 0.0 0.0)
+    )
+    (shape
+      (circle 2 3.15 0.0 0.0)
+    )
+  )
+  (via 
+    via0 via0 default
+  )
+  (via 
+    via1 via1 default
+  )
+  (via 
+    via2 via2 default
+  )
+  (via 
+    "via0-IO17" via0 IO17
+  )
+  (via 
+    "via1-IO17" via1 IO17
+  )
+  (via 
+    "via2-IO17" via2 IO17
+  )
+  (via 
+    "via0-GND" via0 GND
+  )
+  (via 
+    "via1-GND" via1 GND
+  )
+  (via 
+    "via2-GND" via2 GND
+  )
+  (via 
+    "via0-3.3V-ESP" via0 "3.3V-ESP"
+  )
+  (via 
+    "via1-3.3V-ESP" via1 "3.3V-ESP"
+  )
+  (via 
+    "via2-3.3V-ESP" via2 "3.3V-ESP"
+  )
+  (via 
+    "via0-UART_1" via0 "UART_1"
+  )
+  (via 
+    "via1-UART_1" via1 "UART_1"
+  )
+  (via 
+    "via2-UART_1" via2 "UART_1"
+  )
+  (via 
+    "via0-UART_2" via0 "UART_2"
+  )
+  (via 
+    "via1-UART_2" via1 "UART_2"
+  )
+  (via 
+    "via2-UART_2" via2 "UART_2"
+  )
+  (via 
+    "via0-UART_3" via0 "UART_3"
+  )
+  (via 
+    "via1-UART_3" via1 "UART_3"
+  )
+  (via 
+    "via2-UART_3" via2 "UART_3"
+  )
+  (via 
+    "via0-IO0" via0 IO0
+  )
+  (via 
+    "via1-IO0" via1 IO0
+  )
+  (via 
+    "via2-IO0" via2 IO0
+  )
+  (via 
+    "via0-IO42" via0 IO42
+  )
+  (via 
+    "via1-IO42" via1 IO42
+  )
+  (via 
+    "via2-IO42" via2 IO42
+  )
+  (via 
+    "via0-J1_30" via0 "J1_30"
+  )
+  (via 
+    "via1-J1_30" via1 "J1_30"
+  )
+  (via 
+    "via2-J1_30" via2 "J1_30"
+  )
+  (via 
+    "via0-LED1_2" via0 "LED1_2"
+  )
+  (via 
+    "via1-LED1_2" via1 "LED1_2"
+  )
+  (via 
+    "via2-LED1_2" via2 "LED1_2"
+  )
+  (via 
+    "via0-+5V" via0 +5V
+  )
+  (via 
+    "via1-+5V" via1 +5V
+  )
+  (via 
+    "via2-+5V" via2 +5V
+  )
+  (via 
+    "via0-R7_1" via0 "R7_1"
+  )
+  (via 
+    "via1-R7_1" via1 "R7_1"
+  )
+  (via 
+    "via2-R7_1" via2 "R7_1"
+  )
+  (via 
+    "via0-RST" via0 RST
+  )
+  (via 
+    "via1-RST" via1 RST
+  )
+  (via 
+    "via2-RST" via2 RST
+  )
+  (via 
+    "via0-IO4" via0 IO4
+  )
+  (via 
+    "via1-IO4" via1 IO4
+  )
+  (via 
+    "via2-IO4" via2 IO4
+  )
+  (via 
+    "via0-IO5" via0 IO5
+  )
+  (via 
+    "via1-IO5" via1 IO5
+  )
+  (via 
+    "via2-IO5" via2 IO5
+  )
+  (via 
+    "via0-IO6" via0 IO6
+  )
+  (via 
+    "via1-IO6" via1 IO6
+  )
+  (via 
+    "via2-IO6" via2 IO6
+  )
+  (via 
+    "via0-IO7" via0 IO7
+  )
+  (via 
+    "via1-IO7" via1 IO7
+  )
+  (via 
+    "via2-IO7" via2 IO7
+  )
+  (via 
+    "via0-IO15" via0 IO15
+  )
+  (via 
+    "via1-IO15" via1 IO15
+  )
+  (via 
+    "via2-IO15" via2 IO15
+  )
+  (via 
+    "via0-IO16" via0 IO16
+  )
+  (via 
+    "via1-IO16" via1 IO16
+  )
+  (via 
+    "via2-IO16" via2 IO16
+  )
+  (via 
+    "via0-IO18" via0 IO18
+  )
+  (via 
+    "via1-IO18" via1 IO18
+  )
+  (via 
+    "via2-IO18" via2 IO18
+  )
+  (via 
+    "via0-IO8" via0 IO8
+  )
+  (via 
+    "via1-IO8" via1 IO8
+  )
+  (via 
+    "via2-IO8" via2 IO8
+  )
+  (via 
+    "via0-IO19" via0 IO19
+  )
+  (via 
+    "via1-IO19" via1 IO19
+  )
+  (via 
+    "via2-IO19" via2 IO19
+  )
+  (via 
+    "via0-IO20" via0 IO20
+  )
+  (via 
+    "via1-IO20" via1 IO20
+  )
+  (via 
+    "via2-IO20" via2 IO20
+  )
+  (via 
+    "via0-IO3" via0 IO3
+  )
+  (via 
+    "via1-IO3" via1 IO3
+  )
+  (via 
+    "via2-IO3" via2 IO3
+  )
+  (via 
+    "via0-IO46" via0 IO46
+  )
+  (via 
+    "via1-IO46" via1 IO46
+  )
+  (via 
+    "via2-IO46" via2 IO46
+  )
+  (via 
+    "via0-IO9" via0 IO9
+  )
+  (via 
+    "via1-IO9" via1 IO9
+  )
+  (via 
+    "via2-IO9" via2 IO9
+  )
+  (via 
+    "via0-IO10" via0 IO10
+  )
+  (via 
+    "via1-IO10" via1 IO10
+  )
+  (via 
+    "via2-IO10" via2 IO10
+  )
+  (via 
+    "via0-IO11" via0 IO11
+  )
+  (via 
+    "via1-IO11" via1 IO11
+  )
+  (via 
+    "via2-IO11" via2 IO11
+  )
+  (via 
+    "via0-IO12" via0 IO12
+  )
+  (via 
+    "via1-IO12" via1 IO12
+  )
+  (via 
+    "via2-IO12" via2 IO12
+  )
+  (via 
+    "via0-IO13" via0 IO13
+  )
+  (via 
+    "via1-IO13" via1 IO13
+  )
+  (via 
+    "via2-IO13" via2 IO13
+  )
+  (via 
+    "via0-IO14" via0 IO14
+  )
+  (via 
+    "via1-IO14" via1 IO14
+  )
+  (via 
+    "via2-IO14" via2 IO14
+  )
+  (via 
+    "via0-IO21" via0 IO21
+  )
+  (via 
+    "via1-IO21" via1 IO21
+  )
+  (via 
+    "via2-IO21" via2 IO21
+  )
+  (via 
+    "via0-IO47" via0 IO47
+  )
+  (via 
+    "via1-IO47" via1 IO47
+  )
+  (via 
+    "via2-IO47" via2 IO47
+  )
+  (via 
+    "via0-IO48" via0 IO48
+  )
+  (via 
+    "via1-IO48" via1 IO48
+  )
+  (via 
+    "via2-IO48" via2 IO48
+  )
+  (via 
+    "via0-IO45" via0 IO45
+  )
+  (via 
+    "via1-IO45" via1 IO45
+  )
+  (via 
+    "via2-IO45" via2 IO45
+  )
+  (via 
+    "via0-IO38" via0 IO38
+  )
+  (via 
+    "via1-IO38" via1 IO38
+  )
+  (via 
+    "via2-IO38" via2 IO38
+  )
+  (via 
+    "via0-IO39" via0 IO39
+  )
+  (via 
+    "via1-IO39" via1 IO39
+  )
+  (via 
+    "via2-IO39" via2 IO39
+  )
+  (via 
+    "via0-IO40" via0 IO40
+  )
+  (via 
+    "via1-IO40" via1 IO40
+  )
+  (via 
+    "via2-IO40" via2 IO40
+  )
+  (via 
+    "via0-IO41" via0 IO41
+  )
+  (via 
+    "via1-IO41" via1 IO41
+  )
+  (via 
+    "via2-IO41" via2 IO41
+  )
+  (via 
+    "via0-U0RXD" via0 U0RXD
+  )
+  (via 
+    "via1-U0RXD" via1 U0RXD
+  )
+  (via 
+    "via2-U0RXD" via2 U0RXD
+  )
+  (via 
+    "via0-U0TXD" via0 U0TXD
+  )
+  (via 
+    "via1-U0TXD" via1 U0TXD
+  )
+  (via 
+    "via2-U0TXD" via2 U0TXD
+  )
+  (via 
+    "via0-IO2" via0 IO2
+  )
+  (via 
+    "via1-IO2" via1 IO2
+  )
+  (via 
+    "via2-IO2" via2 IO2
+  )
+  (via 
+    "via0-IO1" via0 IO1
+  )
+  (via 
+    "via1-IO1" via1 IO1
+  )
+  (via 
+    "via2-IO1" via2 IO1
+  )
+  (via 
+    "via0-LEDK" via0 LEDK
+  )
+  (via 
+    "via1-LEDK" via1 LEDK
+  )
+  (via 
+    "via2-LEDK" via2 LEDK
+  )
+  (via 
+    "via0-LEDA" via0 LEDA
+  )
+  (via 
+    "via1-LEDA" via1 LEDA
+  )
+  (via 
+    "via2-LEDA" via2 LEDA
+  )
+  (via 
+    "via0-3.3V" via0 3.3V
+  )
+  (via 
+    "via1-3.3V" via1 3.3V
+  )
+  (via 
+    "via2-3.3V" via2 3.3V
+  )
+  (via 
+    "via0-J1_31" via0 "J1_31"
+  )
+  (via 
+    "via1-J1_31" via1 "J1_31"
+  )
+  (via 
+    "via2-J1_31" via2 "J1_31"
+  )
+  (via 
+    "via0-X+" via0 X+
+  )
+  (via 
+    "via1-X+" via1 X+
+  )
+  (via 
+    "via2-X+" via2 X+
+  )
+  (via 
+    "via0-Y+" via0 Y+
+  )
+  (via 
+    "via1-Y+" via1 Y+
+  )
+  (via 
+    "via2-Y+" via2 Y+
+  )
+  (via 
+    "via0-X-" via0 "X-"
+  )
+  (via 
+    "via1-X-" via1 "X-"
+  )
+  (via 
+    "via2-X-" via2 "X-"
+  )
+  (via 
+    "via0-Y-" via0 "Y-"
+  )
+  (via 
+    "via1-Y-" via1 "Y-"
+  )
+  (via 
+    "via2-Y-" via2 "Y-"
+  )
+  (via 
+    "via0-U10_6" via0 "U10_6"
+  )
+  (via 
+    "via1-U10_6" via1 "U10_6"
+  )
+  (via 
+    "via2-U10_6" via2 "U10_6"
+  )
+  (via 
+    "via0-U4_1" via0 "U4_1"
+  )
+  (via 
+    "via1-U4_1" via1 "U4_1"
+  )
+  (via 
+    "via2-U4_1" via2 "U4_1"
+  )
+  (via 
+    "via0-U4_4" via0 "U4_4"
+  )
+  (via 
+    "via1-U4_4" via1 "U4_4"
+  )
+  (via 
+    "via2-U4_4" via2 "U4_4"
+  )
+  (via 
+    "via0-R10_2" via0 "R10_2"
+  )
+  (via 
+    "via1-R10_2" via1 "R10_2"
+  )
+  (via 
+    "via2-R10_2" via2 "R10_2"
+  )
+  (via 
+    "via0-U9_14" via0 "U9_14"
+  )
+  (via 
+    "via1-U9_14" via1 "U9_14"
+  )
+  (via 
+    "via2-U9_14" via2 "U9_14"
+  )
+  (via 
+    "via0-R11_2" via0 "R11_2"
+  )
+  (via 
+    "via1-R11_2" via1 "R11_2"
+  )
+  (via 
+    "via2-R11_2" via2 "R11_2"
+  )
+  (via 
+    "via0-U9_13" via0 "U9_13"
+  )
+  (via 
+    "via1-U9_13" via1 "U9_13"
+  )
+  (via 
+    "via2-U9_13" via2 "U9_13"
+  )
+  (via 
+    "via0-USB_DP" via0 "USB_DP"
+  )
+  (via 
+    "via1-USB_DP" via1 "USB_DP"
+  )
+  (via 
+    "via2-USB_DP" via2 "USB_DP"
+  )
+  (via 
+    "via0-USB_DN" via0 "USB_DN"
+  )
+  (via 
+    "via1-USB_DN" via1 "USB_DN"
+  )
+  (via 
+    "via2-USB_DN" via2 "USB_DN"
+  )
+  (via 
+    "via0-+POWER" via0 +POWER
+  )
+  (via 
+    "via1-+POWER" via1 +POWER
+  )
+  (via 
+    "via2-+POWER" via2 +POWER
+  )
+  (via 
+    "via0-CN2_2" via0 "CN2_2"
+  )
+  (via 
+    "via1-CN2_2" via1 "CN2_2"
+  )
+  (via 
+    "via2-CN2_2" via2 "CN2_2"
+  )
+  (via 
+    "via0-CN2_1" via0 "CN2_1"
+  )
+  (via 
+    "via1-CN2_1" via1 "CN2_1"
+  )
+  (via 
+    "via2-CN2_1" via2 "CN2_1"
+  )
+  (via 
+    "via0-VBUS" via0 VBUS
+  )
+  (via 
+    "via1-VBUS" via1 VBUS
+  )
+  (via 
+    "via2-VBUS" via2 VBUS
+  )
+  (via 
+    "via0-U1_2" via0 "U1_2"
+  )
+  (via 
+    "via1-U1_2" via1 "U1_2"
+  )
+  (via 
+    "via2-U1_2" via2 "U1_2"
+  )
+  (via 
+    "via0-U5_8" via0 "U5_8"
+  )
+  (via 
+    "via1-U5_8" via1 "U5_8"
+  )
+  (via 
+    "via2-U5_8" via2 "U5_8"
+  )
+  (via_rule
+    default via0
+  )
+  (via_rule
+    IO17 "via0-IO17"
+  )
+  (via_rule
+    GND "via0-GND"
+  )
+  (via_rule
+    "3.3V-ESP" "via0-3.3V-ESP"
+  )
+  (via_rule
+    "UART_1" "via0-UART_1"
+  )
+  (via_rule
+    "UART_2" "via0-UART_2"
+  )
+  (via_rule
+    "UART_3" "via0-UART_3"
+  )
+  (via_rule
+    IO0 "via0-IO0"
+  )
+  (via_rule
+    IO42 "via0-IO42"
+  )
+  (via_rule
+    "J1_30" "via0-J1_30"
+  )
+  (via_rule
+    "LED1_2" "via0-LED1_2"
+  )
+  (via_rule
+    +5V "via0-+5V"
+  )
+  (via_rule
+    "R7_1" "via0-R7_1"
+  )
+  (via_rule
+    RST "via0-RST"
+  )
+  (via_rule
+    IO4 "via0-IO4"
+  )
+  (via_rule
+    IO5 "via0-IO5"
+  )
+  (via_rule
+    IO6 "via0-IO6"
+  )
+  (via_rule
+    IO7 "via0-IO7"
+  )
+  (via_rule
+    IO15 "via0-IO15"
+  )
+  (via_rule
+    IO16 "via0-IO16"
+  )
+  (via_rule
+    IO18 "via0-IO18"
+  )
+  (via_rule
+    IO8 "via0-IO8"
+  )
+  (via_rule
+    IO19 "via0-IO19"
+  )
+  (via_rule
+    IO20 "via0-IO20"
+  )
+  (via_rule
+    IO3 "via0-IO3"
+  )
+  (via_rule
+    IO46 "via0-IO46"
+  )
+  (via_rule
+    IO9 "via0-IO9"
+  )
+  (via_rule
+    IO10 "via0-IO10"
+  )
+  (via_rule
+    IO11 "via0-IO11"
+  )
+  (via_rule
+    IO12 "via0-IO12"
+  )
+  (via_rule
+    IO13 "via0-IO13"
+  )
+  (via_rule
+    IO14 "via0-IO14"
+  )
+  (via_rule
+    IO21 "via0-IO21"
+  )
+  (via_rule
+    IO47 "via0-IO47"
+  )
+  (via_rule
+    IO48 "via0-IO48"
+  )
+  (via_rule
+    IO45 "via0-IO45"
+  )
+  (via_rule
+    IO38 "via0-IO38"
+  )
+  (via_rule
+    IO39 "via0-IO39"
+  )
+  (via_rule
+    IO40 "via0-IO40"
+  )
+  (via_rule
+    IO41 "via0-IO41"
+  )
+  (via_rule
+    U0RXD "via0-U0RXD"
+  )
+  (via_rule
+    U0TXD "via0-U0TXD"
+  )
+  (via_rule
+    IO2 "via0-IO2"
+  )
+  (via_rule
+    IO1 "via0-IO1"
+  )
+  (via_rule
+    LEDK "via0-LEDK"
+  )
+  (via_rule
+    LEDA "via0-LEDA"
+  )
+  (via_rule
+    3.3V "via0-3.3V"
+  )
+  (via_rule
+    "J1_31" "via0-J1_31"
+  )
+  (via_rule
+    X+ "via0-X+"
+  )
+  (via_rule
+    Y+ "via0-Y+"
+  )
+  (via_rule
+    "X-" "via0-X-"
+  )
+  (via_rule
+    "Y-" "via0-Y-"
+  )
+  (via_rule
+    "U10_6" "via0-U10_6"
+  )
+  (via_rule
+    "U4_1" "via0-U4_1"
+  )
+  (via_rule
+    "U4_4" "via0-U4_4"
+  )
+  (via_rule
+    "R10_2" "via0-R10_2"
+  )
+  (via_rule
+    "U9_14" "via0-U9_14"
+  )
+  (via_rule
+    "R11_2" "via0-R11_2"
+  )
+  (via_rule
+    "U9_13" "via0-U9_13"
+  )
+  (via_rule
+    "USB_DP" "via0-USB_DP"
+  )
+  (via_rule
+    "USB_DN" "via0-USB_DN"
+  )
+  (via_rule
+    +POWER "via0-+POWER"
+  )
+  (via_rule
+    "CN2_2" "via0-CN2_2"
+  )
+  (via_rule
+    "CN2_1" "via0-CN2_1"
+  )
+  (via_rule
+    VBUS "via0-VBUS"
+  )
+  (via_rule
+    "U1_2" "via0-U1_2"
+  )
+  (via_rule
+    "U5_8" "via0-U5_8"
+  )
+  (class default
+    (clearance_class default)
+    (via_rule default)
+    (rule
+      (width 1.004)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO17
+    IO17
+    (clearance_class IO17)
+    (via_rule IO17)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class GND
+    GND
+    (clearance_class GND)
+    (via_rule GND)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "3.3V-ESP"
+    "3.3V-ESP"
+    (clearance_class "3.3V-ESP")
+    (via_rule "3.3V-ESP")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "UART_1"
+    "UART_1"
+    (clearance_class "UART_1")
+    (via_rule "UART_1")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "UART_2"
+    "UART_2"
+    (clearance_class "UART_2")
+    (via_rule "UART_2")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "UART_3"
+    "UART_3"
+    (clearance_class "UART_3")
+    (via_rule "UART_3")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO0
+    IO0
+    (clearance_class IO0)
+    (via_rule IO0)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO42
+    IO42
+    (clearance_class IO42)
+    (via_rule IO42)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "J1_30"
+    "J1_30"
+    (clearance_class "J1_30")
+    (via_rule "J1_30")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "LED1_2"
+    "LED1_2"
+    (clearance_class "LED1_2")
+    (via_rule "LED1_2")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class +5V
+    +5V
+    (clearance_class +5V)
+    (via_rule +5V)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "R7_1"
+    "R7_1"
+    (clearance_class "R7_1")
+    (via_rule "R7_1")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class RST
+    RST
+    (clearance_class RST)
+    (via_rule RST)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO4
+    IO4
+    (clearance_class IO4)
+    (via_rule IO4)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO5
+    IO5
+    (clearance_class IO5)
+    (via_rule IO5)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO6
+    IO6
+    (clearance_class IO6)
+    (via_rule IO6)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO7
+    IO7
+    (clearance_class IO7)
+    (via_rule IO7)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO15
+    IO15
+    (clearance_class IO15)
+    (via_rule IO15)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO16
+    IO16
+    (clearance_class IO16)
+    (via_rule IO16)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO18
+    IO18
+    (clearance_class IO18)
+    (via_rule IO18)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO8
+    IO8
+    (clearance_class IO8)
+    (via_rule IO8)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO19
+    IO19
+    (clearance_class IO19)
+    (via_rule IO19)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO20
+    IO20
+    (clearance_class IO20)
+    (via_rule IO20)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO3
+    IO3
+    (clearance_class IO3)
+    (via_rule IO3)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO46
+    IO46
+    (clearance_class IO46)
+    (via_rule IO46)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO9
+    IO9
+    (clearance_class IO9)
+    (via_rule IO9)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO10
+    IO10
+    (clearance_class IO10)
+    (via_rule IO10)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO11
+    IO11
+    (clearance_class IO11)
+    (via_rule IO11)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO12
+    IO12
+    (clearance_class IO12)
+    (via_rule IO12)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO13
+    IO13
+    (clearance_class IO13)
+    (via_rule IO13)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO14
+    IO14
+    (clearance_class IO14)
+    (via_rule IO14)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO21
+    IO21
+    (clearance_class IO21)
+    (via_rule IO21)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO47
+    IO47
+    (clearance_class IO47)
+    (via_rule IO47)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO48
+    IO48
+    (clearance_class IO48)
+    (via_rule IO48)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO45
+    IO45
+    (clearance_class IO45)
+    (via_rule IO45)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO38
+    IO38
+    (clearance_class IO38)
+    (via_rule IO38)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO39
+    IO39
+    (clearance_class IO39)
+    (via_rule IO39)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO40
+    IO40
+    (clearance_class IO40)
+    (via_rule IO40)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO41
+    IO41
+    (clearance_class IO41)
+    (via_rule IO41)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class U0RXD
+    U0RXD
+    (clearance_class U0RXD)
+    (via_rule U0RXD)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class U0TXD
+    U0TXD
+    (clearance_class U0TXD)
+    (via_rule U0TXD)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO2
+    IO2
+    (clearance_class IO2)
+    (via_rule IO2)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class IO1
+    IO1
+    (clearance_class IO1)
+    (via_rule IO1)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class LEDK
+    LEDK
+    (clearance_class LEDK)
+    (via_rule LEDK)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class LEDA
+    LEDA
+    (clearance_class LEDA)
+    (via_rule LEDA)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class 3.3V
+    3.3V
+    (clearance_class 3.3V)
+    (via_rule 3.3V)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "J1_31"
+    "J1_31"
+    (clearance_class "J1_31")
+    (via_rule "J1_31")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class X+
+    X+
+    (clearance_class X+)
+    (via_rule X+)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class Y+
+    Y+
+    (clearance_class Y+)
+    (via_rule Y+)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "X-"
+    "X-"
+    (clearance_class "X-")
+    (via_rule "X-")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "Y-"
+    "Y-"
+    (clearance_class "Y-")
+    (via_rule "Y-")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "U10_6"
+    "U10_6"
+    (clearance_class "U10_6")
+    (via_rule "U10_6")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "U4_1"
+    "U4_1"
+    (clearance_class "U4_1")
+    (via_rule "U4_1")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "U4_4"
+    "U4_4"
+    (clearance_class "U4_4")
+    (via_rule "U4_4")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "R10_2"
+    "R10_2"
+    (clearance_class "R10_2")
+    (via_rule "R10_2")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "U9_14"
+    "U9_14"
+    (clearance_class "U9_14")
+    (via_rule "U9_14")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "R11_2"
+    "R11_2"
+    (clearance_class "R11_2")
+    (via_rule "R11_2")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "U9_13"
+    "U9_13"
+    (clearance_class "U9_13")
+    (via_rule "U9_13")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "USB_DP"
+    "USB_DP"
+    (clearance_class "USB_DP")
+    (via_rule "USB_DP")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "USB_DN"
+    "USB_DN"
+    (clearance_class "USB_DN")
+    (via_rule "USB_DN")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class +POWER
+    +POWER
+    (clearance_class +POWER)
+    (via_rule +POWER)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "CN2_2"
+    "CN2_2"
+    (clearance_class "CN2_2")
+    (via_rule "CN2_2")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "CN2_1"
+    "CN2_1"
+    (clearance_class "CN2_1")
+    (via_rule "CN2_1")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class VBUS
+    VBUS
+    (clearance_class VBUS)
+    (via_rule VBUS)
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "U1_2"
+    "U1_2"
+    (clearance_class "U1_2")
+    (via_rule "U1_2")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+  (class "U5_8"
+    "U5_8"
+    (clearance_class "U5_8")
+    (via_rule "U5_8")
+    (rule
+      (width 1.0)
+    )
+    (circuit 
+      (use_layer 1 2)
+    )
+  )
+)

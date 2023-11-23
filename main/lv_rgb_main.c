@@ -604,3 +604,12 @@ void lv_cancel_timing_backlight() {
 
 
 }
+
+
+void lv_init_spi_lcd(void *arg) {
+
+
+
+}
+
+
