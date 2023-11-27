@@ -174,28 +174,28 @@ void lv_init_lcd_application(void *arg)
         .bounce_buffer_size_px = 10 * CONFIG_LCD_H_RES,
 #endif
         .clk_src = LCD_CLK_SRC_DEFAULT,
-        .disp_gpio_num = CONFIG_PIN_NUM_DISP_EN,
-        .pclk_gpio_num = CONFIG_PIN_NUM_PCLK,
-        .vsync_gpio_num = CONFIG_PIN_NUM_VSYNC,
-        .hsync_gpio_num = CONFIG_PIN_NUM_HSYNC,
-        .de_gpio_num = CONFIG_PIN_NUM_DE,
+        .disp_gpio_num = CONFIG_RGB_LCD_PIN_NUM_DISP_EN,
+        .pclk_gpio_num = CONFIG_RGB_LCD_PIN_NUM_PCLK,
+        .vsync_gpio_num = CONFIG_RGB_LCD_PIN_NUM_VSYNC,
+        .hsync_gpio_num = CONFIG_RGB_LCD_PIN_NUM_HSYNC,
+        .de_gpio_num = CONFIG_RGB_LCD_PIN_NUM_DE,
         .data_gpio_nums = {
-            CONFIG_PIN_NUM_DATA0,
-            CONFIG_PIN_NUM_DATA1,
-            CONFIG_PIN_NUM_DATA2,
-            CONFIG_PIN_NUM_DATA3,
-            CONFIG_PIN_NUM_DATA4,
-            CONFIG_PIN_NUM_DATA5,
-            CONFIG_PIN_NUM_DATA6,
-            CONFIG_PIN_NUM_DATA7,
-            CONFIG_PIN_NUM_DATA8,
-            CONFIG_PIN_NUM_DATA9,
-            CONFIG_PIN_NUM_DATA10,
-            CONFIG_PIN_NUM_DATA11,
-            CONFIG_PIN_NUM_DATA12,
-            CONFIG_PIN_NUM_DATA13,
-            CONFIG_PIN_NUM_DATA14,
-            CONFIG_PIN_NUM_DATA15,
+            CONFIG_RGB_LCD_PIN_NUM_DATA0,
+            CONFIG_RGB_LCD_PIN_NUM_DATA1,
+            CONFIG_RGB_LCD_PIN_NUM_DATA2,
+            CONFIG_RGB_LCD_PIN_NUM_DATA3,
+            CONFIG_RGB_LCD_PIN_NUM_DATA4,
+            CONFIG_RGB_LCD_PIN_NUM_DATA5,
+            CONFIG_RGB_LCD_PIN_NUM_DATA6,
+            CONFIG_RGB_LCD_PIN_NUM_DATA7,
+            CONFIG_RGB_LCD_PIN_NUM_DATA8,
+            CONFIG_RGB_LCD_PIN_NUM_DATA9,
+            CONFIG_RGB_LCD_PIN_NUM_DATA10,
+            CONFIG_RGB_LCD_PIN_NUM_DATA11,
+            CONFIG_RGB_LCD_PIN_NUM_DATA12,
+            CONFIG_RGB_LCD_PIN_NUM_DATA13,
+            CONFIG_RGB_LCD_PIN_NUM_DATA14,
+            CONFIG_RGB_LCD_PIN_NUM_DATA15,
         },
         .timings = {
             .pclk_hz = CONFIG_LCD_PIXEL_CLOCK_HZ,
@@ -258,7 +258,7 @@ void lv_init_lcd_application(void *arg)
     }
     //ESP_ERROR_CHECK(esp_lcd_panel_init(panel_handle));
 
-#if CONFIG_PIN_NUM_BK_LIGHT >= 0
+#if CONFIG_RGB_LCD_PIN_NUM_BK_LIGHT >= 0
     ESP_LOGI(TAG, "Turn on LCD backlight");
     gpio_set_level(CONFIG_PIN_NUM_BK_LIGHT, CONFIG_LCD_BK_LIGHT_ON_LEVEL);
 #endif
@@ -557,7 +557,7 @@ void backlight_off(void *arg) {
 
 
 
-	//gpio_set_level(CONFIG_PIN_NUM_BK_LIGHT, 0);
+	//gpio_set_level(CONFIG_RGB_LCD_PIN_NUM_BK_LIGHT, 0);
 	//ESP_LOGE(TAG, "PANTALLA APAGADA");
 
 

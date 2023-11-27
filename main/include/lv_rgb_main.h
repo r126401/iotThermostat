@@ -30,6 +30,7 @@
 #define CONFIG_LCD_PIXEL_CLOCK_HZ     (7 * 1000 * 1000)
 #define CONFIG_LCD_BK_LIGHT_ON_LEVEL  1
 #define CONFIG_LCD_BK_LIGHT_OFF_LEVEL !CONFIG_LCD_BK_LIGHT_ON_LEVEL
+/*
 #define CONFIG_PIN_NUM_BK_LIGHT       2
 #define CONFIG_PIN_NUM_HSYNC          39
 #define CONFIG_PIN_NUM_VSYNC          41
@@ -52,7 +53,7 @@
 #define CONFIG_PIN_NUM_DATA14         21 // R3
 #define CONFIG_PIN_NUM_DATA15         14 // R4
 #define CONFIG_PIN_NUM_DISP_EN        -1
-
+*/
 // The pixel number in horizontal and vertical
 //#define CONFIG_LCD_H_RES              480
 //#define CONFIG_LCD_V_RES              272
