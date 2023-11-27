@@ -20,12 +20,12 @@
 
 
 
-#if CONFIG_RGB_PANEL
+
 #include "lv_rgb_main.h"
 #include "lv_factory_reset.h"
 #include "lv_thermostat.h"
 #include "lv_init_thermostat.h"
-#endif
+
 
 static const char *TAG = "IotThermostat";
 DATOS_APLICACION datosApp;
@@ -89,8 +89,12 @@ void app_main(void) {
 	}
 */
 
-#ifdef CONFIG_RGB_PANEL
+#ifdef CONFIG_RGB_LCD
 	xTaskCreate(lv_init_lcd_application, "tarea LCD", 8192,  &datosApp, 4, NULL);
+#endif
+
+#ifdef CONFIG_SPI_LCD
+	xTaskCreate(lv_init_spi_lcd, "tarea LCD", 8192,  &datosApp, 4, NULL);
 #endif
 
 	//lv_screen_thermostat(&datosApp);

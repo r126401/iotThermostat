@@ -624,8 +624,13 @@ void lv_normal_boot() {
 
 void lv_factory_boot() {
 
-	lv_obj_add_flag(lv_layout_notification, LV_OBJ_FLAG_HIDDEN);
-	lv_obj_add_flag(lv_text_status_application, LV_OBJ_FLAG_HIDDEN);
+	if (lv_layout_notification != NULL) {
+		lv_obj_add_flag(lv_layout_notification, LV_OBJ_FLAG_HIDDEN);
+	}
+	if (lv_text_status_application != NULL) {
+		lv_obj_add_flag(lv_text_status_application, LV_OBJ_FLAG_HIDDEN);
+	}
+
 
 
 }
