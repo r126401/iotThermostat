@@ -55,77 +55,6 @@ config GPIO_PIN_LED_LCD
 	depends on IMPLEMENTS_LEDS
 	help 
 		GPIO to implement LED indicator
-	
-config TIME_OFF_BACKLIGHT
-	int "Tiempo de apagado del LCD"
-	default 60
-	help 
-		Indica el tiempo en segundos en el que se apagara la pantalla
-
-
-menu "Tipo de touch"
-
-    choice "TOUCH_TYPE"
-        prompt "Seleccion del tipo de touch para la pantalla"
-        help
-	        Selecciona el tipo de touch a usar
-	        
-        config GT911
-	        bool "GT911"
-	        prompt "GT911"
-		        help
-			        GT911
-        config XPT2046
-	        bool "XPT2046"
-	        prompt "XPT2046"
-	        help
-		        XPT2046
-		        
-    endchoice
-    
-        config SPI_TOUCH_SCLK
-        depends on XPT2046
-        int "SPI_TOUCH_SCLK"
-        default 12
-        help
-            SPI_TOUCH_SCLK 
-    
-        config SPI_TOUCH_MOSI
-        depends on XPT2046
-        int "SPI_TOUCH_MOSI (DIN)"
-        default 11
-        help
-            SPI_TOUCH_MOSI (DIN)
-            
-     
-        config SPI_TOUCH_MISO 
-        depends on XPT2046
-        int "SPI_TOUCH_MISO (DOUT)"
-        default 13
-        help
-            SPI_TOUCH_MISO (DOUT)
-            
-      
-        config SPI_TOUCH_INTR
-        depends on XPT2046
-        int "SPI_TOUCH_INTR"
-        default 18
-        help
-            SPI_TOUCH_INTR 
-            
-      
-        config SPI_TOUCH_CS
-        depends on XPT2046
-        int "SPI_TOUCH_CS"
-        default 38
-        help
-            SPI_TOUCH_CS 
-            
-               
-    
-
-endmenu
-
 
 
 menu "Tipo de sensor a utilizar"
@@ -166,29 +95,17 @@ config GPIO_PIN_DS18B20
 
 
 
-config RGB_LCD
+config USE_LCD
 	bool "Indicate if use rgb panel"
 	default n
 	help 
 		include code for implement rgb panel into proyect
 
-
-config LCD_H_RES
-	int "Horizontal resolution rgb panel"
-	default 800
-	help
-		Indicate the horizontal resolution of rgb panel
-		
-config LCD_V_RES
-	int "Vertical resolution rgb panel"
-	default 480
-	help
-		Indicate the vertical resolution of rgb panel		
-
             
 menu "Tipo de LCD"
-
+	depends on USE_LCD
 choice LCD
+	depends on USE_LCD
     prompt "Tipo de LCD"
     help
         Selecciona el tipo de LCD a usar
@@ -498,6 +415,97 @@ choice LCD
 endchoice
 endmenu
 
+
+
+config LCD_H_RES
+	depends on USE_LCD
+	int "Horizontal resolution rgb panel"
+	default 800
+	help
+		Indicate the horizontal resolution of rgb panel
+		
+config LCD_V_RES
+	depends on USE_LCD
+	int "Vertical resolution rgb panel"
+	default 480
+	help
+		Indicate the vertical resolution of rgb panel		
+
+	
+config TIME_OFF_BACKLIGHT
+	depends on USE_LCD
+	int "Tiempo de apagado del LCD"
+	default 60
+	help 
+		Indica el tiempo en segundos en el que se apagara la pantalla
+
+
+
+
+
+menu "Tipo de touch"
+	depends on USE_LCD
+
+    choice "TOUCH_TYPE"
+        prompt "Seleccion del tipo de touch para la pantalla"
+        help
+	        Selecciona el tipo de touch a usar
+	        
+        config GT911
+	        bool "GT911"
+	        prompt "GT911"
+		        help
+			        GT911
+        config XPT2046
+	        bool "XPT2046"
+	        prompt "XPT2046"
+	        help
+		        XPT2046
+		        
+    endchoice
+    
+        config SPI_TOUCH_SCLK
+        depends on XPT2046
+        int "SPI_TOUCH_SCLK"
+        default 12
+        help
+            SPI_TOUCH_SCLK 
+    
+        config SPI_TOUCH_MOSI
+        depends on XPT2046
+        int "SPI_TOUCH_MOSI (DIN)"
+        default 11
+        help
+            SPI_TOUCH_MOSI (DIN)
+            
+     
+        config SPI_TOUCH_MISO 
+        depends on XPT2046
+        int "SPI_TOUCH_MISO (DOUT)"
+        default 13
+        help
+            SPI_TOUCH_MISO (DOUT)
+            
+      
+        config SPI_TOUCH_INTR
+        depends on XPT2046
+        int "SPI_TOUCH_INTR"
+        default 18
+        help
+            SPI_TOUCH_INTR 
+            
+      
+        config SPI_TOUCH_CS
+        depends on XPT2046
+        int "SPI_TOUCH_CS"
+        default 38
+        help
+            SPI_TOUCH_CS 
+            
+               
+    
+
+endmenu
 
 
 

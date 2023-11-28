@@ -48,9 +48,6 @@ enum ESTADO_RELE relay_operation(DATOS_APLICACION *datosApp, enum TIPO_ACTUACION
 
 	enum ESTADO_RELE rele;
 
-
-	//gpio_reset_pin(CONFIG_GPIO_PIN_RELE);
-	//gpio_rele_in();
 	switch (tipo) {
 	case MANUAL:
 		if (gpio_get_level(CONFIG_GPIO_PIN_RELE) == OFF) {
@@ -70,7 +67,6 @@ enum ESTADO_RELE relay_operation(DATOS_APLICACION *datosApp, enum TIPO_ACTUACION
 	ESP_LOGW(TAG, ""TRAZAR"EL RELE SE HA PUESTO A %d", INFOTRAZA, rele);
 	lv_update_relay(rele);
 	if (get_current_status_application(datosApp) == FACTORY) {
-		//lv_timer_handler();
 	}
 
 	return rele;
@@ -82,7 +78,6 @@ void thermostat_action(DATOS_APLICACION *datosApp) {
 
 	enum ESTADO_RELE accion_rele;
 	enum TIPO_ACCION_TERMOSTATO accion_termostato;
-	cJSON* informe = NULL;
 	static float lecturaAnterior = -1000;
 
 	ESP_LOGI(TAG, ""TRAZAR"accionar_termostato: LECTURA ANTERIOR: %.2f, LECTURA POSTERIOR: %.2f HA HABIDO CAMBIO DE TEMPERATURA", INFOTRAZA,
@@ -94,14 +89,8 @@ void thermostat_action(DATOS_APLICACION *datosApp) {
     }
 
     if ((accion_termostato == ACCIONAR_TERMOSTATO) || (lecturaAnterior != datosApp->termostato.tempActual)) {
-    	//lv_actualizar_temperatura_lcd(datosApp);
     	ESP_LOGI(TAG, ""TRAZAR"HA HABIDO CAMBIO DE TEMPERATURA", INFOTRAZA);
-        informe = appuser_send_spontaneous_report(datosApp, CAMBIO_TEMPERATURA, NULL);
-        if (informe != NULL) {
-        	publicar_mensaje_json(datosApp, informe, NULL);
-        } else {
-        	ESP_LOGI(TAG, "El informe iba vacio");
-        }
+        send_spontaneous_report(datosApp, CAMBIO_TEMPERATURA);
 
     }
     lecturaAnterior = datosApp->termostato.tempActual;
@@ -116,7 +105,6 @@ void update_thermostat_device(DATOS_APLICACION *datosApp) {
 	// Esto lo metemos de manera provisional para pintar la temperatura mientras estamos en factory
 	if (get_current_status_application(datosApp) == FACTORY) {
 		lv_update_threshold(datosApp, true);
-		//lv_timer_handler();
 	}
 	thermostat_action(datosApp);
 
@@ -141,48 +129,17 @@ void task_iotThermostat(void *parametros) {
 			vTaskDelay(datosApp->termostato.retry_interval * 1000 / portTICK_RATE_MS);
 			ESP_LOGI(TAG, ""TRAZAR"ERROR EN LA LECTURA LOCAL, PASAMOS A LA LOGICA DE REINTENTOS", INFOTRAZA);
 		}
-/*
-
-
-    	if (datosApp->termostato.master) {
-    		if (get_status_alarm(datosApp, ALARM_APP) == ALARM_ON) {
-    			vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
-    		} else {
-    			vTaskDelay(datosApp->termostato.intervaloReintentos * 1000 / portTICK_RATE_MS);
-    			ESP_LOGI(TAG, ""TRAZAR"ERROR EN LA LECTURA LOCAL, PASAMOS A LA LOGICA DE REINTENTOS", INFOTRAZA);
-    		}
-    	} else {
-    		if ((get_status_alarm(datosApp, ALARM_APP) == ALARM_ON) ||  (get_status_alarm(datosApp, ALARM_REMOTE_DEVICE) == ALARM_ON)) {
-    			vTaskDelay(datosApp->termostato.intervaloLectura * 1000 / portTICK_RATE_MS);
-    		} else {
-    			vTaskDelay(datosApp->termostato.intervaloReintentos * 1000 / portTICK_RATE_MS);
-    			ESP_LOGI(TAG, ""TRAZAR"ERROR EN LA LECTURA REMOTA, PASAMOS A LA LOGICA DE REINTENTOS", INFOTRAZA);
-    		}
-    	}
-*/
-    	//event = reading_temperature(datosApp);
 
 		if ((datosApp->termostato.master == false)) {
 
 			event = reading_remote_temperature(datosApp);
-			/*
-			if (get_status_alarm(datosApp, ALARM_REMOTE_DEVICE) == ALARM_ON) {
-				ESP_LOGW(TAG, ""TRAZAR" termostato en remoto. ADEMAS LA ALARMA ESTA A ON", INFOTRAZA);
-				event = reading_local_temperature(datosApp);
-				if (event != EVENT_ANSWER_TEMPERATURE) {
-					ESP_LOGE(TAG, ""TRAZAR"ERROR EN LA LECTURA EN LOCAL CUANDO ESTA SELECCIONADA LA LECTURA REMOTA", INFOTRAZA);
-					event = EVENT_ERROR_READ_LOCAL_TEMPERATURE;
-				}
-			}
-*/
+
 
 		} else {
 			ESP_LOGW(TAG, ""TRAZAR" Leemos temperatura en local", INFOTRAZA);
 			event = reading_local_temperature(datosApp);
 
 		}
-
-
 
     	switch(event) {
 
@@ -199,18 +156,6 @@ void task_iotThermostat(void *parametros) {
     		break;
 
     	}
-    	/*
-    	if (reading_temperature(datosApp) == EVENT_ANSWER_TEMPERATURE) {
-    		//send_event(EVENT_DEVICE_OK);
-
-
-
-    	} else {
-    		send_event(EVENT_ERROR_DEVICE);
-    	}
-
-*/
-
 
     }
 
@@ -298,7 +243,6 @@ enum TIPO_ACCION_TERMOSTATO calcular_accion_termostato(DATOS_APLICACION *datosAp
 EVENT_DEVICE reading_local_temperature(DATOS_APLICACION *datosApp) {
 
     esp_err_t error = ESP_FAIL;
-    static uint8_t contador = 0;
 	float temperatura_a_redondear;
 
 
@@ -334,37 +278,15 @@ EVENT_DEVICE reading_local_temperature(DATOS_APLICACION *datosApp) {
     		temperatura_a_redondear = datosApp->termostato.tempActual;
           	datosApp->termostato.tempActual = redondear_temperatura(temperatura_a_redondear);
             	ESP_LOGI(TAG, ""TRAZAR" Temp sin redondeo %.01lf, Temp redondeada %.01lf ", INFOTRAZA, temperatura_a_redondear,datosApp->termostato.tempActual );
-      		contador = 0;
+
     	} else {
 
     		ESP_LOGE(TAG, ""TRAZAR" ERROR AL TOMAR LA LECTURA", INFOTRAZA);
     		return EVENT_ERROR_READ_LOCAL_TEMPERATURE;
 
-    		/*
-    		contador++;
-    		if (contador == 5) {
-    			//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_ON, true);
-    			return ESP_FAIL;
-
-    		}
-    		ESP_LOGE(TAG, ""TRAZAR" ERROR AL TOMAR LA LECTURA. REINTENTAMOS EN %d SEGUNDOS", INFOTRAZA, datosApp->termostato.intervaloReintentos);
-        	vTaskDelay(datosApp->termostato.intervaloReintentos * 1000 / portTICK_RATE_MS);
-        	*/
     	}
 
     }
-
- /*
-
-    if (datosApp->alarmas[ALARMA_SENSOR_DHT].estado_alarma > ALARM_OFF) {
-    	ESP_LOGE(TAG, ""TRAZAR"LA ALARMA DE SENSOR SE DESACTIVA", INFOTRAZA);
-    	//registrar_alarma(datosApp, NOTIFICACION_ALARMA_SENSOR_DHT, ALARMA_SENSOR_DHT, ALARMA_OFF, true);
-    	send_event(EVENT_ERROR_DEVICE);
-    	lv_update_alarm_device(datosApp);
-    }
-*/
-
-
 
     return EVENT_ANSWER_TEMPERATURE;
 
@@ -405,6 +327,14 @@ void gpio_rele_in_out() {
 
 
 esp_err_t init_code_application(DATOS_APLICACION *datosApp) {
+
+
+
+	DATOS_GENERALES *datosGenerales;
+	datosGenerales = (DATOS_GENERALES*) calloc(1, sizeof(DATOS_GENERALES));
+	datosApp->datosGenerales = datosGenerales;
+
+
 
 	gpio_rele_in_out();
 	gpio_set_level(CONFIG_GPIO_PIN_RELE, OFF);
