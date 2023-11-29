@@ -90,7 +90,7 @@ void thermostat_action(DATOS_APLICACION *datosApp) {
 
     if ((accion_termostato == ACCIONAR_TERMOSTATO) || (lecturaAnterior != datosApp->termostato.tempActual)) {
     	ESP_LOGI(TAG, ""TRAZAR"HA HABIDO CAMBIO DE TEMPERATURA", INFOTRAZA);
-        send_spontaneous_report(datosApp, CAMBIO_TEMPERATURA);
+        send_spontaneous_report(datosApp, CHANGE_TEMPERATURE);
 
     }
     lecturaAnterior = datosApp->termostato.tempActual;
