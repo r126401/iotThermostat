@@ -301,7 +301,7 @@ esp_err_t reading_remote_temperature(DATOS_APLICACION *datosApp) {
 	comando = cJSON_CreateObject();
 	objeto = cabeceraGeneral(datosApp);
 	if (objeto != NULL) {
-		cJSON_AddNumberToObject(objeto, DLG_COMANDO, STATUS_DISPOSITIVO);
+		cJSON_AddNumberToObject(objeto, DLG_COMANDO, STATUS_DEVICE);
 		cJSON_AddItemToObject(comando, COMANDO, objeto);
 		publicar_mensaje_json(datosApp, comando, datosApp->datosGenerales->parametrosMqtt.topics[CONFIG_INDEX_REMOTE_TOPIC_TEMPERATURE].publish);
 	}
