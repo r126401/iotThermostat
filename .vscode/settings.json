@@ -1,0 +1,14 @@
+{
+  "C_Cpp.intelliSenseEngine": "default",
+  "idf.adapterTargetName": "esp32s3",
+  "idf.port": "/dev/ttyUSB0",
+  "C_Cpp.default.compilerPath": "/home/t126401/.espressif/tools/xtensa-esp-elf/esp-13.2.0_20230928/xtensa-esp-elf/bin/xtensa-esp32-elf-gcc",
+  "files.associations": {
+    "lv_rgb_main.h": "c",
+    "lvgl.h": "c",
+    "lv_log.h": "c",
+    "common_data.h": "c",
+    "lv_conf_internal.h": "c"
+  },
+  "idf.flashType": "UART"
+}

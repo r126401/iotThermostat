@@ -350,7 +350,7 @@ void lv_create_heating_icon(DATOS_APLICACION *datosApp) {
 
 	lv_icon_heating = lv_img_create(lv_main_screen);
 	lv_img_set_src(lv_icon_heating, &ic_heating);
-	lv_obj_align_to(lv_icon_heating, lv_layout_temperature, LV_ALIGN_OUT_RIGHT_MID, 50, 30);
+	lv_obj_align_to(lv_icon_heating, lv_layout_temperature, LV_ALIGN_OUT_RIGHT_MID, 30, 30);
 
 
 
@@ -378,6 +378,8 @@ void lv_set_style_buttons_threshold() {
 	lv_obj_add_style(lv_button_down_threshold, &lv_style_button_threshold, LV_STATE_DEFAULT);
 	lv_style_set_pad_all(&lv_style_button_threshold, 0);
 	lv_style_set_border_width(&lv_style_button_threshold, 0);
+
+
 
 }
 
@@ -415,7 +417,7 @@ void lv_create_layout_buttons_threshold(DATOS_APLICACION *datosApp) {
 	lv_icon_down_threshold = lv_img_create(lv_button_down_threshold);
 	lv_img_set_src(lv_icon_down_threshold, &ic_down_threshold);
 	lv_obj_set_size(lv_layout_buttons_threshold, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-	lv_obj_set_pos(lv_layout_buttons_threshold,lv_pct(5) , lv_pct(20));
+	lv_obj_set_pos(lv_layout_buttons_threshold,lv_pct(85) , lv_pct(30));
 	lv_set_style_buttons_threshold();
 
 

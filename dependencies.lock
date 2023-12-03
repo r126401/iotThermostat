@@ -8,13 +8,13 @@ dependencies:
   espressif__esp_lcd_touch:
     component_hash: null
     source:
-      path: /home/t126401/espressif5.2/iotThermostat/components/espressif__esp_lcd_touch
+      path: /home/t126401/visual/iotThermostat/components/espressif__esp_lcd_touch
       type: local
     version: 1.0.4
   espressif__esp_lcd_touch_gt911:
     component_hash: null
     source:
-      path: /home/t126401/espressif5.2/iotThermostat/components/espressif__esp_lcd_touch_gt911
+      path: /home/t126401/visual/iotThermostat/components/espressif__esp_lcd_touch_gt911
       type: local
     version: 1.0.0
   idf:

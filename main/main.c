@@ -50,6 +50,10 @@ void app_main(void) {
 
 	}
 
+	
+
+
+
 #ifdef CONFIG_USE_LCD
 
 #ifdef CONFIG_RGB_LCD
