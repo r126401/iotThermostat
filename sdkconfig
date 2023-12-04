@@ -615,7 +615,7 @@ CONFIG_MEMORIA_ESP8266=1
 #
 # Configuracion Termostato
 #
-CONFIG_GPIO_PIN_RELE=19
+CONFIG_GPIO_PIN_RELE=10
 # end of Configuracion Termostato
 
 #
