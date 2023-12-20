@@ -8,7 +8,19 @@
     "lvgl.h": "c",
     "lv_log.h": "c",
     "common_data.h": "c",
-    "lv_conf_internal.h": "c"
+    "lv_conf_internal.h": "c",
+    "esp_https_ota.h": "c",
+    "errores_proyecto.h": "c",
+    "conexiones.h": "c",
+    "complex": "cpp",
+    "format": "cpp",
+    "lv_thermostat.h": "c",
+    "esp_lcd_panel_io.h": "c",
+    "user_interface.h": "c",
+    "programmer.h": "c",
+    "event_groups.h": "c",
+    "freertos.h": "c",
+    "conexiones_mqtt.h": "c"
   },
   "idf.flashType": "UART",
   "cmake.configureOnOpen": true

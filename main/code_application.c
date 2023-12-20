@@ -9,12 +9,11 @@
 #include "logging.h"
 #include "driver/gpio.h"
 #include "esp_timer.h"
-#include "interfaz_usuario.h"
+#include "user_interface.h"
 #include "conexiones.h"
 #include "conexiones_mqtt.h"
 #include <math.h>
 #include "cJSON.h"
-#include "funciones_usuario.h"
 #include "ds18x20.h"
 #include "events_device.h"
 #include "dialogos_json.h"

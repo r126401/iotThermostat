@@ -585,6 +585,9 @@ CONFIG_CARGA_CONFIGURACION=0
 # Configuracion General
 #
 CONFIG_DEFAULT_SCAN_LIST_SIZE=10
+CONFIG_UINT32_FORMAT="%ld"
+CONFIG_LONG_FORMAT="%lld"
+CONFIG_ULONG_FORMAT="%llu"
 # end of Configuracion General
 
 #
@@ -613,17 +616,17 @@ CONFIG_MEMORIA_ESP8266=1
 # end of Configuracion otaesp
 
 #
-# Configuracion Termostato
-#
-CONFIG_GPIO_PIN_RELE=10
-# end of Configuracion Termostato
-
-#
 # Configuracion ntp
 #
 CONFIG_TIMEOUT_NTP=5000
 CONFIG_SERVIDOR_NTP="pool.ntp.org"
 # end of Configuracion ntp
+
+#
+# Configuracion Termostato
+#
+CONFIG_GPIO_PIN_RELE=10
+# end of Configuracion Termostato
 
 #
 # XPT2046
