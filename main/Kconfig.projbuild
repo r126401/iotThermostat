@@ -507,7 +507,42 @@ menu "Tipo de touch"
 
 endmenu
 
+menu "Task Configuration"
 
+
+
+
+    config RESOURCE_EVENT_TASK
+        int "memory event task"
+        default 4096
+        help 
+            Indica la memoria de la tarea event_task
+    
+    config RESOURCE_MQTT_TASK
+        int "memory mqtt task"
+        default 8192
+        help 
+            Indica la memoria de la tarea mqtt_task
+    
+    config RESOURCE_SMARTCONFIG_TASK
+        int "memory smartconfig task"
+        default 4096
+        help 
+            Indica la memoria de la tarea smartconfig_task
+    
+    
+    config RESOURCE_OTA_TASK
+        int "memory ota task"
+        default 4096
+        help 
+            Indica la memoria de la tarea ota_task
+    
+    config RESOURCE_APP_TASK
+        int "memory app task"
+        default 4096
+        help 
+            Indica la memoria de la tarea app_task
+    endmenu
 
 
 
