@@ -43,7 +43,7 @@ void app_main(void) {
 	error = init_code_application(&datosApp);
 	create_event_task(&datosApp);
 
-	error = init_application(&datosApp, CONFIG_CARGA_CONFIGURACION);
+	error = init_application(&datosApp);
 	if (error == ESP_OK) {
 		ESP_LOGI(TAG, ""TRAZAR"INICIALIZACION CORRECTA", INFOTRAZA);
 	} else {

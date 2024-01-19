@@ -79,19 +79,6 @@ endchoice
 endmenu
 
 
-config GPIO_PIN_DHT
-    int "PIN SENSOR DHT"
-    default 0
-    depends on DHT22
-    help 
-        Implement pin gpio to sensor dht22 or dht11
-
-config GPIO_PIN_DS18B20
-    int "PIN SENSOR DS18B20"
-    default 0
-    depends on DS18B20
-    help 
-        Implement pin gpio to sensor DS18B20
 
 
 

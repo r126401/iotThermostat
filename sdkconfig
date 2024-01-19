@@ -56,7 +56,6 @@ CONFIG_SOC_CLK_TREE_SUPPORTED=y
 CONFIG_SOC_MPU_SUPPORTED=y
 CONFIG_SOC_WDT_SUPPORTED=y
 CONFIG_SOC_SPI_FLASH_SUPPORTED=y
-CONFIG_SOC_RNG_SUPPORTED=y
 CONFIG_SOC_XTAL_SUPPORT_40M=y
 CONFIG_SOC_APPCPU_HAS_CLOCK_GATING_BUG=y
 CONFIG_SOC_ADC_RTC_CTRL_SUPPORTED=y
@@ -90,7 +89,6 @@ CONFIG_SOC_CACHE_FREEZE_SUPPORTED=y
 CONFIG_SOC_CPU_CORES_NUM=2
 CONFIG_SOC_CPU_INTR_NUM=32
 CONFIG_SOC_CPU_HAS_FPU=y
-CONFIG_SOC_HP_CPU_HAS_MULTIPLE_CORES=y
 CONFIG_SOC_CPU_BREAKPOINTS_NUM=2
 CONFIG_SOC_CPU_WATCHPOINTS_NUM=2
 CONFIG_SOC_CPU_WATCHPOINT_MAX_REGION_SIZE=64
@@ -515,9 +513,7 @@ CONFIG_NUM_TOPICS=3
 CONFIG_INDEX_REMOTE_TOPIC_TEMPERATURE=2
 CONFIG_PREFIX_TOPIC_PUBLISH_REMOTE_TEMPERATURE="/sub_"
 CONFIG_PREFIX_TOPIC_SUBSCRIBE_REMOTE_TEMPERATURE="/pub_"
-CONFIG_IMPLEMENTS_LEDS=y
-CONFIG_GPIO_PIN_LED=12
-CONFIG_GPIO_PIN_LED_LCD=13
+# CONFIG_IMPLEMENTS_LEDS is not set
 
 #
 # Tipo de sensor a utilizar
@@ -526,7 +522,6 @@ CONFIG_GPIO_PIN_LED_LCD=13
 CONFIG_DS18B20=y
 # end of Tipo de sensor a utilizar
 
-CONFIG_GPIO_PIN_DS18B20=17
 CONFIG_USE_LCD=y
 
 #
@@ -588,56 +583,68 @@ CONFIG_RESOURCE_APP_TASK=4096
 # end of iotThermostat configuration
 
 #
-# Configuracion de inicializacion
+# Configuracion General components
 #
-CONFIG_CARGA_CONFIGURACION=0
-# end of Configuracion de inicializacion
+# CONFIG_FACTORY_DATA is not set
 
 #
-# Configuracion General
-#
-CONFIG_DEFAULT_SCAN_LIST_SIZE=10
-CONFIG_UINT32_FORMAT="%ld"
-CONFIG_LONG_FORMAT="%lld"
-CONFIG_ULONG_FORMAT="%llu"
-# end of Configuracion General
-
-#
-# Configuracion General
+# Configuracion nvs
 #
 CONFIG_CLAVE_CONFIGURACION_GENERAL="general"
 CONFIG_CLAVE_PROGRAMACION="programacion"
 CONFIG_CLAVE_PROGRAMA_ESTATICO="programa_estatico_real"
+CONFIG_NAMESPACE="CONF_DISP"
+# end of Configuracion nvs
+
+#
+# Configuraciones mqtt
+#
 CONFIG_BROKER_DEFECTO="mqtts://jajicaiot.ddns.net"
 CONFIG_PUERTO_DEFECTO=8883
 CONFIG_USUARIO_BROKER_DEFECTO=""
 CONFIG_PASSWORD_BROKER_DEFECTO=""
 CONFIG_MQTT_TLS=1
 CONFIG_PREFIJO_SUSCRIPCION_DEFECTO="/"
-CONFIG_NAMESPACE="CONF_DISP"
 CONFIG_TAMANO_BUFFER_LECTURA=1024
-CONFIG_NUMERO_ALARMAS_PROVISIONADAS=6
-# end of Configuracion General
+# end of Configuraciones mqtt
 
 #
-# Configuracion otaesp
+# logging format
 #
-CONFIG_SERVER_IP="jajicaiot.ddns.net/firmware/iotThermostat"
-CONFIG_SERVER_PORT="80"
-CONFIG_MEMORIA_ESP8266=1
-# end of Configuracion otaesp
+CONFIG_UINT32_FORMAT="%ld"
+CONFIG_LONG_FORMAT="%lld"
+CONFIG_ULONG_FORMAT="%llu"
+# end of logging format
 
 #
-# Configuracion ntp
+# Wifi Configurations
+#
+CONFIG_DEFAULT_SCAN_LIST_SIZE=10
+# end of Wifi Configurations
+
+#
+# NTP Configurations
 #
 CONFIG_TIMEOUT_NTP=5000
 CONFIG_SERVIDOR_NTP="pool.ntp.org"
-# end of Configuracion ntp
+# end of NTP Configurations
+
+#
+# Task Configurations
+#
+# end of Task Configurations
+# end of Configuracion General components
+
+#
+# Configuracion ds18b20
+#
+CONFIG_GPIO_PIN_DS18B20=17
+# end of Configuracion ds18b20
 
 #
 # Configuracion Termostato
 #
-CONFIG_GPIO_PIN_RELE=19
+CONFIG_GPIO_PIN_RELE=10
 # end of Configuracion Termostato
 
 #
@@ -645,7 +652,7 @@ CONFIG_GPIO_PIN_RELE=19
 #
 CONFIG_XPT2046_Z_THRESHOLD=400
 CONFIG_XPT2046_CONVERT_ADC_TO_COORDS=y
-CONFIG_XPT2046_ENABLE_LOCKING=y
+# CONFIG_XPT2046_ENABLE_LOCKING is not set
 # end of XPT2046
 
 #
@@ -727,6 +734,14 @@ CONFIG_TWAI_ERRATA_FIX_LISTEN_ONLY_DOM=y
 #
 # CONFIG_UART_ISR_IN_IRAM is not set
 # end of UART Configuration
+
+#
+# Sigma Delta Modulator Configuration
+#
+# CONFIG_SDM_CTRL_FUNC_IN_IRAM is not set
+# CONFIG_SDM_SUPPRESS_DEPRECATE_WARN is not set
+# CONFIG_SDM_ENABLE_DEBUG_LOG is not set
+# end of Sigma Delta Modulator Configuration
 
 #
 # USB Serial/JTAG Configuration
@@ -841,14 +856,6 @@ CONFIG_GPTIMER_ISR_HANDLER_IN_IRAM=y
 # end of ESP-Driver:RMT Configurations
 
 #
-# ESP-Driver:Sigma Delta Modulator Configurations
-#
-# CONFIG_SDM_CTRL_FUNC_IN_IRAM is not set
-# CONFIG_SDM_SUPPRESS_DEPRECATE_WARN is not set
-# CONFIG_SDM_ENABLE_DEBUG_LOG is not set
-# end of ESP-Driver:Sigma Delta Modulator Configurations
-
-#
 # ESP-Driver:SPI Configurations
 #
 # CONFIG_SPI_MASTER_IN_IRAM is not set
@@ -899,7 +906,6 @@ CONFIG_ESP_GDBSTUB_MAX_TASKS=32
 CONFIG_ESP_HTTP_CLIENT_ENABLE_HTTPS=y
 # CONFIG_ESP_HTTP_CLIENT_ENABLE_BASIC_AUTH is not set
 # CONFIG_ESP_HTTP_CLIENT_ENABLE_DIGEST_AUTH is not set
-# CONFIG_ESP_HTTP_CLIENT_ENABLE_CUSTOM_TRANSPORT is not set
 # end of ESP HTTP client
 
 #
@@ -958,7 +964,6 @@ CONFIG_ESP_MAC_UNIVERSAL_MAC_ADDRESSES_FOUR=y
 # CONFIG_ESP32S3_UNIVERSAL_MAC_ADDRESSES_TWO is not set
 CONFIG_ESP32S3_UNIVERSAL_MAC_ADDRESSES_FOUR=y
 CONFIG_ESP32S3_UNIVERSAL_MAC_ADDRESSES=4
-# CONFIG_ESP_MAC_USE_CUSTOM_MAC_AS_BASE_MAC is not set
 # end of MAC Config
 
 #

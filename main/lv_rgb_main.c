@@ -92,44 +92,6 @@ static void increase_lvgl_tick(void *arg)
 }
 
 
-void main_function(DATOS_APLICACION *datosApp) {
-
-	esp_err_t error;
-
-	if (init_code_application(datosApp) != ESP_OK) {
-		ESP_LOGE(TAG, ""TRAZAR" FALLO LA INICIALIZACION DE LA APLICACION", INFOTRAZA);
-	}
-
-
-
-
-	error = init_application(datosApp, CONFIG_CARGA_CONFIGURACION);
-	if (error == ESP_OK) {
-		ESP_LOGI(TAG, ""TRAZAR"INICIALIZACION CORRECTA", INFOTRAZA);
-	} else {
-		if (datosApp->datosGenerales->estadoApp == FACTORY) {
-			ESP_LOGI(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
-		} else {
-			ESP_LOGE(TAG, ""TRAZAR"NO SE HA PODIDO INICIALIZAR EL DISPOSITIVO", INFOTRAZA);
-			return;
-		}
-
-	}
-
-
-
-
-	ESP_LOGI(TAG, ""TRAZAR" vamos a conectar al wifi", INFOTRAZA);
-	conectar_dispositivo_wifi();
-
-	//sync_app_by_ntp(datosApp);
-	crear_tarea_mqtt(datosApp);
-
-
-
-}
-
-
 void report_error_lcd() {
 
 	send_event(__func__,EVENT_ERROR_LCD);
@@ -460,7 +422,7 @@ static void lvgl_touch_cb2(lv_indev_drv_t * drv, lv_indev_data_t * data) {
         data->point.y = y[0];
         data->state = LV_INDEV_STATE_PR;
         ESP_LOGI(TAG, "XPT2046: x=%d, y=%d",data->point.x, data->point.y);
-        //backlight_on();
+        backlight_on();
 
     }
 
@@ -489,6 +451,7 @@ void init_app_touch_xpt2046(lv_disp_t *disp) {
 
 	esp_lcd_panel_io_handle_t tp_io_handle = NULL;
 	esp_lcd_panel_io_spi_config_t tp_io_config = ESP_LCD_TOUCH_IO_SPI_XPT2046_CONFIG(38);
+    tp_io_config.spi_mode = 3;
 	ESP_ERROR_CHECK(esp_lcd_new_panel_io_spi((esp_lcd_spi_bus_handle_t)SPI2_HOST, &tp_io_config, &tp_io_handle));
 
 	    esp_lcd_touch_config_t tp_cfg = {
@@ -527,26 +490,21 @@ void init_app_touch_xpt2046(lv_disp_t *disp) {
 esp_err_t backlight_on() {
 
 
-
-	if (gpio_get_level(CONFIG_PIN_NUM_BK_LIGHT) == 0) {
+    
+    if (gpio_get_level(CONFIG_PIN_NUM_BK_LIGHT) == 0) {
 		gpio_set_level(CONFIG_PIN_NUM_BK_LIGHT, 1);
 		ESP_LOGE(TAG, "SE ENCIENDE LA PANTALLA");
 	} else {
 		if (esp_timer_is_active(timer_backlight)) {
+            ESP_ERROR_CHECK(esp_timer_stop(timer_backlight));
 			ESP_LOGE(TAG, "CANCELAMOS TEMPORIZADOS Y REINICIAMOS");
-			ESP_ERROR_CHECK(esp_timer_stop(timer_backlight));
-			ESP_ERROR_CHECK(esp_timer_delete(timer_backlight));
+			
 		} else {
 			ESP_LOGE(TAG, "REBOTE");
 		}
-
-
 	}
-
-	timing_backlight();
-
-
-
+    ESP_LOGW(TAG,""TRAZAR"REINICIAMOS LA TEMPORIZACION PARA BACKLIGHT", INFOTRAZA);
+    ESP_ERROR_CHECK(esp_timer_start_once(timer_backlight, (CONFIG_TIME_OFF_BACKLIGHT * 1000000)));
 
 	return ESP_OK;
 }
@@ -557,19 +515,15 @@ void backlight_off(void *arg) {
 
 
 
-	//gpio_set_level(CONFIG_RGB_LCD_PIN_NUM_BK_LIGHT, 0);
-	//ESP_LOGE(TAG, "PANTALLA APAGADA");
+ESP_LOGI(TAG, ""TRAZAR" TEMPORIZACION VENCIDA EN LA PANTALLA SIN TOCAR...", INFOTRAZA);
 
-
-
-	if (gpio_get_level(CONFIG_PIN_NUM_BK_LIGHT) == 1) {
-		gpio_set_level(CONFIG_PIN_NUM_BK_LIGHT, 0);
-		ESP_LOGE(TAG, "PANTALLA APAGADA");
-	} else {
-
-		ESP_LOGE(TAG, "LA PANTALLA SIGUE ENCENDIDA");
-
+if (gpio_get_level(CONFIG_PIN_NUM_BK_LIGHT) == 1) {
+    gpio_set_level(CONFIG_PIN_NUM_BK_LIGHT, 0);
+    ESP_LOGE(TAG, "PANTALLA APAGADA");
+    } else {
+        ESP_LOGE(TAG, "LA PANTALLA SIGUE ENCENDIDA");
 	}
+
 
 
 
@@ -579,6 +533,7 @@ void backlight_off(void *arg) {
 void timing_backlight() {
 
 
+ESP_LOGI(TAG, ""TRAZAR" TEMPORIZADOR PARA LA PANTALLA", INFOTRAZA);
     const esp_timer_create_args_t backlight_shot_timer_args = {
             .callback = &backlight_off,
             /* name is optional, but may help identify the timer when debugging */
@@ -589,7 +544,7 @@ void timing_backlight() {
 
 	    ESP_ERROR_CHECK(esp_timer_create(&backlight_shot_timer_args, &timer_backlight));
 	    ESP_ERROR_CHECK(esp_timer_start_once(timer_backlight, (CONFIG_TIME_OFF_BACKLIGHT * 1000000)));
-
+        ESP_LOGI(TAG, ""TRAZAR" TEMPORIZADOR PARA LA PANTALLA CREADO", INFOTRAZA);
 
 }
 
@@ -599,7 +554,7 @@ void lv_cancel_timing_backlight() {
 	if (esp_timer_is_active(timer_backlight)) {
 		ESP_LOGI(TAG, ""TRAZAR"se cancela temporizador", INFOTRAZA);
 		esp_timer_stop(timer_backlight);
-		esp_timer_delete(timer_backlight);
+		//esp_timer_delete(timer_backlight);
 	}
 
 
