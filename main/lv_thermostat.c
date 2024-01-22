@@ -43,6 +43,7 @@ lv_obj_t *lv_text_temperature;
 lv_obj_t *lv_icon_themometer;
 lv_obj_t *lv_icon_heating;
 lv_obj_t *lv_icon_threshold;
+lv_obj_t *lv_icon_button_reset;
 lv_obj_t *lv_text_threshold;
 lv_obj_t *lv_text_status_application;
 lv_obj_t *lv_text_from_schedule;
@@ -60,6 +61,7 @@ lv_style_t lv_style_main_screen;
 lv_style_t lv_style_layout_notification;
 lv_style_t lv_style_lv_layout_buttons_threshold;
 lv_style_t lv_style_button_threshold;
+lv_style_t lv_style_button_reset_app;
 lv_style_t lv_style_layout_schedule;
 lv_style_t lv_style_bar_schedule;
 
@@ -73,6 +75,7 @@ lv_obj_t *lv_icon_ntp;
 lv_obj_t *lv_icon_alarm;
 lv_obj_t *lv_button_up_threshold;
 lv_obj_t *lv_button_down_threshold;
+lv_obj_t *lv_button_reset_app;
 lv_obj_t *lv_icon_up_threshold;
 lv_obj_t *lv_icon_down_threshold;
 lv_obj_t *lv_icon_wifi;
@@ -91,6 +94,7 @@ LV_IMG_DECLARE(ic_thermometer);
 LV_IMG_DECLARE(ic_threshold);
 LV_IMG_DECLARE(ic_up_threshold);
 LV_IMG_DECLARE(ic_down_threshold);
+LV_IMG_DECLARE(ic_reset);
 
 //LV_FONT_CUSTOM_DECLARE(lv_font_led_30);
 LV_FONT_DECLARE(russo48);
@@ -120,22 +124,23 @@ void lv_set_style_screen(lv_obj_t *display) {
 
 	lv_style_init(&lv_style_main_screen);
 	lv_obj_add_style(lv_main_screen, &lv_style_main_screen, LV_STATE_DEFAULT);
-	//lv_style_set_bg_color(&lv_style_main_screen, lv_color_hex(0xcccccc));
-	//lv_style_set_bg_grad_color(&lv_style_main_screen, lv_color_hex(0xdddddd));
-    /*Make a gradient*/
-/*
-    lv_style_set_bg_opa(&lv_style_main_screen, LV_OPA_COVER);
-    lv_style_set_bg_color(&lv_style_main_screen, lv_color_hex(0));
-    lv_style_set_bg_grad_color(&lv_style_main_screen, lv_color_hex(0x0534F0));
-    lv_style_set_bg_grad_dir(&lv_style_main_screen, LV_GRAD_DIR_VER);
-*/
-	//lv_style_set_border_color(&lv_style_main_screen, lv_color_hex(0xcccccc));
 
 
+}
+
+
+void lv_general_style(lv_style_t *style) {
+
+	lv_style_set_pad_all(style, 0);
+	lv_style_set_bg_opa(style, LV_OPA_TRANSP);
+    lv_style_set_border_width(style, 0);
 
 
 
 }
+
+
+
 
 void lv_set_style_layout_notification() {
 
@@ -205,7 +210,14 @@ void lv_create_layout_nofitification(DATOS_APLICACION *datosApp) {
 }
 
 
+void lv_set_lv_style_button_reset_app() {
+	lv_style_init(&lv_style_button_reset_app);
+	lv_style_set_pad_all(&lv_style_button_reset_app, 0);
+	lv_style_set_bg_opa(&lv_style_button_reset_app, LV_OPA_TRANSP);
+    lv_style_set_border_width(&lv_style_button_reset_app, 0);
+	lv_obj_add_style(lv_button_reset_app, &lv_style_button_reset_app, LV_STATE_DEFAULT);
 
+}
 
 
 
@@ -350,7 +362,9 @@ void lv_create_heating_icon(DATOS_APLICACION *datosApp) {
 
 	lv_icon_heating = lv_img_create(lv_main_screen);
 	lv_img_set_src(lv_icon_heating, &ic_heating);
-	lv_obj_align_to(lv_icon_heating, lv_layout_temperature, LV_ALIGN_OUT_RIGHT_MID, 30, 30);
+
+	lv_obj_set_pos(lv_icon_heating, lv_pct(10), lv_pct(30));
+	//lv_obj_align_to(lv_icon_heating, lv_layout_temperature, LV_ALIGN_OUT_RIGHT_MID, 30, 30);
 
 
 
@@ -376,6 +390,7 @@ void lv_set_style_buttons_threshold() {
 	lv_style_init(&lv_style_button_threshold);
 	lv_obj_add_style(lv_button_up_threshold, &lv_style_button_threshold, LV_STATE_DEFAULT);
 	lv_obj_add_style(lv_button_down_threshold, &lv_style_button_threshold, LV_STATE_DEFAULT);
+	//lv_obj_add_style(lv_button_reset_app, &lv_style_button_threshold, LV_STATE_DEFAULT);
 	lv_style_set_pad_all(&lv_style_button_threshold, 0);
 	lv_style_set_border_width(&lv_style_button_threshold, 0);
 
@@ -401,6 +416,17 @@ static void event_handler_down_threshold(lv_event_t *event) {
 }
 
 
+static void event_handler_button_reset(lv_event_t *event) {
+
+	send_event_device(__func__, EVENT_RESET_BUTTON);
+	ESP_LOGI(TAG, ""TRAZAR"PULSADO BOTON RESET", INFOTRAZA);
+	esp_restart();
+
+
+}
+
+
+
 void lv_create_layout_buttons_threshold(DATOS_APLICACION *datosApp) {
 
 
@@ -408,17 +434,42 @@ void lv_create_layout_buttons_threshold(DATOS_APLICACION *datosApp) {
 	lv_set_style_layout_buttons_threshold();
 	lv_obj_set_flex_flow(lv_layout_buttons_threshold, LV_FLEX_FLOW_COLUMN);
 
+	lv_button_reset_app = lv_btn_create(lv_main_screen);
 	lv_button_up_threshold = lv_btn_create(lv_layout_buttons_threshold);
 	lv_button_down_threshold = lv_btn_create(lv_layout_buttons_threshold);
+
+
+
+
+
 	lv_obj_add_event_cb(lv_button_up_threshold, event_handler_up_threshold, LV_EVENT_CLICKED, datosApp);
 	lv_obj_add_event_cb(lv_button_down_threshold, event_handler_down_threshold, LV_EVENT_CLICKED, datosApp);
+	lv_obj_add_event_cb(lv_button_reset_app, event_handler_button_reset, LV_EVENT_CLICKED, datosApp);
+
+
+
+
+
 	lv_icon_up_threshold = lv_img_create(lv_button_up_threshold);
-	lv_img_set_src(lv_icon_up_threshold, &ic_up_threshold);
 	lv_icon_down_threshold = lv_img_create(lv_button_down_threshold);
+	lv_icon_button_reset = lv_img_create(lv_button_reset_app);
+
 	lv_img_set_src(lv_icon_down_threshold, &ic_down_threshold);
+
+	lv_img_set_src(lv_icon_up_threshold, &ic_up_threshold);
+	lv_img_set_src(lv_icon_button_reset, &ic_reset);
+
+
+
 	lv_obj_set_size(lv_layout_buttons_threshold, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-	lv_obj_set_pos(lv_layout_buttons_threshold,lv_pct(5) , lv_pct(25));
+	lv_obj_set_size(lv_button_reset_app, 48, 48);
+
+
+
+	lv_obj_set_pos(lv_button_reset_app, 0,0);
+	lv_obj_set_pos(lv_layout_buttons_threshold,lv_pct(87) , lv_pct(30));
 	lv_set_style_buttons_threshold();
+	lv_set_lv_style_button_reset_app();
 
 
 

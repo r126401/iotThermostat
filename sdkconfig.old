@@ -646,7 +646,7 @@ CONFIG_GPIO_PIN_DS18B20=17
 #
 # Configuracion Termostato
 #
-CONFIG_GPIO_PIN_RELE=19
+CONFIG_GPIO_PIN_RELE=10
 # end of Configuracion Termostato
 
 #

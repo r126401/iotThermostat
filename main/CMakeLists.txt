@@ -24,6 +24,7 @@ idf_component_register(SRCS
 "images/ic_up_threshold.c"
 "images/ic_wifi_off.c"
 "images/ic_wifi_on.c"
+"images/ic_reset.c"
 INCLUDE_DIRS 
 "."
 "include")
