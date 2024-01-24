@@ -125,12 +125,7 @@ void task_iotThermostat(void *parametros) {
     lv_update_relay(gpio_get_level(CONFIG_GPIO_PIN_RELE));
 
     while(1) {
-		if (get_status_alarm(datosApp, ALARM_APP) == ALARM_ON) {
-			vTaskDelay(datosApp->termostato.read_interval * 1000 / portTICK_RATE_MS);
-		} else {
-			vTaskDelay(datosApp->termostato.retry_interval * 1000 / portTICK_RATE_MS);
-			ESP_LOGI(TAG, ""TRAZAR"ERROR EN LA LECTURA LOCAL, PASAMOS A LA LOGICA DE REINTENTOS", INFOTRAZA);
-		}
+
 
 		if ((datosApp->termostato.master == false)) {
 
@@ -142,6 +137,8 @@ void task_iotThermostat(void *parametros) {
 			event = reading_local_temperature(datosApp);
 
 		}
+
+
 
     	switch(event) {
 
@@ -159,7 +156,17 @@ void task_iotThermostat(void *parametros) {
 
     	}
 
+		if (get_status_alarm(datosApp, ALARM_APP) == ALARM_ON) {
+			vTaskDelay(datosApp->termostato.read_interval * 1000 / portTICK_RATE_MS);
+		} else {
+			vTaskDelay(datosApp->termostato.retry_interval * 1000 / portTICK_RATE_MS);
+			ESP_LOGI(TAG, ""TRAZAR"ERROR EN LA LECTURA LOCAL, PASAMOS A LA LOGICA DE REINTENTOS", INFOTRAZA);
+		}
+
     }
+
+
+	
 
 }
 
