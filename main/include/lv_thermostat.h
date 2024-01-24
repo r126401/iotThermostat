@@ -21,6 +21,7 @@
 #include "esp_lcd_touch.h"
 #include "esp_lcd_panel_io.h"
 #include "common_data.h"
+#include "local_events_device.h"
 
 
 
@@ -56,5 +57,6 @@ void lv_update_relay(ESTADO_RELE relay);
 void lv_configure_smartconfig();
 void lv_normal_boot();
 void lv_factory_boot();
+void lv_paint_sub_status_app(SUB_STATUS_APP status);
 
 #endif /* LV_SRC_INCLUDE_LV_THERMOSTAT_H_ */

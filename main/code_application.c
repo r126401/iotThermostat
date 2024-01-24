@@ -105,7 +105,10 @@ void update_thermostat_device(DATOS_APLICACION *datosApp) {
 	if (get_current_status_application(datosApp) == FACTORY) {
 		lv_update_threshold(datosApp, true);
 	}
-	thermostat_action(datosApp);
+	if (get_current_status_application(datosApp) != NORMAL_MANUAL) {
+		thermostat_action(datosApp);
+	}
+	
 
 
 }
@@ -286,7 +289,7 @@ EVENT_DEVICE reading_local_temperature(DATOS_APLICACION *datosApp) {
     	}
 
     }
-
+	ESP_LOGE(TAG, ""TRAZAR" VOLVEMOS DE LEER LA TEMPERATURA", INFOTRAZA);
     return EVENT_ANSWER_TEMPERATURE;
 
 }

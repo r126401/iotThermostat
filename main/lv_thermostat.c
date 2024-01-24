@@ -64,6 +64,8 @@ lv_style_t lv_style_button_threshold;
 lv_style_t lv_style_button_reset_app;
 lv_style_t lv_style_layout_schedule;
 lv_style_t lv_style_bar_schedule;
+lv_style_t lv_style_button_icon_wifi;
+lv_style_t lv_style_button_action;
 
 
 lv_obj_t *lv_date_text;
@@ -76,10 +78,12 @@ lv_obj_t *lv_icon_alarm;
 lv_obj_t *lv_button_up_threshold;
 lv_obj_t *lv_button_down_threshold;
 lv_obj_t *lv_button_reset_app;
+lv_obj_t *lv_button_action;
 lv_obj_t *lv_icon_up_threshold;
 lv_obj_t *lv_icon_down_threshold;
 lv_obj_t *lv_icon_wifi;
 lv_obj_t *lv_icon_reset;
+lv_obj_t *lv_icon_action;
 
 LV_IMG_DECLARE(ic_action_online);
 LV_IMG_DECLARE(ic_action_offline);
@@ -95,6 +99,9 @@ LV_IMG_DECLARE(ic_threshold);
 LV_IMG_DECLARE(ic_up_threshold);
 LV_IMG_DECLARE(ic_down_threshold);
 LV_IMG_DECLARE(ic_reset);
+LV_IMG_DECLARE(ic_action_thermostat);
+LV_IMG_DECLARE(ic_sun);
+LV_IMG_DECLARE(ic_moon);
 
 //LV_FONT_CUSTOM_DECLARE(lv_font_led_30);
 LV_FONT_DECLARE(russo48);
@@ -164,14 +171,16 @@ void lv_create_layout_nofitification(DATOS_APLICACION *datosApp) {
 
 	//creating objects
 	lv_layout_notification = lv_obj_create(lv_main_screen);
-	lv_date_text = lv_label_create(lv_layout_notification);
+	
+	lv_date_text = lv_label_create(lv_main_screen);
 	lv_label_set_text_fmt(lv_date_text, "--:--");
 	lv_label_set_long_mode(lv_date_text, 3);
+	lv_obj_set_pos(lv_date_text, CONFIG_LCD_H_RES/2, 0);
 
 	//style objects
 	lv_set_style_layout_notification();
 	lv_obj_set_style_pad_all(lv_layout_notification, 5, LV_PART_MAIN);
-	lv_obj_set_style_text_font(lv_date_text, &lv_font_montserrat_16, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_font(lv_date_text, &lv_font_montserrat_26, LV_STATE_DEFAULT);
 
 
 	//position objects
@@ -221,7 +230,14 @@ void lv_set_lv_style_button_reset_app() {
 
 
 
+void lv_set_lv_style_button_action() {
+	lv_style_init(&lv_style_button_action);
+	lv_style_set_pad_all(&lv_style_button_action, 0);
+	lv_style_set_bg_opa(&lv_style_button_action, LV_OPA_TRANSP);
+    lv_style_set_border_width(&lv_style_button_action, 0);
+	lv_obj_add_style(lv_button_action, &lv_style_button_action, LV_STATE_DEFAULT);
 
+}
 
 
 
@@ -332,13 +348,8 @@ void lv_create_layout_threshold(DATOS_APLICACION *datosApp) {
 	lv_icon_threshold = lv_img_create(lv_layout_threshold);
 	lv_img_set_src(lv_icon_threshold, &ic_threshold);
 	lv_text_threshold = lv_label_create(lv_layout_threshold);
-	//lv_obj_set_y(lv_text_threshold, 25);
-	//lv_set_text_threshold(datosApp);
-	//sprintf(temperature, "%.1f ºC", datosApp->termostato.tempUmbral);
-	//lv_label_set_text(lv_text_threshold, temperature);
 	lv_set_style_threshold();
 	lv_obj_set_size(lv_layout_threshold, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
-	//lv_obj_align(lv_text_threshold, LV_ALIGN_OUT_BOTTOM_MID, 40, 25);
 
 
 
@@ -364,7 +375,6 @@ void lv_create_heating_icon(DATOS_APLICACION *datosApp) {
 	lv_img_set_src(lv_icon_heating, &ic_heating);
 
 	lv_obj_set_pos(lv_icon_heating, lv_pct(10), lv_pct(30));
-	//lv_obj_align_to(lv_icon_heating, lv_layout_temperature, LV_ALIGN_OUT_RIGHT_MID, 30, 30);
 
 
 
@@ -400,7 +410,6 @@ void lv_set_style_buttons_threshold() {
 
 static void event_handler_up_threshold(lv_event_t *event) {
 
-
 	send_event_device(__func__,EVENT_UP_THRESHOLD);
 	ESP_LOGI("HOLA", "HE PULSADO ARRIBA");
 
@@ -418,13 +427,18 @@ static void event_handler_down_threshold(lv_event_t *event) {
 
 static void event_handler_button_reset(lv_event_t *event) {
 
+	ESP_LOGI(TAG, ""TRAZAR"PULSADO BOTON RESET", INFOTRAZA);		
 	send_event_device(__func__, EVENT_RESET_BUTTON);
-	ESP_LOGI(TAG, ""TRAZAR"PULSADO BOTON RESET", INFOTRAZA);
-	esp_restart();
+	
+	
 
 
 }
 
+static void event_handler_button_action(lv_event_t *event) {
+	ESP_LOGI(TAG, ""TRAZAR"PULSADO BOTON ACTION_BUTTON", INFOTRAZA);
+	send_event_device(__func__, EVENT_ACTION_BUTTON);
+}
 
 
 void lv_create_layout_buttons_threshold(DATOS_APLICACION *datosApp) {
@@ -436,16 +450,15 @@ void lv_create_layout_buttons_threshold(DATOS_APLICACION *datosApp) {
 
 	lv_button_reset_app = lv_btn_create(lv_main_screen);
 	lv_button_up_threshold = lv_btn_create(lv_layout_buttons_threshold);
+	lv_button_action = lv_btn_create(lv_layout_buttons_threshold);
 	lv_button_down_threshold = lv_btn_create(lv_layout_buttons_threshold);
-
-
 
 
 
 	lv_obj_add_event_cb(lv_button_up_threshold, event_handler_up_threshold, LV_EVENT_CLICKED, datosApp);
 	lv_obj_add_event_cb(lv_button_down_threshold, event_handler_down_threshold, LV_EVENT_CLICKED, datosApp);
 	lv_obj_add_event_cb(lv_button_reset_app, event_handler_button_reset, LV_EVENT_CLICKED, datosApp);
-
+	lv_obj_add_event_cb(lv_button_action, event_handler_button_action, LV_EVENT_CLICKED, datosApp);
 
 
 
@@ -453,23 +466,28 @@ void lv_create_layout_buttons_threshold(DATOS_APLICACION *datosApp) {
 	lv_icon_up_threshold = lv_img_create(lv_button_up_threshold);
 	lv_icon_down_threshold = lv_img_create(lv_button_down_threshold);
 	lv_icon_button_reset = lv_img_create(lv_button_reset_app);
+	lv_icon_action = lv_img_create(lv_button_action);
+
 
 	lv_img_set_src(lv_icon_down_threshold, &ic_down_threshold);
 
 	lv_img_set_src(lv_icon_up_threshold, &ic_up_threshold);
 	lv_img_set_src(lv_icon_button_reset, &ic_reset);
+	lv_img_set_src(lv_icon_action, &ic_action_thermostat);
 
 
 
 	lv_obj_set_size(lv_layout_buttons_threshold, LV_SIZE_CONTENT, LV_SIZE_CONTENT);
 	lv_obj_set_size(lv_button_reset_app, 48, 48);
+	lv_obj_set_size(lv_button_action, 48, 48);
 
 
 
 	lv_obj_set_pos(lv_button_reset_app, 0,0);
-	lv_obj_set_pos(lv_layout_buttons_threshold,lv_pct(87) , lv_pct(30));
+	lv_obj_set_pos(lv_layout_buttons_threshold,lv_pct(87) , lv_pct(20));
 	lv_set_style_buttons_threshold();
 	lv_set_lv_style_button_reset_app();
+	lv_set_lv_style_button_action();
 
 
 
@@ -580,28 +598,15 @@ void lv_update_bar_schedule(DATOS_APLICACION *datosApp, bool show) {
 
 
 	ESP_LOGI(TAG, "intervalo inicio :%lld, intervalo fin : %lld y hora actual %lld", begin_interval, next_interval, now);
-
-
-	//ESP_LOGI(TAG, "hora inicio: %d, minuto inicio:%d, ini :%lld, fin:%lld", current_schedule.tm_hour, current_schedule.tm_min, datosApp->datosGenerales->programacion[active_schedule].programa, next_interval);
-
-
-
-
-
-
-	//lv_label_set_text_fmt(lv_text_from_schedule, "%02d:%02d", hour_from, minute_from);
-	//lv_label_set_text_fmt(lv_text_to_schedule, "%02d:%02d", hour_to, minute_to);
-
 	progress = (now - begin_interval)* 100 / (next_interval - begin_interval);
-
 	lv_label_set_text_fmt(lv_text_from_schedule, "%02d:%02d", current_schedule.tm_hour, current_schedule.tm_min);
 	localtime_r(&next_interval, &fecha);
 	lv_label_set_text_fmt(lv_text_to_schedule, "%02d:%02d", fecha.tm_hour, fecha.tm_min);
 	ESP_LOGE(TAG, "PROGRESS: %d, %02d:%02d to %02d:%02d", progress, current_schedule.tm_hour, current_schedule.tm_min, fecha.tm_hour, fecha.tm_min);
 
-
+	lv_obj_set_style_text_font(lv_text_from_schedule, &lv_font_montserrat_20, LV_STATE_DEFAULT);
+	lv_obj_set_style_text_font(lv_text_to_schedule, &lv_font_montserrat_20, LV_STATE_DEFAULT);
 	lv_obj_clear_flag(lv_layout_schedule, LV_OBJ_FLAG_HIDDEN);
-
 	lv_bar_set_value(lv_progress_schedule, progress, LV_ANIM_OFF);
 
 }
@@ -815,59 +820,114 @@ static void event_handler_smartconfig(lv_event_t *event) {
 
 	ESP_LOGI(TAG, ""TRAZAR"event_handler_smartconfig", INFOTRAZA);
 	send_event(__func__,EVENT_SMARTCONFIG_START);
-	lv_label_set_text_fmt(lv_text_smartconfig, "%s Recibiendo wifi", LV_SYMBOL_WIFI);
 	lv_obj_add_flag(lv_icon_wifi, LV_OBJ_FLAG_HIDDEN);
 	lv_create_screen_factory();
 }
+
+
+void lv_set_style_button_icon_wifi() {
+
+	lv_style_init(&lv_style_button_icon_wifi);
+	lv_general_style(&lv_style_button_icon_wifi);
+
+
+
+}
+
+// Función para animar el cambio de color del icono
+static void color_animation(void *btn, int32_t value)
+{
+    // Cambia el tono de rojo (0xFF0000) a verde (0x00FF00)
+    //lv_obj_set_style_local_image_recolor(btn, LV_BTN_PART_MAIN, LV_STATE_DEFAULT, value);
+	lv_obj_set_style_text_color(btn, lv_color_hex(value), LV_PART_MAIN);
+	
+
+
+
+}
+
+
+void animation_icon_wifi() {
+
+
+
+    // Define un objeto de animación
+    lv_anim_t a;
+    lv_anim_init(&a);
+
+    // Configura la animación
+    lv_anim_set_exec_cb(&a, (lv_anim_exec_xcb_t)color_animation);
+	lv_anim_set_var(&a, lv_text_icon_wifi);
+	lv_anim_set_values(&a, -20, 40);
+    //lv_anim_set_values(&a, lv_color_hex(0xFF0000), lv_color_hex(0x00FF00));  // Rojo a verde
+    lv_anim_set_time(&a, 100);  // Duración de la animación en milisegundos
+    lv_anim_set_repeat_count(&a, LV_ANIM_REPEAT_INFINITE);  // Repetir infinitamente
+
+    // Inicia la animación
+    lv_anim_start(&a);
+
+
+
+}
+
 
 void lv_configure_smartconfig() {
 
 
 	ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI", INFOTRAZA);
 	//creating objects
-	if (lv_text_smartconfig == NULL) {
-		lv_text_smartconfig = lv_label_create(lv_main_screen);
-		ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 1", INFOTRAZA);
-	} else {
-		ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 2", INFOTRAZA);
-	}
 
 	if (lv_icon_wifi == NULL) {
 		lv_icon_wifi = lv_btn_create(lv_main_screen);
 		lv_text_icon_wifi = lv_label_create(lv_icon_wifi);
-		ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 3", INFOTRAZA);
-	} else {
-		ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 4", INFOTRAZA);
 	}
 
+
 	lv_obj_clear_flag(lv_icon_wifi, LV_OBJ_FLAG_HIDDEN);
-
-
-	lv_label_set_text_fmt(lv_text_smartconfig, "%s para configurar", LV_SYMBOL_WIFI);
 	lv_label_set_text(lv_text_icon_wifi, LV_SYMBOL_WIFI);
 
-	ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 5", INFOTRAZA);
 	//style objects
 	lv_set_style_status_application();
-	ESP_LOGW(TAG, ""TRAZAR" LV CONFIGURACION WIFI 6", INFOTRAZA);
-	lv_obj_add_style(lv_text_smartconfig, &lv_style_status_application, LV_STATE_DEFAULT);
+
 	lv_obj_add_style(lv_icon_wifi, &lv_style_status_application, LV_STATE_DEFAULT);
 	lv_obj_add_style(lv_text_icon_wifi, &lv_style_status_application, LV_STATE_DEFAULT);
 
 	//position objects
-	lv_obj_set_pos(lv_text_smartconfig, 100, 20);
-	lv_obj_set_pos(lv_icon_wifi, CONFIG_LCD_H_RES/2, 50);
+	lv_obj_set_pos(lv_icon_wifi, lv_pct(10), lv_pct(60));
 	//size objects
-	lv_obj_set_size(lv_text_smartconfig, 400,20);
-	lv_obj_set_size(lv_icon_wifi, 40,40);
+	lv_obj_set_size(lv_icon_wifi, 48,48);
 
 	//callback functions
 	lv_obj_add_event_cb(lv_icon_wifi, event_handler_smartconfig, LV_EVENT_CLICKED, NULL);
 
+	lv_obj_set_style_text_color(lv_text_icon_wifi, lv_color_hex(0xFF0000), LV_PART_MAIN);
+	//animation_icon_wifi();
+
 }
 
 
+void lv_paint_sub_status_app(SUB_STATUS_APP status) {
 
+
+
+	switch (status)
+	{
+	case NORMAL_SUB_STATUS:
+		lv_img_set_src(lv_icon_action, &ic_action_thermostat);
+		break;
+	case MOON_SUB_STATUS:
+		lv_img_set_src(lv_icon_action, &ic_moon);
+		break;
+	case SUN_SUB_STATUS:
+		lv_img_set_src(lv_icon_action, &ic_sun);
+		break;
+	default:
+		break;
+	}
+
+	
+
+}
 
 
 

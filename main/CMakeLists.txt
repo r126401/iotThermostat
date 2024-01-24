@@ -25,6 +25,10 @@ idf_component_register(SRCS
 "images/ic_wifi_off.c"
 "images/ic_wifi_on.c"
 "images/ic_reset.c"
+"images/ic_action_thermostat.c"
+"images/ic_moon.c"
+"images/ic_sun.c"
+
 INCLUDE_DIRS 
 "."
 "include")
