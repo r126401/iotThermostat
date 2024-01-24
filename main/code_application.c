@@ -79,6 +79,11 @@ void thermostat_action(DATOS_APLICACION *datosApp) {
 	enum TIPO_ACCION_TERMOSTATO accion_termostato;
 	static float lecturaAnterior = -1000;
 
+	if (get_current_status_application(datosApp) == NORMAL_MANUAL) {
+		ESP_LOGW(TAG, ""TRAZAR"SE RETORNA PORQUE LA APLICACION ESTA EN ESTADO NORMAL_MANUAL", INFOTRAZA);
+		return;
+	}
+
 	ESP_LOGI(TAG, ""TRAZAR"accionar_termostato: LECTURA ANTERIOR: %.2f, LECTURA POSTERIOR: %.2f HA HABIDO CAMBIO DE TEMPERATURA", INFOTRAZA,
 			lecturaAnterior, datosApp->termostato.tempActual);
 
@@ -105,9 +110,8 @@ void update_thermostat_device(DATOS_APLICACION *datosApp) {
 	if (get_current_status_application(datosApp) == FACTORY) {
 		lv_update_threshold(datosApp, true);
 	}
-	if (get_current_status_application(datosApp) != NORMAL_MANUAL) {
-		thermostat_action(datosApp);
-	}
+	thermostat_action(datosApp);
+
 	
 
 
