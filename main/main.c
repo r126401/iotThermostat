@@ -63,7 +63,7 @@ void app_main(void) {
 #endif
 
 
-	xTaskCreate(task_iotThermostat, "tarea_lectura_temperatura", 8192, (void*) &datosApp, 1, NULL);
+	xTaskCreate(task_iotThermostat, "tarea_lectura_temperatura", CONFIG_RESOURCE_APP_TASK, (void*) &datosApp, 1, NULL);
 
 	if(is_factory() == ESP_OK) {
 
