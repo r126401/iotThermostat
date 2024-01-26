@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 
 
-
+set (EXTRA_COMPONENT_DIRS "/opt/desarrollo/espidf/components")
 #add_custom_target( ALL NAME prueba COMMAND date)
 set (SERVIDOR_OTA jajicaiot.ddns.net)
 set (PUERTO_OTA 8070)
